@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         login_btn = findViewById(R.id.login_btnmain);
         gridAdapter = new GridAdapter(this, grid_image);
         gridView.setAdapter(gridAdapter);
+
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

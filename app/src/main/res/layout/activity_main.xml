@@ -16,7 +16,7 @@
         android:gravity="center"
         android:padding="15dp"
         android:text="Choose your book"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         android:textColor="#211868" />
 
 

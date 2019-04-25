@@ -4,21 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
-public class RecordedAudioActivity extends AppCompatActivity {
-    ImageView share_audio;
+public class ListenAudioStory extends AppCompatActivity {
+    ImageView recordAudioButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recorded_audio);
-        share_audio = findViewById(R.id.share_audio_btn);
-        share_audio.setOnClickListener(new View.OnClickListener() {
+        setContentView(R.layout.activity_listen_audio_story);
+
+        recordAudioButton = findViewById(R.id.record_audio_book);
+        recordAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RecordedAudioActivity.this, ShareStory.class));
+                startActivity(new Intent(ListenAudioStory.this, StoryActivity.class));
             }
         });
     }

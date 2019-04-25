@@ -8,8 +8,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class GridAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
@@ -48,7 +46,12 @@ public class GridAdapter extends BaseAdapter {
         holder.audioBookImage = view.findViewById(R.id.imageview);
         holder.linearLayout = view.findViewById(R.id.layout);
         holder.audioBookImage.setBackgroundResource(grid_ico[position]);
-
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                context.startActivity(new Intent(context, ListenAudioStory.class));
+            }
+        });
         return view;
     }
 

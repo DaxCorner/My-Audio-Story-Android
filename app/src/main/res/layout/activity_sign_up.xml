@@ -14,7 +14,7 @@
         android:padding="15dp"
         android:text="Sign Up"
         android:layout_alignParentTop="true"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
         android:textColor="#211868" />
 
     <View
