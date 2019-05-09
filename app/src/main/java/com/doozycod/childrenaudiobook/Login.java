@@ -20,7 +20,7 @@ public class Login extends AppCompatActivity {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Login.this, StoryActivity.class));
+                startActivity(new Intent(Login.this, RecordOwnAudioActivity.class));
             }
         });
         submit_btn.setOnClickListener(new View.OnClickListener() {

@@ -3,13 +3,24 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#211868"
+    android:background="@drawable/splash_bg"
     tools:context=".SplashActivity">
 
     <ImageView
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:id="@+id/app_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="260dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/splash_logo" />
+        android:src="@drawable/logo"
+        />
+    <ImageView
+        android:layout_marginTop="50dp"
+        android:id="@+id/loading"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/app_logo"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/a01"
+        />
 
 </RelativeLayout>

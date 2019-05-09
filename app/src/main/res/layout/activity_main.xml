@@ -1,108 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#e0e0e0"
-    tools:context=".MainActivity">
+    android:background="@drawable/bg"
+    android:orientation="vertical">
 
 
-    <TextView
-        android:background="#fff"
+    <RelativeLayout
         android:id="@+id/header"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:padding="15dp"
-        android:text="Choose your book"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-        android:textColor="#211868" />
-
-
-    <View
-        android:id="@+id/separator"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_below="@+id/header"
-        android:background="#211868" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/home_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/home_btn" />
+
+        <ImageView
+            android:id="@+id/homepage_logo"
+            android:layout_width="260dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/top_logo" />
+
+        <ImageView
+            android:id="@+id/lib_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_toLeftOf="@id/login_btn_main"
+            android:src="@drawable/library_btn" />
+
+        <ImageView
+            android:id="@+id/login_btn_main"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/login_btn" />
 
 
-    <GridView
-        android:id="@+id/gridview"
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/choose_book"
+        android:layout_width="wrap_content"
+        android:layout_height="65dp"
+        android:src="@drawable/choose_your_book"
+        android:layout_below="@+id/header"/>
+
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/photos_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/separator"
-        android:horizontalSpacing="10dp"
-        android:columnWidth="60dp"
-        android:numColumns="2"
-        android:padding="10dp"
-        android:verticalSpacing="10dp" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/choose_book"
+        android:layout_above="@+id/SliderDots">
+
+    </android.support.v4.view.ViewPager>
+
 
     <LinearLayout
-        android:id="@+id/bottom_navi"
+        android:id="@+id/SliderDots"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#211868"
+        android:gravity="center_vertical|center_horizontal"
         android:orientation="horizontal"
-        android:padding="2dp"
-        android:weightSum="2">
-
-        <LinearLayout
-            android:id="@+id/scan_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="2dp"
-            android:paddingBottom="3dp">
-
-            <ImageView
-                android:id="@+id/home_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_library" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="Library"
-                android:textColor="#fff" />
-        </LinearLayout>
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#fff" />
-
-        <LinearLayout
-            android:id="@+id/login_btnmain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="2dp"
-            android:paddingBottom="3dp">
-
-            <ImageView
-                android:id="@+id/scan_now_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_account_" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Login"
-                android:textColor="#fff" />
-        </LinearLayout>
+        android:layout_marginBottom="15dp"/>
 
 
-    </LinearLayout>
+
 </RelativeLayout>

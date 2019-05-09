@@ -44,14 +44,8 @@ public class GridAdapter extends BaseAdapter {
         Holder holder = new Holder();
         View view = inflater.inflate(R.layout.grid_list_view, null);
         holder.audioBookImage = view.findViewById(R.id.imageview);
-        holder.linearLayout = view.findViewById(R.id.layout);
         holder.audioBookImage.setBackgroundResource(grid_ico[position]);
-        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                context.startActivity(new Intent(context, ListenAudioStory.class));
-            }
-        });
+
         return view;
     }
 

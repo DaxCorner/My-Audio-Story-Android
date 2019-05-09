@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/home_btn"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:src="@drawable/home_btn" />
+
+        <ImageView
+            android:id="@+id/homepage_logo"
+            android:layout_width="260dp"
+            android:layout_height="150dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/top_logo" />
+
+        <ImageView
+            android:id="@+id/lib_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_toLeftOf="@id/login_btn_main"
+            android:src="@drawable/library_btn" />
+
+        <ImageView
+            android:id="@+id/login_btn_main"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:src="@drawable/login_btn" />
+
+
+    </RelativeLayout>
+
+
+    <ImageView
+        android:id="@+id/recor_own_txt"
+        android:layout_width="wrap_content"
+        android:layout_height="65dp"
+        android:layout_below="@+id/header"
+        android:src="@drawable/record_your_own_text" />
+
+    <ImageView
+
+        android:id="@+id/bg_music_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_below="@+id/recor_own_txt"
+        android:layout_marginTop="20dp"
+        android:padding="5dp"
+        android:src="@drawable/bg_music_on_btn" />
+
+    <ImageView
+
+        android:id="@+id/large_font"
+        android:layout_width="wrap_content"
+        android:layout_height="70dp"
+        android:layout_below="@+id/bg_music_btn"
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        android:src="@drawable/large_font_btn" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/large_font">
+
+        <ImageView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="20dp"
+            android:padding="30dp"
+            android:src="@drawable/text" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="70dp"
+            android:layout_below="@id/text"
+            android:layout_marginBottom="10dp"
+            android:padding="10dp"
+            android:src="@drawable/start_btn" />
+    </RelativeLayout>
+
+
+</RelativeLayout>
