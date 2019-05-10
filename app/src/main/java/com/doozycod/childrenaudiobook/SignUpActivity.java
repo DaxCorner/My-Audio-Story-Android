@@ -17,6 +17,7 @@ public class SignUpActivity extends AppCompatActivity {
     Button sign_up_user;
     ImageView login_button, library_buton, home_button;
     Dialog myDialog;
+    ImageView login_dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +26,7 @@ public class SignUpActivity extends AppCompatActivity {
         myDialog = new Dialog(this);
         sign_up_user = findViewById(R.id.sign_upactivity_btn);
         home_button = findViewById(R.id.home_btn);
-        library_buton = findViewById(R.id.lib_btn);
+        library_buton = findViewById(R.id.lib_btn_on_signup);
         login_button = findViewById(R.id.login_btn);
         sign_up_user.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,15 +54,14 @@ public class SignUpActivity extends AppCompatActivity {
 
         myDialog.setContentView(R.layout.custom_login_popup);
 
-        Button login_dialog;
-//        login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
-//
-//        login_dialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
+
+        login_dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();

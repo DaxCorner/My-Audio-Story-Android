@@ -14,12 +14,6 @@ public class RecordedAudioActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorded_audio);
-        share_audio = findViewById(R.id.share_audio_btn);
-        share_audio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(RecordedAudioActivity.this, ShareStory.class));
-            }
-        });
+
     }
 }

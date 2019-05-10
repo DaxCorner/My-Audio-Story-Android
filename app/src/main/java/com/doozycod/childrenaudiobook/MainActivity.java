@@ -1,17 +1,16 @@
 package com.doozycod.childrenaudiobook;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
+
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -21,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04};
 
     Button login_dialog_btn;
-    ImageView login_btn;
+    ImageView login_btn, home_btn, library_btn;
     ViewPager viewPager;
     LinearLayout sliderDotspanel;
     private int dotscount;
@@ -32,13 +31,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        home_btn = findViewById(R.id.home_btn);
+        library_btn = findViewById(R.id.lib_btn);
         myDialog = new Dialog(this);
         sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
 
         viewPager = findViewById(R.id.photos_viewpager);
         login_btn = findViewById(R.id.login_btn_main);
 
-
+        home_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, RecordOwnAudioActivity.class));
+            }
+        });
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,6 +53,12 @@ public class MainActivity extends AppCompatActivity {
         });
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this, grid_image);
 
+        library_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, LibraryActivity.class));
+            }
+        });
         viewPager.setAdapter(viewPagerAdapter);
 
 
@@ -96,37 +108,12 @@ public class MainActivity extends AppCompatActivity {
     public void ShowPopup(View v) {
 
         myDialog.setContentView(R.layout.custom_popup);
-//        login_dialog_btn = v.findViewById(R.id.select_login);
-//
-//        login_dialog_btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                ShowPopupLogin(v);
-//                myDialog.dismiss();
-//            }
-//        });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
 
         myDialog.show();
     }
 
-    public void ShowPopupLogin(View v) {
-
-        myDialog.setContentView(R.layout.custom_login_popup);
-//        login_dialog = myDialog.findViewById(R.id.select_login);
-//
-//        login_dialog.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
-
-        myDialog.show();
-    }
 }
 
 
