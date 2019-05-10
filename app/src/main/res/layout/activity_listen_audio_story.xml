@@ -5,18 +5,18 @@
     android:background="@drawable/bg"
     android:orientation="vertical">
 
-
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="#269FF1">
 
         <ImageView
             android:id="@+id/home_btn"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_margin="10dp"
-            android:src="@drawable/home_btn" />
+            android:src="@drawable/home_btn_pressed" />
 
         <ImageView
             android:id="@+id/homepage_logo"
@@ -26,20 +26,20 @@
             android:src="@drawable/top_logo" />
 
         <ImageView
-            android:id="@+id/lib_btn_listen_story"
+            android:id="@+id/lib_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@id/login_btn"
-            android:src="@drawable/library_btn" />
+            android:layout_toLeftOf="@id/login_btn_main"
+            android:src="@drawable/lib_btn_pressed" />
 
         <ImageView
-            android:id="@+id/login_btn"
+            android:id="@+id/login_btn_main"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_margin="10dp"
-            android:src="@drawable/login_btn" />
+            android:src="@drawable/login_btn_pressed" />
 
 
     </RelativeLayout>

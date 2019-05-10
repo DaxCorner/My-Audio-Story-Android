@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true" android:state_pressed="false" android:drawable="@drawable/log_in_btn_dialog" />
+    <item android:state_focused="true" android:state_pressed="true" android:drawable="@drawable/log_in_btn_press_dialog" />
+    <item android:state_focused="false" android:state_pressed="true" android:drawable="@drawable/log_in_btn_press_dialog" />
+    <item android:drawable="@drawable/log_in_btn_dialog" />
+</selector>

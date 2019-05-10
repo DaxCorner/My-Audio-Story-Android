@@ -18,16 +18,21 @@ import com.github.angads25.toggle.interfaces.OnToggledListener;
 import com.github.angads25.toggle.model.ToggleableView;
 import com.github.angads25.toggle.widget.LabeledSwitch;
 
+import static com.doozycod.childrenaudiobook.R.drawable.bg_music_off_btn;
+import static com.doozycod.childrenaudiobook.R.drawable.bg_music_on_btn;
+import static com.doozycod.childrenaudiobook.R.drawable.large_font_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
+import static com.doozycod.childrenaudiobook.R.drawable.small_font_btn;
 
 public class RecordOwnAudioActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     int i = 0;
-    ImageView record_btn;
-    ImageView imageView;
+    ImageView record_btn, large_font;
+    ImageView imageView, bg_music_btn;
     RadioButton regular_button, large_button;
     Dialog myDialog;
     int[] count_down_timer_img = {R.drawable.countdown_02, R.drawable.countdown_01, R.drawable.countdown_00};
+    boolean isPressed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,19 +40,49 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
         record_btn = findViewById(R.id.recording_start);
+        large_font = findViewById(R.id.large_font);
+        large_font.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPressed) {
+//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+                    large_font.setImageResource(large_font_btn);
+                    isPressed = false;
+                } else {
+                    isPressed = true;
+//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+                    large_font.setImageResource(small_font_btn);
+                }
+            }
+        });
         record_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ShowPopup(v);
             }
         });
+        bg_music_btn = findViewById(R.id.bg_music_btn);
+        bg_music_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isPressed) {
+//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+                    bg_music_btn.setImageResource(bg_music_on_btn);
+                    isPressed = false;
+                } else {
+                    isPressed = true;
+//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+                    bg_music_btn.setImageResource(bg_music_off_btn);
+                }
 
+            }
+        });
 
     }
 
     public void ShowPopup(final View v) {
         myDialog.setContentView(R.layout.custom_record_timer);
-         imageView = myDialog.findViewById(R.id.counter_image);
+        imageView = myDialog.findViewById(R.id.counter_image);
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
 

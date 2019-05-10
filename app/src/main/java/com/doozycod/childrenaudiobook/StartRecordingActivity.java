@@ -16,7 +16,7 @@ public class StartRecordingActivity extends AppCompatActivity {
     ImageView start_recording, imageView;
     Dialog myDialog;
     int i = 0;
-    int[] count_down_timer_img = { R.drawable.countdown_29, R.drawable.countdown_28,R.drawable.countdown_27, R.drawable.countdown_26, R.drawable.countdown_25
+    int[] count_down_timer_img = {R.drawable.countdown_29, R.drawable.countdown_28, R.drawable.countdown_27, R.drawable.countdown_26, R.drawable.countdown_25
             , R.drawable.countdown_24, R.drawable.countdown_23, R.drawable.countdown_22, R.drawable.countdown_21, R.drawable.countdown_20, R.drawable.countdown_19,
             R.drawable.countdown_18, R.drawable.countdown_17, R.drawable.countdown_16, R.drawable.countdown_15, R.drawable.countdown_14,
             R.drawable.countdown_13, R.drawable.countdown_12, R.drawable.countdown_11, R.drawable.countdown_10, R.drawable.countdown_09, R.drawable.countdown_08,
@@ -55,7 +55,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(StartRecordingActivity.this, StartRecordingActivity.class));
+                startActivity(new Intent(StartRecordingActivity.this, RecordedAudioActivity.class));
                 finish();
                 myDialog.dismiss();
             }

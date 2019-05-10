@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
     public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04};
 
     Button login_dialog_btn;
-    ImageView login_btn, home_btn, library_btn;
+    ImageView login_btn, home_btn, library_btn, popup_login, popup_signup, login_dialog;
     ViewPager viewPager;
     LinearLayout sliderDotspanel;
     private int dotscount;
@@ -108,9 +108,44 @@ public class MainActivity extends AppCompatActivity {
     public void ShowPopup(View v) {
 
         myDialog.setContentView(R.layout.custom_popup);
+        popup_login = myDialog.findViewById(R.id.select_login);
+        popup_signup = myDialog.findViewById(R.id.sign_upact_btn);
+        popup_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+            }
+        });
+        popup_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                showLoginPopUp(v);
+
+            }
+        });
+
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
 
+        myDialog.show();
+    }
+
+    public void showLoginPopUp(View v) {
+
+        myDialog.setContentView(R.layout.custom_login_popup);
+
+        login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
+
+        login_dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
 
