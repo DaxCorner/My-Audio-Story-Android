@@ -20,25 +20,27 @@
 
         <ImageView
             android:id="@+id/homepage_logo"
-            android:layout_width="260dp"
-            android:layout_height="150dp"
+            android:layout_width="250dp"
+            android:layout_height="140dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/top_logo" />
 
         <ImageView
             android:id="@+id/lib_btn_recorded"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginTop="10dp"
             android:layout_toLeftOf="@id/login_btn_recorded"
             android:src="@drawable/lib_btn_pressed" />
 
         <ImageView
             android:id="@+id/login_btn_recorded"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentRight="true"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/login_btn_pressed" />
 
     </RelativeLayout>

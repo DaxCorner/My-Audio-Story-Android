@@ -15,7 +15,6 @@
         <activity android:name=".ListenAudioStory" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".ShareStory" />
-        <activity android:name=".Login" />
         <activity android:name=".RecordedAudioActivity" />
         <activity android:name=".RecordOwnAudioActivity" />
         <activity
