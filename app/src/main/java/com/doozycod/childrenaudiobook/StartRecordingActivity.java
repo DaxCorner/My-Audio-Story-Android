@@ -52,7 +52,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                 startActivity(new Intent(StartRecordingActivity.this, LibraryActivity.class));
             }
         });
-        login_dialog.setOnClickListener(new View.OnClickListener() {
+        login_btn_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ShowPopupSignInSignUp(v);
