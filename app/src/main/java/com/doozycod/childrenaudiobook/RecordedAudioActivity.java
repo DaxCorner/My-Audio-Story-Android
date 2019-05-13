@@ -22,11 +22,15 @@ public class RecordedAudioActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorded_audio);
+
         save_btn = findViewById(R.id.save_story_btn);
         share_btn = findViewById(R.id.share_story_btn_on_record);
         login_btn = findViewById(R.id.login_btn_recorded);
         homebtn = findViewById(R.id.home_btn_recorded);
         lib_btn = findViewById(R.id.lib_btn_recorded);
+
+
+        myDialog = new Dialog(this);
 
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +42,7 @@ public class RecordedAudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                Toast.makeText(RecordedAudioActivity.this, "Shared!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RecordedAudioActivity.this,ShareStory.class));
+                startActivity(new Intent(RecordedAudioActivity.this, ShareStory.class));
             }
         });
 

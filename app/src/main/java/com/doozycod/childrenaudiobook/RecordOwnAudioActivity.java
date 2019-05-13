@@ -28,8 +28,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     int i = 0;
     ImageView record_btn, large_font;
-    ImageView imageView, bg_music_btn;
-    RadioButton regular_button, large_button;
+    ImageView imageView, bg_music_btn, home_btn_record, lib_btn, login_btn, login_dialog, popup_login, popup_signup;
     Dialog myDialog;
     int[] count_down_timer_img = {R.drawable.countdown_02, R.drawable.countdown_01, R.drawable.countdown_00};
     boolean isPressed = true;
@@ -37,10 +36,16 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
+
         record_btn = findViewById(R.id.recording_start);
         large_font = findViewById(R.id.large_font);
+        lib_btn = findViewById(R.id.lib_btn_record_own);
+        login_btn = findViewById(R.id.login_btn_record_your_own);
+        home_btn_record = findViewById(R.id.home_btn_record_own);
+
         large_font.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +66,26 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
                 ShowPopup(v);
             }
         });
+
+        home_btn_record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(RecordOwnAudioActivity.this, MainActivity.class));
+            }
+        });
+        lib_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(RecordOwnAudioActivity.this, LibraryActivity.class));
+            }
+        });
+        login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowPopupSignInSignUp(v);
+            }
+        });
+
         bg_music_btn = findViewById(R.id.bg_music_btn);
         bg_music_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +130,50 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
                 myDialog.dismiss();
             }
         }, 3 * 1100);
+        myDialog.show();
+    }
+
+    public void ShowPopupSignInSignUp(View v) {
+
+        myDialog.setContentView(R.layout.custom_popup);
+        popup_login = myDialog.findViewById(R.id.select_login);
+        popup_signup = myDialog.findViewById(R.id.sign_upact_btn);
+        popup_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                startActivity(new Intent(RecordOwnAudioActivity.this, SignUpActivity.class));
+            }
+        });
+        popup_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                showLoginPopUp(v);
+
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+
+        myDialog.show();
+    }
+
+    public void showLoginPopUp(View v) {
+
+        myDialog.setContentView(R.layout.custom_login_popup);
+
+        login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
+
+        login_dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
 

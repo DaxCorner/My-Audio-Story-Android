@@ -28,13 +28,13 @@ public class SignUpActivity extends AppCompatActivity {
         sign_up_user = findViewById(R.id.sign_upactivity_btn);
         home_button = findViewById(R.id.home_btn);
         library_buton = findViewById(R.id.lib_btn_on_signup);
-        TextView tx = (TextView)findViewById(R.id.firstname);
-        TextView lastname = (TextView)findViewById(R.id.lastname);
-        TextView emailtxt = (TextView)findViewById(R.id.emailtext);
-        TextView passwordtxt = (TextView)findViewById(R.id.passwordtxt);
-        TextView retypepass = (TextView)findViewById(R.id.retypepass);
+        TextView tx = (TextView) findViewById(R.id.firstname);
+        TextView lastname = (TextView) findViewById(R.id.lastname);
+        TextView emailtxt = (TextView) findViewById(R.id.emailtext);
+        TextView passwordtxt = (TextView) findViewById(R.id.passwordtxt);
+        TextView retypepass = (TextView) findViewById(R.id.retypepass);
 
-        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/helvetica.ttf");
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
 
         tx.setTypeface(custom_font);
         lastname.setTypeface(custom_font);
@@ -42,6 +42,14 @@ public class SignUpActivity extends AppCompatActivity {
         passwordtxt.setTypeface(custom_font);
         retypepass.setTypeface(custom_font);
         login_button = findViewById(R.id.login_btn_signup);
+
+        home_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                finish();
+            }
+        });
         sign_up_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
