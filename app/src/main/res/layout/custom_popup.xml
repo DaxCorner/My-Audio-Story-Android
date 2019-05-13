@@ -33,7 +33,7 @@
         android:layout_centerHorizontal="true"
         android:layout_alignTop="@+id/login_dialog"
 
-        android:src="@drawable/log_in_btn" />
+        android:src="@drawable/login_dialog_pressed" />
     <ImageView
         android:id="@+id/sign_upact_btn"
         android:layout_width="wrap_content"
@@ -41,7 +41,7 @@
         android:layout_marginTop="10dp"
         android:layout_below="@+id/select_login"
         android:layout_centerHorizontal="true"
-        android:src="@drawable/create_account_btn"
+        android:src="@drawable/create_dialog_signup"
         android:layout_marginBottom="20dp"/>
 
     </LinearLayout>

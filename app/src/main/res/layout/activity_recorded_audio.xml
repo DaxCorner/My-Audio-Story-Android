@@ -101,12 +101,14 @@
         android:layout_below="@id/save_name_txt">
 
         <ImageView
+
             android:padding="2dp"
             android:id="@+id/save_story_btn"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:src="@drawable/savebtn_pressed" />
         <ImageView
+            android:id="@+id/share_story_btn_on_record"
             android:padding="2dp"
             android:layout_marginTop="20dp"
             android:layout_below="@id/save_story_btn"

@@ -35,6 +35,7 @@
                 android:src="@drawable/countdown_30" />
 
             <ImageView
+                android:id="@+id/stop_recorder_btn"
                 android:layout_marginTop="25dp"
                 android:layout_width="48dp"
                 android:layout_height="48dp"

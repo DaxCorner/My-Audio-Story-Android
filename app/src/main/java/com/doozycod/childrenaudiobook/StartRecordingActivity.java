@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class StartRecordingActivity extends AppCompatActivity {
-    ImageView start_recording, imageView;
+    ImageView start_recording, imageView, stop_recorder_btn;
     Dialog myDialog;
     int i = 0;
     int[] count_down_timer_img = {R.drawable.countdown_29, R.drawable.countdown_28, R.drawable.countdown_27, R.drawable.countdown_26, R.drawable.countdown_25
@@ -35,12 +35,16 @@ public class StartRecordingActivity extends AppCompatActivity {
                 ShowPopup(v);
             }
         });
+
+
     }
 
     public void ShowPopup(View v) {
 
         myDialog.setContentView(R.layout.custom_personal_greet_popup);
         imageView = myDialog.findViewById(R.id.counter_image_personal);
+        stop_recorder_btn = myDialog.findViewById(R.id.stop_recorder_btn);
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -63,7 +67,12 @@ public class StartRecordingActivity extends AppCompatActivity {
         myDialog.show();
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
-
+        stop_recorder_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
         myDialog.show();
     }
 

@@ -87,7 +87,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:padding="5dp"
-            android:src="@drawable/record_personal_freeting_btn" />
+            android:src="@drawable/greeting_pressed" />
 
     </RelativeLayout>
 
