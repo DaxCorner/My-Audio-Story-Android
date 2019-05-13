@@ -19,7 +19,7 @@
         android:id="@+id/loading"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/app_logo"
-        android:layout_width="220dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:src="@drawable/a01"
         />

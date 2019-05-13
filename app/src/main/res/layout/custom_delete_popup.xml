@@ -30,17 +30,17 @@
             <ImageView
                 android:id="@+id/delete_no"
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
+                android:layout_height="55dp"
                 android:layout_marginLeft="80dp"
-                android:layout_marginTop="170dp"
+                android:layout_marginTop="175dp"
                 android:layout_weight="1"
                 android:padding="5dp"
                 android:src="@drawable/delete_no_press" />
 
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:layout_marginTop="170dp"
+                android:layout_height="55dp"
+                android:layout_marginTop="175dp"
                 android:layout_marginRight="80dp"
                 android:layout_marginBottom="20dp"
                 android:layout_toRightOf="@id/select_login"

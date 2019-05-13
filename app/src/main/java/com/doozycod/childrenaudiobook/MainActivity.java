@@ -19,7 +19,6 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class MainActivity extends AppCompatActivity {
     public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04};
 
-    Button login_dialog_btn;
     ImageView login_btn, home_btn, library_btn, popup_login, popup_signup, login_dialog;
     ViewPager viewPager;
     LinearLayout sliderDotspanel;
@@ -39,12 +38,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.photos_viewpager);
         login_btn = findViewById(R.id.login_btn_main);
 
-        home_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, RecordOwnAudioActivity.class));
-            }
-        });
+
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

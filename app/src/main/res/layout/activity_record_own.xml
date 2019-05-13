@@ -41,7 +41,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="7dp"
             android:src="@drawable/login_btn_pressed" />
 
 
@@ -62,7 +62,9 @@
         android:layout_below="@+id/recor_own_txt"
         android:layout_marginTop="20dp"
         android:padding="5dp"
-        android:src="@drawable/bg_music_off_btn" />
+        android:src="@drawable/bg_music_off_btn"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"/>
 
     <ImageView
 
@@ -72,30 +74,31 @@
         android:layout_below="@+id/bg_music_btn"
         android:layout_marginTop="10dp"
         android:padding="5dp"
-        android:src="@drawable/small_font_btn" />
+        android:src="@drawable/small_font_btn"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"/>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/large_font">
 
         <ImageView
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             android:padding="10dp"
-            android:src="@drawable/text" />
+            android:src="@drawable/text"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_below="@+id/large_font"/>
 
-        <ImageView
-            android:id="@+id/recording_start"
-            android:layout_width="wrap_content"
-            android:layout_height="70dp"
-            android:layout_below="@id/text"
-            android:layout_marginBottom="10dp"
-            android:padding="10dp"
-            android:src="@drawable/start_recording" />
-    </RelativeLayout>
 
+    <ImageView
+        android:id="@+id/recording_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/start_recording"
+        android:layout_marginLeft="75dp"
+        android:layout_marginRight="75dp" />
 
 </RelativeLayout>

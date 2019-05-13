@@ -28,16 +28,15 @@
         android:id="@+id/select_login"
         android:layout_width="wrap_content"
         android:padding="5dp"
-        android:layout_height="47dp"
-        android:layout_marginTop="125dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="123dp"
         android:layout_centerHorizontal="true"
         android:layout_alignTop="@+id/login_dialog"
-
         android:src="@drawable/login_dialog_pressed" />
     <ImageView
         android:id="@+id/sign_upact_btn"
         android:layout_width="wrap_content"
-        android:layout_height="47dp"
+        android:layout_height="50dp"
         android:padding="5dp"
         android:layout_below="@+id/select_login"
         android:layout_centerHorizontal="true"

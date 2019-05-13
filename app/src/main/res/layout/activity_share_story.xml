@@ -41,7 +41,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="7dp"
             android:src="@drawable/login_btn_pressed" />
 
 
@@ -60,16 +60,18 @@
         android:layout_height="65dp"
         android:layout_below="@+id/share_book"
         android:layout_marginTop="10dp"
-        android:padding="4dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:src="@drawable/share_text" />
 
     <RelativeLayout
-        android:id="@+id/send_layout"
+        android:id="@+id/enter_data_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/share_txt"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp">
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp">
 
         <TextView
             android:id="@+id/email"
@@ -77,13 +79,13 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:text="Email:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="#fff" />
 
         <EditText
             android:id="@+id/share_on_email_et"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:padding="10dp"
             android:layout_below="@id/email"
             android:background="@drawable/text_field" />
@@ -97,28 +99,43 @@
             android:layout_marginLeft="15dp"
             android:layout_marginTop="15dp"
             android:text="Phone No for text:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
             android:textColor="#fff" />
 
         <EditText
             android:id="@+id/share_on_phone_text_et"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="40dp"
             android:layout_below="@id/phone_no"
             android:padding="10dp"
             android:background="@drawable/text_field" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:padding="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_share"
+        android:layout_below="@id/enter_data_layout">
+
         <ImageView
             android:id="@+id/share_story_btn"
-            android:layout_marginTop="20dp"
-            android:layout_below="@id/share_on_phone_text_et"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:src="@drawable/share_btn_pressed"/>
+            android:src="@drawable/share_btn_pressed" />
     </RelativeLayout>
+
+
+
 <ImageView
-    android:layout_below="@id/send_layout"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:src="@drawable/image"/>
+    android:layout_height="130dp"
+    android:src="@drawable/image"
+    android:layout_marginRight="50dp"
+    android:paddingBottom="5dp"
+    android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

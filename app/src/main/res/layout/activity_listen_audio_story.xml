@@ -38,7 +38,7 @@
             android:layout_alignParentRight="true"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="7dp"
             android:src="@drawable/login_btn_pressed" />
 
 
@@ -66,6 +66,8 @@
         android:layout_height="60dp"
         android:layout_below="@id/book_cover"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
         android:src="@drawable/listen_audio_btn_pressed" />
 
 
@@ -75,6 +77,8 @@
         android:layout_height="60dp"
         android:layout_below="@id/listen_book"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
         android:src="@drawable/use_bg_music_pressed" />
 
     <ImageView
@@ -83,6 +87,8 @@
         android:layout_height="60dp"
         android:layout_below="@id/use_background_audio"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="70dp"
+        android:layout_marginRight="70dp"
         android:src="@drawable/record_my_own_audio_btn_pressed" />
 
 </RelativeLayout>
