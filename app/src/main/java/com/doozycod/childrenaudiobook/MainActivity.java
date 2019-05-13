@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, RecordOwnAudioActivity.class));
+//                startActivity(new Intent(MainActivity.this, RecordOwnAudioActivity.class));
             }
         });
         login_btn.setOnClickListener(new View.OnClickListener() {
@@ -109,15 +109,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (isPressed == true) {
+        if (isPressed) {
             ShowPopupRating(view);
             isPressed = false;
 
         } else {
             isPressed = false;
             finish();
-
-
         }
 
     }

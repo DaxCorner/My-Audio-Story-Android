@@ -3,6 +3,7 @@ package com.doozycod.childrenaudiobook;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -40,6 +41,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int i) {
 
         holder.book_name_txt.setText(book_name[i]);
+
         if (i % 2 == 1) {
             holder.relativeLayout.setBackground(holder.relativeLayout.getResources().getDrawable(light_line));
         } else {
@@ -70,6 +72,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             book_name_txt = itemView.findViewById(R.id.story_name_txt);
             relativeLayout = itemView.findViewById(R.id.recycler_layout);
             delete_story_btn = itemView.findViewById(R.id.delete_story_btn);
+
 
         }
     }

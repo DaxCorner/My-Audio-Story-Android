@@ -78,8 +78,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="30dp"
-                    android:layout_marginEnd="30dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_marginEnd="25dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -210,7 +210,7 @@
                     <Button
                         android:id="@+id/sign_upactivity_btn"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="45dp"
                         android:layout_marginStart="25dp"
                         android:layout_marginTop="20dp"
                         android:layout_marginEnd="25dp"

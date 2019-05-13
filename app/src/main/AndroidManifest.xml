@@ -13,7 +13,8 @@
         <activity android:name=".StartRecordingActivity"></activity>
         <activity android:name=".LibraryActivity" />
         <activity android:name=".ListenAudioStory" />
-        <activity android:name=".SignUpActivity" />
+        <activity android:name=".SignUpActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ShareStory" />
         <activity android:name=".RecordedAudioActivity" />
         <activity android:name=".RecordOwnAudioActivity" />
