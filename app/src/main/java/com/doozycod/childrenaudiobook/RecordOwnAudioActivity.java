@@ -100,7 +100,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(RecordOwnAudioActivity.this, StartRecordingActivity.class));
+                startActivity(new Intent(RecordOwnAudioActivity.this, ListenAudioStory.class));
                 finish();
                 myDialog.dismiss();
             }

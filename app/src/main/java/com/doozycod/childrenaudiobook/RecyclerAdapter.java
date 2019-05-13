@@ -21,6 +21,7 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder> {
     Context c;
     String[] book_name;
+    ImageView delete_yes, delete_no;
 
     public RecyclerAdapter(Context c, String[] book_name) {
         this.c = c;
@@ -49,7 +50,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.delete_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                    ShowPopup(v);
+                ShowPopup(v);
             }
         });
     }
@@ -76,6 +77,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public void ShowPopup(View v) {
         Dialog myDialog = new Dialog(c);
         myDialog.setContentView(R.layout.custom_delete_popup);
+        delete_no = myDialog.findViewById(R.id.delete_no);
+        delete_yes = myDialog.findViewById(R.id.delete_yes);
+        delete_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        delete_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(v.getResources().getDrawable(pop_up_bg));
 

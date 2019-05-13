@@ -52,12 +52,15 @@ public class LibraryActivity extends AppCompatActivity {
 
         login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
 
+
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
             }
         });
+
+
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();

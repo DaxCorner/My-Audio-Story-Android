@@ -10,35 +10,35 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#269FF1">
-
         <ImageView
-            android:id="@+id/home_btn"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:id="@+id/home_btn_listen_audio"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_margin="10dp"
             android:src="@drawable/home_btn_pressed" />
-
         <ImageView
             android:id="@+id/homepage_logo"
-            android:layout_width="260dp"
-            android:layout_height="150dp"
+            android:layout_width="250dp"
+            android:layout_height="140dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/top_logo" />
 
         <ImageView
-            android:id="@+id/lib_btn"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/lib_btn_listen_audio"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@id/login_btn_main"
+            android:layout_toLeftOf="@id/login_btn_listen"
             android:src="@drawable/lib_btn_pressed" />
 
         <ImageView
-            android:id="@+id/login_btn_main"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/login_btn_listen"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_alignParentRight="true"
-            android:layout_margin="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:src="@drawable/login_btn_pressed" />
 
 
@@ -55,7 +55,7 @@
     <ImageView
         android:id="@+id/book_cover"
         android:layout_width="wrap_content"
-        android:layout_height="260dp"
+        android:layout_height="220dp"
         android:layout_below="@id/choose_book"
         android:src="@drawable/book_cover" />
 
@@ -65,7 +65,7 @@
         android:layout_height="60dp"
         android:layout_below="@id/book_cover"
         android:layout_marginTop="10dp"
-        android:src="@drawable/listen_audio_book_btn" />
+        android:src="@drawable/listen_audio_btn_pressed" />
 
 
     <ImageView
@@ -74,7 +74,7 @@
         android:layout_height="60dp"
         android:layout_below="@id/listen_book"
         android:layout_marginTop="10dp"
-        android:src="@drawable/use_audio_background_btn" />
+        android:src="@drawable/use_bg_music_pressed" />
 
     <ImageView
         android:id="@+id/record_audio"
@@ -82,6 +82,6 @@
         android:layout_height="60dp"
         android:layout_below="@id/use_background_audio"
         android:layout_marginTop="10dp"
-        android:src="@drawable/record_my_own_btn" />
+        android:src="@drawable/record_my_own_audio_btn_pressed" />
 
 </RelativeLayout>

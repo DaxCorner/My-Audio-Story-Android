@@ -13,5 +13,12 @@ public class ListenAudioStory extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_listen_audio_story);
+        recordAudioButton = findViewById(R.id.record_audio);
+        recordAudioButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ListenAudioStory.this,StartRecordingActivity.class));
+            }
+        });
     }
 }

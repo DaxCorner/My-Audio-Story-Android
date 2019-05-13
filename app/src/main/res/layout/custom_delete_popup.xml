@@ -28,7 +28,7 @@
             android:weightSum="2">
 
             <ImageView
-                android:id="@+id/select_login"
+                android:id="@+id/delete_no"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 android:layout_marginLeft="80dp"
@@ -46,6 +46,7 @@
                 android:layout_toRightOf="@id/select_login"
                 android:layout_weight="1"
                 android:padding="5dp"
+                android:id="@+id/delete_yes"
                 android:src="@drawable/delete_yes_pressed" />
 
         </LinearLayout>
