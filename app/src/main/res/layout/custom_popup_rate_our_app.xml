@@ -34,7 +34,7 @@
                 android:layout_marginTop="330dp"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:src="@drawable/later_btn" />
+                android:src="@drawable/later_btn_pressed" />
 
             <ImageView
                 android:id="@+id/rating_now_btn"
@@ -44,7 +44,7 @@
                 android:layout_marginBottom="40dp"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:src="@drawable/submit_btn" />
+                android:src="@drawable/submit_btn_pressed" />
         </LinearLayout>
     </RelativeLayout>
 

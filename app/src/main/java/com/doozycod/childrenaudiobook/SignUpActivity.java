@@ -26,7 +26,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         myDialog = new Dialog(this);
         sign_up_user = findViewById(R.id.sign_upactivity_btn);
-        home_button = findViewById(R.id.home_btn);
+        home_button = findViewById(R.id.home_btn_signup);
         library_buton = findViewById(R.id.lib_btn_on_signup);
         TextView tx = (TextView) findViewById(R.id.firstname);
         TextView lastname = (TextView) findViewById(R.id.lastname);

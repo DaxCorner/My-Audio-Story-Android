@@ -19,12 +19,14 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class MainActivity extends AppCompatActivity {
     public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04};
 
+    View view;
     ImageView login_btn, home_btn, library_btn, popup_login, popup_signup, login_dialog;
     ViewPager viewPager;
     LinearLayout sliderDotspanel;
     private int dotscount;
     private ImageView[] dots;
     Dialog myDialog;
+    Boolean isPressed = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +36,16 @@ public class MainActivity extends AppCompatActivity {
         library_btn = findViewById(R.id.lib_btn_main);
         myDialog = new Dialog(this);
         sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
-
+        view = new View(this);
         viewPager = findViewById(R.id.photos_viewpager);
         login_btn = findViewById(R.id.login_btn_main);
 
-
+        home_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, RecordOwnAudioActivity.class));
+            }
+        });
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,6 +106,23 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+
+        if (isPressed == true) {
+            ShowPopupRating(view);
+            isPressed = false;
+
+        } else {
+            isPressed = false;
+            finish();
+
+
+        }
+
+    }
+
+
     public void ShowPopup(View v) {
 
         myDialog.setContentView(R.layout.custom_popup);
@@ -142,6 +166,32 @@ public class MainActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
+
+    public void ShowPopupRating(View v) {
+
+        myDialog.setContentView(R.layout.custom_popup_rate_our_app);
+        ImageView submit_btn, later_btn;
+        submit_btn = myDialog.findViewById(R.id.rating_now_btn);
+        later_btn = myDialog.findViewById(R.id.later_btn);
+        submit_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        later_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+            }
+        });
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+
+        myDialog.show();
+
+    }
+
 
 }
 
