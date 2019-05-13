@@ -26,15 +26,15 @@
             android:src="@drawable/top_logo" />
 
         <ImageView
-            android:id="@+id/lib_btn_recorded"
+            android:id="@+id/lib_btn_recording"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@id/login_btn_recorded"
+            android:layout_toLeftOf="@id/login_btn_recording"
             android:src="@drawable/lib_btn_pressed" />
 
         <ImageView
-            android:id="@+id/login_btn_recorded"
+            android:id="@+id/login_btn_recording"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentRight="true"
