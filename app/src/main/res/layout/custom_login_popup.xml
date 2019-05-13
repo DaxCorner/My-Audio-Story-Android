@@ -7,10 +7,6 @@
     android:orientation="vertical"
     android:padding="5dp">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
 
         <ImageView
             android:id="@+id/login_dialog"
@@ -23,18 +19,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:paddingLeft="60dp"
+            android:paddingRight="60dp"
             android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/user_name_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_width="100dp"
+                android:layout_height="17dp"
                 android:layout_marginTop="115dp"
                 android:src="@drawable/user_name_text" />
 
             <EditText
                 android:id="@+id/et_login_dialog"
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:padding="10dp"
                 android:layout_below="@id/user_name_txt"
@@ -44,16 +42,15 @@
 
             <ImageView
                 android:id="@+id/password_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
+                android:layout_width="100dp"
+                android:layout_height="17dp"
                 android:layout_below="@id/et_login_dialog"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="8dp"
                 android:src="@drawable/passord_text" />
 
             <EditText
                 android:id="@+id/et_password_dialog"
-                android:layout_width="250dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:padding="10dp"
                 android:layout_below="@id/password_txt"
@@ -71,6 +68,5 @@
                 android:layout_marginBottom="40dp"/>
 
         </LinearLayout>
-    </RelativeLayout>
 
 </RelativeLayout>
