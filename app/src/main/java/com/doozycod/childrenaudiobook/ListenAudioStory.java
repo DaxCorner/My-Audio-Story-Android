@@ -17,7 +17,7 @@ public class ListenAudioStory extends AppCompatActivity {
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ListenAudioStory.this,StartRecordingActivity.class));
+                startActivity(new Intent(ListenAudioStory.this,RecordOwnAudioActivity.class));
             }
         });
     }
