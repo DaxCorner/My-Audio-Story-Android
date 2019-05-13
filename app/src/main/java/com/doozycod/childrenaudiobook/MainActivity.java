@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         home_btn = findViewById(R.id.home_btn);
-        library_btn = findViewById(R.id.lib_btn);
+        library_btn = findViewById(R.id.lib_btn_main);
         myDialog = new Dialog(this);
         sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
 

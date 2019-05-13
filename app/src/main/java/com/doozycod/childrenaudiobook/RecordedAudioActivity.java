@@ -27,6 +27,7 @@ public class RecordedAudioActivity extends AppCompatActivity {
         login_btn = findViewById(R.id.login_btn_recorded);
         homebtn = findViewById(R.id.home_btn_recorded);
         lib_btn = findViewById(R.id.lib_btn_recorded);
+
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,6 +41,7 @@ public class RecordedAudioActivity extends AppCompatActivity {
                 startActivity(new Intent(RecordedAudioActivity.this,ShareStory.class));
             }
         });
+
         lib_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

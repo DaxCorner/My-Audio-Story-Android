@@ -30,11 +30,11 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@id/login_btn_main"
+            android:layout_toLeftOf="@id/login_btn_lib"
             android:src="@drawable/lib_btn_pressed" />
 
         <ImageView
-            android:id="@+id/login_btn_main"
+            android:id="@+id/login_btn_lib"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentRight="true"

@@ -28,7 +28,7 @@ public class LibraryActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view_lib);
         recyclerView.setHasFixedSize(true);
         home_btn = findViewById(R.id.home_btn_lib);
-        login_btn_main = findViewById(R.id.login_btn_main);
+        login_btn_main = findViewById(R.id.login_btn_lib);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new RecyclerAdapter(this, book_name));

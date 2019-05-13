@@ -27,7 +27,7 @@
             android:src="@drawable/top_logo" />
 
         <ImageView
-            android:id="@+id/lib_btn"
+            android:id="@+id/lib_btn_share_story"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="10dp"
