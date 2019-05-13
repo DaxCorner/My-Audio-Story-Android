@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class ListenAudioStory extends AppCompatActivity {
-    ImageView recordAudioButton, home_btn_listen_audio, library_btn_listen, login_btn_listen, popup_login, popup_signup, login_dialog;
+    ImageView recordAudioButton, home_btn_listen_audio, library_btn_listen, login_btn_listen, popup_login, popup_signup, login_dialog,listen_book,use_bg_music;
     Dialog myDialog;
 
     @Override
@@ -21,6 +21,8 @@ public class ListenAudioStory extends AppCompatActivity {
         setContentView(R.layout.activity_listen_audio_story);
         recordAudioButton = findViewById(R.id.record_audio);
         login_btn_listen = findViewById(R.id.login_btn_listen);
+        listen_book = findViewById(R.id.listen_book);
+        use_bg_music = findViewById(R.id.use_background_audio);
         home_btn_listen_audio = findViewById(R.id.home_btn_listen_audio);
         library_btn_listen = findViewById(R.id.lib_btn_listen_audio);
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +35,18 @@ public class ListenAudioStory extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ShowPopup(v);
+            }
+        });
+        listen_book.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        use_bg_music.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
         home_btn_listen_audio.setOnClickListener(new View.OnClickListener() {
