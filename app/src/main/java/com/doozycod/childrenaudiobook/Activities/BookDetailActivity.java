@@ -30,11 +30,7 @@ public class BookDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        if (!Permissions.Check_RECORD_AUDIO(this) && !Permissions.Check_STORAGE(this)) {
-            Permissions.Request_RECORD_AUDIO(this, 10);
-            Permissions.Request_STORAGE(this, 10);
 
-        }
 
         setContentView(R.layout.activity_listen_audio_story);
         recordAudioButton = findViewById(R.id.record_audio);

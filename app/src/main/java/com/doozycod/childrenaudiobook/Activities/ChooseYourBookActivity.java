@@ -1,19 +1,28 @@
 package com.doozycod.childrenaudiobook.Activities;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.doozycod.childrenaudiobook.Adapter.ViewPagerAdapter;
+import com.doozycod.childrenaudiobook.Helper.Permissions;
 import com.doozycod.childrenaudiobook.R;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
@@ -33,6 +42,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkPermission();
         setContentView(R.layout.activity_main);
         home_btn = findViewById(R.id.home_btn);
         library_btn = findViewById(R.id.lib_btn_main);
@@ -193,6 +203,65 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     }
 
 
+    private void checkPermission() {
+        if (ContextCompat.checkSelfPermission(ChooseYourBookActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) + ContextCompat.checkSelfPermission(ChooseYourBookActivity.this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) + ContextCompat
+                .checkSelfPermission(ChooseYourBookActivity.this,
+                        Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale
+                    (ChooseYourBookActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) ||
+                    ActivityCompat.shouldShowRequestPermissionRationale
+                            (ChooseYourBookActivity.this, Manifest.permission.CAMERA)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(
+                            new String[]{Manifest.permission
+                                    .READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            200);
+                }
+
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(
+                            new String[]{Manifest.permission
+                                    .READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            200);
+                }
+            }
+        } else {
+            // write your logic code if permission already granted
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode) {
+            case 200:
+                if (grantResults.length > 0) {
+                    boolean RecordAudio = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+                    boolean writeExternalFile = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    boolean readExternalFile = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+                    if (RecordAudio && readExternalFile && writeExternalFile) {
+                        // write your logic here
+
+                    } else {
+
+                        requestPermissions(
+                                new String[]{Manifest.permission
+                                        .READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA},
+                                200);
+
+                    }
+                }
+                break;
+        }
+    }
 }
 
 

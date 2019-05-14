@@ -1,10 +1,16 @@
 package com.doozycod.childrenaudiobook.Activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.doozycod.childrenaudiobook.Helper.Permissions;
 import com.doozycod.childrenaudiobook.R;
@@ -21,15 +27,7 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!Permissions.Check_STORAGE(SplashActivity.this)) {
 
-            Permissions.Request_STORAGE(SplashActivity.this, 12);
-
-        }
-        if (!Permissions.Check_RECORD_AUDIO(SplashActivity.this)) {
-            Permissions.Request_RECORD_AUDIO(SplashActivity.this, 12);
-
-        }
         setContentView(R.layout.activity_splash);
         loading_bar = findViewById(R.id.loading);
 
@@ -54,4 +52,5 @@ public class SplashActivity extends AppCompatActivity {
         }, 2 * 1400);
 
     }
+
 }
