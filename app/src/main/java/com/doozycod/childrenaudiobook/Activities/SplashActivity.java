@@ -1,12 +1,13 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.content.Intent;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
+
+import com.doozycod.childrenaudiobook.Helper.Permissions;
+import com.doozycod.childrenaudiobook.R;
 
 public class SplashActivity extends AppCompatActivity {
     int[] images = {R.drawable.a01,
@@ -25,7 +26,10 @@ public class SplashActivity extends AppCompatActivity {
             Permissions.Request_STORAGE(SplashActivity.this, 12);
 
         }
+        if (!Permissions.Check_RECORD_AUDIO(SplashActivity.this)) {
+            Permissions.Request_RECORD_AUDIO(SplashActivity.this, 12);
 
+        }
         setContentView(R.layout.activity_splash);
         loading_bar = findViewById(R.id.loading);
 
@@ -44,7 +48,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                startActivity(new Intent(SplashActivity.this, ChooseYourBookActivity.class));
                 finish();
             }
         }, 2 * 1400);

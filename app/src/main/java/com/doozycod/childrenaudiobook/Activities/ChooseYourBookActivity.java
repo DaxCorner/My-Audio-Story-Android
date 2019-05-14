@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -10,13 +10,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.doozycod.childrenaudiobook.Adapter.ViewPagerAdapter;
+import com.doozycod.childrenaudiobook.R;
+
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
-public class MainActivity extends AppCompatActivity {
+public class ChooseYourBookActivity extends AppCompatActivity {
     public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04};
 
     View view;
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(MainActivity.this, RecordOwnAudioActivity.class));
+//                startActivity(new Intent(ChooseYourBookActivity.this, RecordYourOwnActivity.class));
             }
         });
         login_btn.setOnClickListener(new View.OnClickListener() {
@@ -57,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         library_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, LibraryActivity.class));
+                startActivity(new Intent(ChooseYourBookActivity.this, LibraryActivity.class));
             }
         });
         viewPager.setAdapter(viewPagerAdapter);
@@ -130,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+                startActivity(new Intent(ChooseYourBookActivity.this, SignUpActivity.class));
             }
         });
         popup_login.setOnClickListener(new View.OnClickListener() {

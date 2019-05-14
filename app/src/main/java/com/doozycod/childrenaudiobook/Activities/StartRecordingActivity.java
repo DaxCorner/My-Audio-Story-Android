@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -18,19 +18,21 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.doozycod.childrenaudiobook.R;
+
 import java.io.File;
 import java.io.IOException;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class StartRecordingActivity extends AppCompatActivity {
+
     ImageView start_personal_greeting, save_story_btn, share_story_btn, stop_recording_btn, imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup, home_btn_recording, lib_btn_recording, login_btn_recording;
     Dialog myDialog;
     RelativeLayout start_recording_layout, save_recording_layout;
     int i = 0;
     String audioFilePath = "";
     boolean isRecording = false;
-    boolean bg_music = true;
     MediaPlayer mediaPlayer;
     MediaRecorder mediaRecorder;
     int[] count_down_timer_img = {R.drawable.countdown_29, R.drawable.countdown_28, R.drawable.countdown_27, R.drawable.countdown_26, R.drawable.countdown_25
@@ -42,12 +44,16 @@ public class StartRecordingActivity extends AppCompatActivity {
     View view;
     File mydir;
     File mydirRecording;
+    boolean background_music;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_start_recording);
+
+        mediaPlayer = new MediaPlayer();
+        mediaRecorder = new MediaRecorder();
 
         view = new View(this);
         myDialog = new Dialog(this);
@@ -61,22 +67,27 @@ public class StartRecordingActivity extends AppCompatActivity {
         stop_recording_btn = findViewById(R.id.stop_recording_btn);
         save_story_btn = findViewById(R.id.save_story_btn);
         share_story_btn = findViewById(R.id.share_story_btn_on_end);
+
+
         mydir = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/");
 
         if (!mydir.exists()) {
             mydir.mkdirs();
-        }//Creating an internal dir;
+        }
 
+        //Creating an internal dir;
         mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
+
         if (!mydirRecording.exists()) {
             mydirRecording.mkdirs();
-        }//Creating an internal dir;
+        }
 
         save_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 saveRecording();
+                startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
             }
         });
 
@@ -84,19 +95,19 @@ public class StartRecordingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveRecording();
-                startActivity(new Intent(StartRecordingActivity.this, ShareStory.class));
+                startActivity(new Intent(StartRecordingActivity.this, ShareYourStoryActivity.class));
             }
         });
-        boolean intent = getIntent().getExtras().getBoolean("music");
-        Log.e("String Intent =====", intent + "");
+
+        background_music = getIntent().getExtras().getBoolean("music");
+        Log.e("background_music =====", background_music + "");
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 recordAudio("static recorded story");
-                if (bg_music == intent) {
+                if (background_music) {
                     playBGMusic();
-
-                } else {
 
                 }
 
@@ -117,9 +128,9 @@ public class StartRecordingActivity extends AppCompatActivity {
                 stopRecording();
                 save_recording_layout.setVisibility(View.VISIBLE);
                 stop_recording_btn.setEnabled(false);
-                boolean intent = getIntent().getExtras().getBoolean("music");
-                if (bg_music == intent) {
-                    stopBGAudio();
+
+                if (background_music) {
+                    stopBGMusic();
                 }
 
 
@@ -128,7 +139,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         home_btn_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(StartRecordingActivity.this, MainActivity.class));
+                startActivity(new Intent(StartRecordingActivity.this, ChooseYourBookActivity.class));
             }
         });
         lib_btn_recording.setOnClickListener(new View.OnClickListener() {
@@ -150,7 +161,6 @@ public class StartRecordingActivity extends AppCompatActivity {
     public void recordAudio(String audio_filename) {
 
         isRecording = true;
-        mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -171,7 +181,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         audioFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()
                 + "" + "/morning.mp3";
-        mediaPlayer = new MediaPlayer();
+
         try {
             AssetFileDescriptor afd = getAssets().openFd("raw/morning.mp3");
 
@@ -186,9 +196,14 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     }
 
-    void stopBGAudio() {
-        mediaRecorder.release();
-        mediaRecorder = null;
+    void stopBGMusic() {
+
+        if (mediaPlayer != null) {
+
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
 
     }
 
@@ -223,7 +238,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(StartRecordingActivity.this, RecordedAudioActivity.class));
+                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
                 finish();
                 myDialog.dismiss();
             }
@@ -287,6 +302,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
 
     void saveRecording() {
+
         final EditText editText = findViewById(R.id.name_recorded_story);
         String audio_filename = editText.getText().toString();
         if (!audio_filename.equals("")) {
@@ -301,5 +317,20 @@ public class StartRecordingActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Please enter story name!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        stopBGMusic();
+        stopRecording();
+
+        mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
+        if (mydirRecording.exists()) {
+            File from = new File(mydirRecording, "static recorded story.mp3");
+            if (from.exists())
+                from.delete();
+        }
+        super.onBackPressed();
+
     }
 }

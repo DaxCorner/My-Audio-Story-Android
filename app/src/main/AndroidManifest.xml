@@ -15,20 +15,17 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".RecorderActivtiy">
-
-        </activity>
-        <activity android:name=".StartRecordingActivity" />
-        <activity android:name=".LibraryActivity" />
-        <activity android:name=".ListenAudioStory" />
+        <activity android:name=".Activities.StartRecordingActivity" />
+        <activity android:name=".Activities.LibraryActivity" />
+        <activity android:name=".Activities.BookDetailActivity" />
         <activity
-            android:name=".SignUpActivity"
+            android:name=".Activities.SignUpActivity"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".ShareStory" />
-        <activity android:name=".RecordedAudioActivity" />
-        <activity android:name=".RecordOwnAudioActivity" />
+        <activity android:name=".Activities.ShareYourStoryActivity" />
+        <activity android:name=".Activities.SaveShareYourStoryActivity" />
+        <activity android:name=".Activities.RecordYourOwnActivity" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".Activities.SplashActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,7 +33,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".Activities.ChooseYourBookActivity" />
     </application>
 
 </manifest>

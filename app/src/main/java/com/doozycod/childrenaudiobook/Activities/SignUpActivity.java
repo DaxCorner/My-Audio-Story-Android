@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.doozycod.childrenaudiobook.R;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
@@ -46,14 +48,14 @@ public class SignUpActivity extends AppCompatActivity {
         home_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
                 finish();
             }
         });
         sign_up_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, RecordedAudioActivity.class));
+                startActivity(new Intent(SignUpActivity.this, SaveShareYourStoryActivity.class));
                 finish();
             }
         });
@@ -66,7 +68,7 @@ public class SignUpActivity extends AppCompatActivity {
         library_buton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
 
             }
         });

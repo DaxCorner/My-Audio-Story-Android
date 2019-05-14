@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,16 +7,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.doozycod.childrenaudiobook.Activities.BookDetailActivity;
+import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
+import com.doozycod.childrenaudiobook.R;
 
 public class GridAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
     Context context;
     int[] grid_ico;
 
-    public GridAdapter(MainActivity mainActivity, int[] grid_icon) {
-        context = mainActivity;
+    public GridAdapter(ChooseYourBookActivity chooseYourBookActivity, int[] grid_icon) {
+        context = chooseYourBookActivity;
 
         grid_ico = grid_icon;
 //        this.url = url;
@@ -50,7 +53,7 @@ public class GridAdapter extends BaseAdapter {
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                context.startActivity(new Intent(context, ListenAudioStory.class));
+                context.startActivity(new Intent(context, BookDetailActivity.class));
             }
         });
         return view;

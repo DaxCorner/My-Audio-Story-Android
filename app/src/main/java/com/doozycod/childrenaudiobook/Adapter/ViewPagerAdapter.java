@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
@@ -8,19 +8,22 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
+import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
+import com.doozycod.childrenaudiobook.R;
+
 public class ViewPagerAdapter extends PagerAdapter {
 
 
     GridView gridView;
-    MainActivity mainActivity;
+    ChooseYourBookActivity chooseYourBookActivity;
     LayoutInflater mLayoutInflater;
     int[] grid_icon;
     public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04, R.drawable.book_04, R.drawable.book_05};
 
 
-    public ViewPagerAdapter(MainActivity mainActivity, int[] grid_icon) {
-        this.mainActivity = mainActivity;
-        mLayoutInflater = (LayoutInflater) mainActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    public ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, int[] grid_icon) {
+        this.chooseYourBookActivity = chooseYourBookActivity;
+        mLayoutInflater = (LayoutInflater) chooseYourBookActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.grid_icon = grid_icon;
     }
 
@@ -39,7 +42,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         View itemView = mLayoutInflater.inflate(R.layout.view_pager_layout, container, false);
         container.addView(itemView);
         gridView = itemView.findViewById(R.id.gridview);
-        gridView.setAdapter(new GridAdapter(mainActivity, grid_image));
+        gridView.setAdapter(new GridAdapter(chooseYourBookActivity, grid_image));
 
         return itemView;
     }

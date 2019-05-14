@@ -27,6 +27,7 @@
         android:textColor="#131313" />
 
     <ImageView
+        android:id="@+id/share_story_recycler_view_btn"
         android:padding="2dp"
         android:layout_width="30dp"
         android:layout_height="wrap_content"

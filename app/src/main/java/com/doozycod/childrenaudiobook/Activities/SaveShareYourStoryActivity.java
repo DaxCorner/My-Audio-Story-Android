@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -7,13 +7,14 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.doozycod.childrenaudiobook.R;
+
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
-public class RecordedAudioActivity extends AppCompatActivity {
+public class SaveShareYourStoryActivity extends AppCompatActivity {
 
     ImageView save_btn, share_btn, homebtn, lib_btn, login_btn, login_dialog;
     Dialog myDialog;
@@ -35,27 +36,27 @@ public class RecordedAudioActivity extends AppCompatActivity {
         save_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(RecordedAudioActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SaveShareYourStoryActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
             }
         });
         share_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(RecordedAudioActivity.this, "Shared!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RecordedAudioActivity.this, ShareStory.class));
+//                Toast.makeText(SaveShareYourStoryActivity.this, "Shared!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(SaveShareYourStoryActivity.this, ShareYourStoryActivity.class));
             }
         });
 
         lib_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RecordedAudioActivity.this, LibraryActivity.class));
+                startActivity(new Intent(SaveShareYourStoryActivity.this, LibraryActivity.class));
             }
         });
         homebtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RecordedAudioActivity.this, MainActivity.class));
+                startActivity(new Intent(SaveShareYourStoryActivity.this, ChooseYourBookActivity.class));
 
             }
         });

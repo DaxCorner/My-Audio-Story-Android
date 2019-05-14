@@ -1,4 +1,4 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -6,18 +6,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.github.angads25.toggle.interfaces.OnToggledListener;
-import com.github.angads25.toggle.model.ToggleableView;
-import com.github.angads25.toggle.widget.LabeledSwitch;
+import com.doozycod.childrenaudiobook.R;
 
 import static com.doozycod.childrenaudiobook.R.drawable.bg_music_off_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.bg_music_on_btn;
@@ -25,7 +21,7 @@ import static com.doozycod.childrenaudiobook.R.drawable.large_font_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 import static com.doozycod.childrenaudiobook.R.drawable.small_font_btn;
 
-public class RecordOwnAudioActivity extends AppCompatActivity {
+public class RecordYourOwnActivity extends AppCompatActivity {
     AlertDialog alertDialog;
     int i = 0;
     ImageView record_btn, large_font;
@@ -43,10 +39,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
 
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
-        if (!Permissions.Check_RECORD_AUDIO(RecordOwnAudioActivity.this)) {
-            Permissions.Request_RECORD_AUDIO(RecordOwnAudioActivity.this, 12);
 
-        }
 
 
         record_btn = findViewById(R.id.recording_start);
@@ -59,12 +52,12 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isPressed) {
-//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(RecordYourOwnActivity.this, "", Toast.LENGTH_SHORT).show();
                     large_font.setImageResource(large_font_btn);
                     isPressed = false;
                 } else {
                     isPressed = true;
-//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(RecordYourOwnActivity.this, "", Toast.LENGTH_SHORT).show();
                     large_font.setImageResource(small_font_btn);
                 }
             }
@@ -75,7 +68,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
                 if (hasMicrophone()) {
                     ShowPopup(v);
                 } else {
-                    Toast.makeText(RecordOwnAudioActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -84,13 +77,13 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         home_btn_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RecordOwnAudioActivity.this, MainActivity.class));
+                startActivity(new Intent(RecordYourOwnActivity.this, ChooseYourBookActivity.class));
             }
         });
         lib_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RecordOwnAudioActivity.this, LibraryActivity.class));
+                startActivity(new Intent(RecordYourOwnActivity.this, LibraryActivity.class));
             }
         });
         login_btn.setOnClickListener(new View.OnClickListener() {
@@ -101,23 +94,27 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         });
 
         bg_music_btn = findViewById(R.id.bg_music_btn);
+
+        intent = new Intent(RecordYourOwnActivity.this, StartRecordingActivity.class);
+        intent.putExtra("music", true);
+
         bg_music_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(RecordOwnAudioActivity.this, StartRecordingActivity.class);
-                intent.putExtra("music", true);
+
+
                 if (isPressed) {
 
-                    intent.putExtra("music", true);
-                    Toast.makeText(RecordOwnAudioActivity.this, true + "", Toast.LENGTH_SHORT).show();
-                    bg_music_btn.setImageResource(bg_music_on_btn);
+                    intent.putExtra("music", false);
+
+                    bg_music_btn.setImageResource(bg_music_off_btn);
                     isPressed = false;
 
                 } else {
                     isPressed = true;
-                    intent.putExtra("music", false);
-                    Toast.makeText(RecordOwnAudioActivity.this, false + "", Toast.LENGTH_SHORT).show();
-                    bg_music_btn.setImageResource(bg_music_off_btn);
+                    intent.putExtra("music", true);
+
+                    bg_music_btn.setImageResource(bg_music_on_btn);
                 }
 
             }
@@ -164,7 +161,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                startActivity(new Intent(RecordOwnAudioActivity.this, SignUpActivity.class));
+                startActivity(new Intent(RecordYourOwnActivity.this, SignUpActivity.class));
             }
         });
         popup_login.setOnClickListener(new View.OnClickListener() {
@@ -201,8 +198,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
 
     protected boolean hasMicrophone() {
         PackageManager pmanager = this.getPackageManager();
-        return pmanager.hasSystemFeature(
-                PackageManager.FEATURE_MICROPHONE);
+        return pmanager.hasSystemFeature(PackageManager.FEATURE_MICROPHONE);
     }
 
 }

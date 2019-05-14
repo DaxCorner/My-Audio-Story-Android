@@ -1,10 +1,9 @@
-package com.doozycod.childrenaudiobook;
+package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -12,6 +11,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+
+import com.doozycod.childrenaudiobook.Adapter.RecyclerAdapter;
+import com.doozycod.childrenaudiobook.Helper.Model;
+import com.doozycod.childrenaudiobook.R;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,7 +48,7 @@ public class LibraryActivity extends AppCompatActivity {
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LibraryActivity.this, MainActivity.class));
+                startActivity(new Intent(LibraryActivity.this, ChooseYourBookActivity.class));
             }
         });
     }
