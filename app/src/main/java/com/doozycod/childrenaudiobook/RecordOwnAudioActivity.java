@@ -33,6 +33,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
     Dialog myDialog;
     int[] count_down_timer_img = {R.drawable.countdown_02, R.drawable.countdown_01, R.drawable.countdown_00};
     boolean isPressed = true;
+    final Handler handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,12 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
 
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
+        if (!Permissions.Check_RECORD_AUDIO(RecordOwnAudioActivity.this) ) {
+
+            Permissions.Request_RECORD_AUDIO(RecordOwnAudioActivity.this, 12);
+
+        }
+
 
         record_btn = findViewById(R.id.recording_start);
         large_font = findViewById(R.id.large_font);
@@ -64,7 +71,12 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         record_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup(v);
+                if (hasMicrophone()) {
+                    ShowPopup(v);
+                } else {
+                    Toast.makeText(RecordOwnAudioActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
@@ -112,7 +124,6 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
 
-        final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 if (i < 3) {
@@ -124,8 +135,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
             }
         }, 1000);
 
-
-        new Handler().postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 startActivity(new Intent(RecordOwnAudioActivity.this, StartRecordingActivity.class));
@@ -179,6 +189,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
+
     protected boolean hasMicrophone() {
         PackageManager pmanager = this.getPackageManager();
         return pmanager.hasSystemFeature(

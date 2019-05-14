@@ -20,10 +20,10 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!Permissions.Check_RECORD_AUDIO(SplashActivity.this) && !Permissions.Check_STORAGE(SplashActivity.this)) {
+        if (!Permissions.Check_STORAGE(SplashActivity.this)) {
 
             Permissions.Request_STORAGE(SplashActivity.this, 12);
-            Permissions.Request_RECORD_AUDIO(SplashActivity.this, 22);
+
         }
 
         setContentView(R.layout.activity_splash);
