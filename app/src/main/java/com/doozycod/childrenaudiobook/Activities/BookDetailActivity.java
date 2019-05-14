@@ -24,12 +24,11 @@ public class BookDetailActivity extends AppCompatActivity {
     Dialog myDialog;
     String AudioSavePathInDevice;
     MediaRecorder mediaRecorder;
-    MediaPlayer mediaPlayer ;
+    MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
 
 
         setContentView(R.layout.activity_listen_audio_story);
@@ -40,6 +39,7 @@ public class BookDetailActivity extends AppCompatActivity {
         home_btn_listen_audio = findViewById(R.id.home_btn_listen_audio);
         library_btn_listen = findViewById(R.id.lib_btn_listen_audio);
 
+        myDialog = new Dialog(this);
 
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,13 +125,15 @@ public class BookDetailActivity extends AppCompatActivity {
         }
 
     }
-    public void MediaRecorderReady(){
-        mediaRecorder=new MediaRecorder();
+
+    public void MediaRecorderReady() {
+        mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
         mediaRecorder.setOutputFile(AudioSavePathInDevice);
     }
+
     public void showLoginPopUp(View v) {
 
         myDialog.setContentView(R.layout.custom_login_popup);
