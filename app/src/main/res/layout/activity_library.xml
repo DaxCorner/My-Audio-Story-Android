@@ -16,14 +16,14 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:src="@drawable/home_btn_pressed" />
+            android:src="@drawable/home_btn_pressed"/>
 
         <ImageView
             android:id="@+id/homepage_logo"
             android:layout_width="260dp"
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/top_logo" />
+            android:src="@drawable/top_logo"/>
 
         <ImageView
             android:id="@+id/lib_btn"

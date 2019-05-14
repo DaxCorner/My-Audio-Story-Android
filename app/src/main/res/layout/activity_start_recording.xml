@@ -97,6 +97,14 @@
             android:layout_above="@+id/record_personal_msg"
             android:layout_centerHorizontal="true"
             android:src="@drawable/design_element" />
+        <ImageView
+            android:id="@+id/stop_recording_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:padding="5dp"
+            android:src="@drawable/end_recording_button" />
 
         <ImageView
             android:id="@+id/record_personal_msg"

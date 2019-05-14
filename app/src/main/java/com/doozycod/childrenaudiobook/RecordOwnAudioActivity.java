@@ -2,6 +2,7 @@ package com.doozycod.childrenaudiobook;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -122,6 +123,8 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
 
             }
         }, 1000);
+
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -176,6 +179,10 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
-
+    protected boolean hasMicrophone() {
+        PackageManager pmanager = this.getPackageManager();
+        return pmanager.hasSystemFeature(
+                PackageManager.FEATURE_MICROPHONE);
+    }
 
 }

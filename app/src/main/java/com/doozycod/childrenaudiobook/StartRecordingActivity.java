@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class StartRecordingActivity extends AppCompatActivity {
-    ImageView start_recording, imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup, home_btn_recording, lib_btn_recording, login_btn_recording;
+    ImageView start_recording, stop_recording_btn, imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup, home_btn_recording, lib_btn_recording, login_btn_recording;
     Dialog myDialog;
     int i = 0;
     int[] count_down_timer_img = {R.drawable.countdown_29, R.drawable.countdown_28, R.drawable.countdown_27, R.drawable.countdown_26, R.drawable.countdown_25
@@ -33,11 +33,23 @@ public class StartRecordingActivity extends AppCompatActivity {
         home_btn_recording = findViewById(R.id.home_btn_start_recording);
         lib_btn_recording = findViewById(R.id.lib_btn_recording);
         login_btn_recording = findViewById(R.id.login_btn_recording);
+        stop_recording_btn = findViewById(R.id.stop_recording_btn);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
+            }
+        }, 500);
         start_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ShowPopup(v);
+            }
+        });
+        stop_recording_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
         home_btn_recording.setOnClickListener(new View.OnClickListener() {
