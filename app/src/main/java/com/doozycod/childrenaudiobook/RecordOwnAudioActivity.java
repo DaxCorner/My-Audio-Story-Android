@@ -34,6 +34,8 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
     int[] count_down_timer_img = {R.drawable.countdown_02, R.drawable.countdown_01, R.drawable.countdown_00};
     boolean isPressed = true;
     final Handler handler = new Handler();
+    boolean bg_music;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +43,7 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
 
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
-        if (!Permissions.Check_RECORD_AUDIO(RecordOwnAudioActivity.this) ) {
-
+        if (!Permissions.Check_RECORD_AUDIO(RecordOwnAudioActivity.this)) {
             Permissions.Request_RECORD_AUDIO(RecordOwnAudioActivity.this, 12);
 
         }
@@ -103,13 +104,19 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         bg_music_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                intent = new Intent(RecordOwnAudioActivity.this, StartRecordingActivity.class);
+                intent.putExtra("music", true);
                 if (isPressed) {
-//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+
+                    intent.putExtra("music", true);
+                    Toast.makeText(RecordOwnAudioActivity.this, true + "", Toast.LENGTH_SHORT).show();
                     bg_music_btn.setImageResource(bg_music_on_btn);
                     isPressed = false;
+
                 } else {
                     isPressed = true;
-//                    Toast.makeText(RecordOwnAudioActivity.this, "", Toast.LENGTH_SHORT).show();
+                    intent.putExtra("music", false);
+                    Toast.makeText(RecordOwnAudioActivity.this, false + "", Toast.LENGTH_SHORT).show();
                     bg_music_btn.setImageResource(bg_music_off_btn);
                 }
 
@@ -138,7 +145,9 @@ public class RecordOwnAudioActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(RecordOwnAudioActivity.this, StartRecordingActivity.class));
+
+                startActivity(intent);
+
                 finish();
                 myDialog.dismiss();
             }

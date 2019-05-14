@@ -14,6 +14,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import static com.doozycod.childrenaudiobook.R.drawable.dark_dot;
 import static com.doozycod.childrenaudiobook.R.drawable.dark_line;
 import static com.doozycod.childrenaudiobook.R.drawable.light_line;
@@ -23,10 +26,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     Context c;
     String[] book_name;
     ImageView delete_yes, delete_no;
+    ArrayList<Model> modelArrayList;
 
-    public RecyclerAdapter(Context c, String[] book_name) {
+    public RecyclerAdapter(Context c, ArrayList<Model> modelArrayList) {
         this.c = c;
-        this.book_name = book_name;
+        this.modelArrayList = modelArrayList;
     }
 
     @NonNull
@@ -39,8 +43,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int i) {
-
-        holder.book_name_txt.setText(book_name[i]);
+        final Model fileModel = (Model) this.modelArrayList.get(i);
+        holder.book_name_txt.setText(fileModel.getName());
 
         if (i % 2 == 1) {
             holder.relativeLayout.setBackground(holder.relativeLayout.getResources().getDrawable(light_line));
@@ -52,14 +56,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.delete_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup(v);
+                ShowPopup(fileModel.getPath(), v);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return book_name.length;
+        return modelArrayList.size();
     }
 
     class RecyclerHolder extends RecyclerView.ViewHolder {
@@ -77,7 +81,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         }
     }
 
-    public void ShowPopup(View v) {
+    public void ShowPopup(String filePath, View v) {
         Dialog myDialog = new Dialog(c);
         myDialog.setContentView(R.layout.custom_delete_popup);
         delete_no = myDialog.findViewById(R.id.delete_no);
@@ -86,11 +90,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
+
             }
         });
         delete_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                File deleteFile = new File(filePath);
+                deleteFile.delete();
                 myDialog.dismiss();
             }
         });

@@ -6,6 +6,12 @@
     android:orientation="vertical">
 
 
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -119,4 +125,8 @@
             android:layout_height="50dp"
             android:src="@drawable/share_btn_pressed" />
     </RelativeLayout>
+
+    </RelativeLayout>
+
+
 </RelativeLayout>
