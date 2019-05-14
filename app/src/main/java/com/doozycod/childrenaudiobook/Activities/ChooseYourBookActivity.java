@@ -11,7 +11,7 @@ import android.os.Bundle;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
@@ -19,10 +19,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+
 
 import com.doozycod.childrenaudiobook.Adapter.ViewPagerAdapter;
-import com.doozycod.childrenaudiobook.Helper.Permissions;
+
 import com.doozycod.childrenaudiobook.R;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
