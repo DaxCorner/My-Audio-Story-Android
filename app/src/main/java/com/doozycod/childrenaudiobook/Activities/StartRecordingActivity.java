@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -16,18 +17,23 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doozycod.childrenaudiobook.R;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class StartRecordingActivity extends AppCompatActivity {
 
-    ImageView start_personal_greeting, save_story_btn, share_story_btn, stop_recording_btn, imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup, home_btn_recording, lib_btn_recording, login_btn_recording;
+    ImageView start_personal_greeting, save_story_btn, share_story_btn, stop_recording_btn,
+            imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup,
+            home_btn_recording, lib_btn_recording, login_btn_recording, home_btn_recorded, lib_btn_recorded, login_btn_recorded;
     Dialog myDialog;
     RelativeLayout start_recording_layout, save_recording_layout;
     int i = 0;
@@ -62,8 +68,11 @@ public class StartRecordingActivity extends AppCompatActivity {
         start_recording_layout = findViewById(R.id.recording_layout);
         save_recording_layout = findViewById(R.id.save_share_layout);
         home_btn_recording = findViewById(R.id.home_btn_start_recording);
+        home_btn_recorded = findViewById(R.id.home_btn_recorded);
         lib_btn_recording = findViewById(R.id.lib_btn_recording);
+        lib_btn_recorded = findViewById(R.id.lib_btn_recorded);
         login_btn_recording = findViewById(R.id.login_btn_recording);
+        login_btn_recorded = findViewById(R.id.login_btn_recorded);
         stop_recording_btn = findViewById(R.id.stop_recording_btn);
         save_story_btn = findViewById(R.id.save_story_btn);
         share_story_btn = findViewById(R.id.share_story_btn_on_end);
@@ -87,15 +96,37 @@ public class StartRecordingActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 saveRecording();
-                startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
             }
         });
+        login_btn_recorded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                ShowPopupSignInSignUp(v);
+            }
+        });
+        lib_btn_recorded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(StartRecordingActivity.this, LibraryActivity.class));
+
+            }
+        });
+        home_btn_recorded.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(StartRecordingActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
+        });
+
 
         share_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveRecording();
-                startActivity(new Intent(StartRecordingActivity.this, ShareYourStoryActivity.class));
+                saveShareRecording();
             }
         });
 
@@ -139,7 +170,9 @@ public class StartRecordingActivity extends AppCompatActivity {
         home_btn_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(StartRecordingActivity.this, ChooseYourBookActivity.class));
+                Intent intent = new Intent(StartRecordingActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
         lib_btn_recording.setOnClickListener(new View.OnClickListener() {
@@ -189,6 +222,7 @@ public class StartRecordingActivity extends AppCompatActivity {
             mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
             mediaPlayer.prepare();
             mediaPlayer.start();
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -313,7 +347,32 @@ public class StartRecordingActivity extends AppCompatActivity {
                 File to = new File(mydirRecording, audio_filename + ".mp3");
                 if (from.exists())
                     from.renameTo(to);
+
             }
+            startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
+            finish();
+
+        } else {
+            Toast.makeText(this, "Please enter story name!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    void saveShareRecording() {
+
+        final EditText editText = findViewById(R.id.name_recorded_story);
+        String audio_filename = editText.getText().toString();
+        if (!audio_filename.equals("")) {
+
+            mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
+            if (mydirRecording.exists()) {
+                File from = new File(mydirRecording, "static recorded story.mp3");
+                File to = new File(mydirRecording, audio_filename + ".mp3");
+                if (from.exists())
+                    from.renameTo(to);
+            }
+            startActivity(new Intent(StartRecordingActivity.this, ShareYourStoryActivity.class));
+            finish();
+
         } else {
             Toast.makeText(this, "Please enter story name!", Toast.LENGTH_SHORT).show();
         }

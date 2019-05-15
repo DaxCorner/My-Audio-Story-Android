@@ -48,8 +48,9 @@ public class SignUpActivity extends AppCompatActivity {
         home_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
-                finish();
+                Intent intent = new Intent(SignUpActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
         sign_up_user.setOnClickListener(new View.OnClickListener() {

@@ -49,7 +49,9 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         home_btn_share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ShareYourStoryActivity.this, ChooseYourBookActivity.class));
+                Intent intent = new Intent(ShareYourStoryActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
 

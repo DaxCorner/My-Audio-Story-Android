@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -26,6 +27,8 @@ public class LibraryActivity extends AppCompatActivity {
     String[] book_name = {"Amelia Bebelia", "Cat in The Hat", "Drive the Bus", "Frog and Toad", "Go, Dog. Go"};
     Dialog myDialog;
     ImageView login_dialog, login_btn_main, home_btn;
+    private MediaPlayer mediaPlayer;
+    RecyclerAdapter recyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +39,7 @@ public class LibraryActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         home_btn = findViewById(R.id.home_btn_lib);
         login_btn_main = findViewById(R.id.login_btn_lib);
+        recyclerAdapter = new RecyclerAdapter(this, GetFiles());
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new RecyclerAdapter(this, GetFiles()));
@@ -48,17 +52,45 @@ public class LibraryActivity extends AppCompatActivity {
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LibraryActivity.this, ChooseYourBookActivity.class));
+                Intent intent = new Intent(LibraryActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
     }
 
     public void ShowPopup(View v) {
 
+        myDialog.setContentView(R.layout.custom_popup);
+        ImageView popup_login = myDialog.findViewById(R.id.select_login);
+        ImageView popup_signup = myDialog.findViewById(R.id.sign_upact_btn);
+        popup_signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                startActivity(new Intent(LibraryActivity.this, SignUpActivity.class));
+            }
+        });
+        popup_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                showLoginPopUp(v);
+
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+
+        myDialog.show();
+    }
+
+    public void showLoginPopUp(View v) {
+
         myDialog.setContentView(R.layout.custom_login_popup);
 
         login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
-
 
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,8 +98,6 @@ public class LibraryActivity extends AppCompatActivity {
                 myDialog.dismiss();
             }
         });
-
-
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
@@ -98,5 +128,25 @@ public class LibraryActivity extends AppCompatActivity {
 
         }
         return Myfiles;
+    }
+
+    void stopBGMusic() {
+
+        if (recyclerAdapter.mediaPlayer != null) {
+
+            recyclerAdapter.mediaPlayer.stop();
+            recyclerAdapter.mediaPlayer.release();
+            recyclerAdapter.mediaPlayer = null;
+        }
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+
+        stopBGMusic();
+
+        super.onBackPressed();
     }
 }

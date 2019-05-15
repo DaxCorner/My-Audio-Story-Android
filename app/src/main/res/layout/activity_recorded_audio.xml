@@ -6,125 +6,124 @@
     android:orientation="vertical">
 
 
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#269FF1">
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#269FF1">
+
+            <ImageView
+                android:id="@+id/home_btn_recorded"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/home_btn_pressed" />
+
+
+            <ImageView
+                android:id="@+id/homepage_logo"
+                android:layout_width="260dp"
+                android:layout_height="150dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/top_logo" />
+
+            <ImageView
+                android:id="@+id/lib_btn_recorded"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/login_btn_recorded"
+                android:src="@drawable/lib_btn_pressed" />
+
+            <ImageView
+                android:id="@+id/login_btn_recorded"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="7dp"
+                android:src="@drawable/login_btn_pressed" />
+
+
+        </RelativeLayout>
 
         <ImageView
-            android:id="@+id/home_btn_recorded"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/home_btn_pressed" />
+            android:id="@+id/share_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_below="@+id/header"
+            android:src="@drawable/share_story_text" />
 
 
         <ImageView
-            android:id="@+id/homepage_logo"
-            android:layout_width="260dp"
-            android:layout_height="150dp"
+            android:id="@+id/story_ico"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_below="@id/share_txt"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/top_logo" />
+            android:layout_marginTop="30dp"
+            android:src="@drawable/story_icon" />
 
-        <ImageView
-            android:id="@+id/lib_btn_recorded"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@id/login_btn_recorded"
-            android:src="@drawable/lib_btn_pressed" />
-
-        <ImageView
-            android:id="@+id/login_btn_recorded"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="7dp"
-            android:src="@drawable/login_btn_pressed" />
-
-
-    </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/share_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_below="@+id/header"
-        android:src="@drawable/share_story_text" />
-
-
-    <ImageView
-        android:id="@+id/story_ico"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/share_txt"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/story_icon" />
-
-    <RelativeLayout
-        android:id="@+id/save_name_txt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/story_ico"
-        android:layout_centerHorizontal="true"
-        android:paddingLeft="30dp"
-        android:paddingTop="30dp"
-        android:paddingRight="30dp"
-        android:paddingBottom="20dp">
-
-        <TextView
-            android:id="@+id/recorded_story"
+        <RelativeLayout
+            android:id="@+id/save_name_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Name you recorded Story:"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="#fff" />
+            android:layout_below="@id/story_ico"
+            android:layout_centerHorizontal="true"
+            android:paddingLeft="30dp"
+            android:paddingTop="30dp"
+            android:paddingRight="30dp"
+            android:paddingBottom="20dp">
 
-        <EditText
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:id="@+id/name_recorded_story"
+            <TextView
+                android:id="@+id/recorded_story"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="Name you recorded Story:"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="#fff" />
+
+            <EditText
+                android:id="@+id/name_recorded_story"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_below="@id/recorded_story"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/text_field"
+                android:padding="10dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_below="@id/recorded_story"
-            android:background="@drawable/text_field"
-            android:padding="10dp" />
-    </RelativeLayout>
+            android:layout_height="wrap_content"
+            android:layout_below="@id/save_name_txt"
+            android:layout_centerHorizontal="true"
+            android:padding="15dp">
 
-    <RelativeLayout
-        android:padding="15dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/save_name_txt">
+            <ImageView
 
-        <ImageView
+                android:id="@+id/save_story_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:padding="2dp"
+                android:src="@drawable/savebtn_pressed" />
 
-            android:padding="2dp"
-            android:id="@+id/save_story_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:src="@drawable/savebtn_pressed" />
-        <ImageView
-            android:id="@+id/share_story_btn_on_record"
-            android:padding="2dp"
-            android:layout_marginTop="20dp"
-            android:layout_below="@id/save_story_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:src="@drawable/share_btn_pressed" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/share_story_btn_on_record"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_below="@id/save_story_btn"
+                android:layout_marginTop="20dp"
+                android:padding="2dp"
+                android:src="@drawable/share_btn_pressed" />
+        </RelativeLayout>
 
     </RelativeLayout>
 

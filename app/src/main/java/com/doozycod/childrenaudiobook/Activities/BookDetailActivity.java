@@ -1,16 +1,24 @@
 package com.doozycod.childrenaudiobook.Activities;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 
 
 import com.doozycod.childrenaudiobook.R;
@@ -22,9 +30,13 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class BookDetailActivity extends AppCompatActivity {
     ImageView recordAudioButton, home_btn_listen_audio, library_btn_listen, login_btn_listen, popup_login, popup_signup, login_dialog, listen_book, use_bg_music;
     Dialog myDialog;
-    String AudioSavePathInDevice;
+    String AudioSavePathInDevice, audioFilePath;
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
+    int length;
+    boolean isPlaying = true;
+    private int seekForwardTime = 5000; // 5000 milliseconds
+    private int seekBackwardTime = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +44,8 @@ public class BookDetailActivity extends AppCompatActivity {
 
 
         setContentView(R.layout.activity_listen_audio_story);
+
+
         recordAudioButton = findViewById(R.id.record_audio);
         login_btn_listen = findViewById(R.id.login_btn_listen);
         listen_book = findViewById(R.id.listen_book);
@@ -57,6 +71,10 @@ public class BookDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
+                ShowMediaPlayerPopoup();
+
+
             }
         });
         use_bg_music.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +86,9 @@ public class BookDetailActivity extends AppCompatActivity {
         home_btn_listen_audio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(BookDetailActivity.this, ChooseYourBookActivity.class));
+                Intent intent = new Intent(BookDetailActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         });
         library_btn_listen.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +146,137 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
+    void stopBGMusic() {
+
+        if (mediaPlayer != null) {
+
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+
+    }
+
+
+    public void ShowMediaPlayerPopoup() {
+        SeekBar seekBar;
+        Dialog myDialog = new Dialog(this);
+        myDialog.setContentView(R.layout.custom_popup_media_player);
+
+        ImageView play_btn = myDialog.findViewById(R.id.play_pause_btn);
+        ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
+        ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
+        seekBar = myDialog.findViewById(R.id.seekbar);
+
+
+        seekBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+
+        });
+        myDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK)
+                    stopBGMusic();
+
+
+                return false;
+            }
+        });
+
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (mediaPlayer != null && fromUser) {
+                    mediaPlayer.seekTo(progress * 1000);
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            playBGMusic(seekBar);
+        }
+
+
+        ff_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                // check if seekForward time is lesser than song duration
+                if (currentPosition + seekForwardTime <= mediaPlayer.getDuration()) {
+                    // forward song
+                    mediaPlayer.seekTo(currentPosition + seekForwardTime);
+                } else {
+                    // forward to end position
+                    mediaPlayer.seekTo(mediaPlayer.getDuration());
+                }
+
+            }
+        });
+
+        play_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                    length = mediaPlayer.getCurrentPosition();
+                    play_btn.setImageResource(R.drawable.ic_play);
+
+                } else {
+                    play_btn.setImageResource(R.drawable.ic_pause);
+
+                    mediaPlayer.seekTo(length);
+                    mediaPlayer.start();
+                    seekBar.setMax(mediaPlayer.getDuration());
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(1.0f));
+                    }
+                }
+
+            }
+        });
+
+        rewind_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = mediaPlayer.getCurrentPosition();
+                if (currentPosition - seekBackwardTime >= 0) {
+
+                    // forward song
+                    mediaPlayer.seekTo(currentPosition - seekBackwardTime);
+                } else {
+                    // backward to starting position
+                    mediaPlayer.seekTo(0);
+                }
+
+
+            }
+        });
+
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+
+        myDialog.show();
+    }
+
+
     public void MediaRecorderReady() {
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
@@ -150,4 +301,42 @@ public class BookDetailActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
+
+    public void playBGMusic(SeekBar seekBar) {
+
+        try {
+            mediaPlayer = new MediaPlayer();
+            AssetFileDescriptor afd = getAssets().openFd("raw/eli_s_star.mp3");
+
+
+            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            Handler mHandler = new Handler();
+            this.runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (mediaPlayer != null) {
+                        int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                        seekBar.setProgress(mCurrentPosition);
+                    }
+                    mHandler.postDelayed(this, 1000);
+                }
+            });
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        stopBGMusic();
+        super.onBackPressed();
+    }
+
+
 }

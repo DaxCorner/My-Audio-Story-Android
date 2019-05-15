@@ -1,17 +1,30 @@
 package com.doozycod.childrenaudiobook.Adapter;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.doozycod.childrenaudiobook.Activities.BookDetailActivity;
 import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
 import com.doozycod.childrenaudiobook.R;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
+import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class GridAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
@@ -53,6 +66,7 @@ public class GridAdapter extends BaseAdapter {
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 context.startActivity(new Intent(context, BookDetailActivity.class));
             }
         });

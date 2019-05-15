@@ -30,7 +30,6 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     int[] count_down_timer_img = {R.drawable.countdown_02, R.drawable.countdown_01, R.drawable.countdown_00};
     boolean isPressed = true;
     final Handler handler = new Handler();
-    boolean bg_music;
     Intent intent;
 
     @Override
@@ -77,7 +76,10 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         home_btn_record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(RecordYourOwnActivity.this, ChooseYourBookActivity.class));
+                Intent intent = new Intent(RecordYourOwnActivity.this, ChooseYourBookActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
             }
         });
         lib_btn.setOnClickListener(new View.OnClickListener() {
