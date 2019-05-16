@@ -135,7 +135,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         Log.e("background_music =====", background_music + "");
         Bundle extra = getIntent().getExtras();
         if (extra.getBoolean("yes")) {
-            ShowPopupGreeting();
+            ShowPopup();
 
         } else {
             new Handler().postDelayed(new Runnable() {
@@ -330,13 +330,15 @@ public class StartRecordingActivity extends AppCompatActivity {
             @Override
             public void run() {
                 myDialog.dismiss();
-                playBGMusic();
+//                playBGMusic();
+                ShowPopupGreeting();
                 recordAudio("static recorded story");
 //                finish();
             }
         }, 3 * 1100);
         myDialog.show();
     }
+
     public void RecordPersonalGreetingPopUp() {
 
         myDialog.setContentView(R.layout.custom_yes_or_no_greeting);
