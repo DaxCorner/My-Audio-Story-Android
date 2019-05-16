@@ -66,7 +66,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (hasMicrophone()) {
-                    ShowPopup(v);
+                    RecordPersonalGreetingPopUp();
                 } else {
                     Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
                 }
@@ -146,8 +146,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void run() {
                 myDialog.dismiss();
-
-                RecordPersonalGreetingPopUp();
+                startActivity(intent);
 //                finish();
             }
         }, 3 * 1100);
@@ -170,7 +169,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                startActivity(intent);
+                ShowPopup(v);
 
 
             }
@@ -179,7 +178,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putBoolean("yes",true);
+                bundle.putBoolean("yes", true);
                 intent.putExtras(bundle);
                 startActivity(intent);
                 myDialog.dismiss();

@@ -272,12 +272,14 @@ public class StartRecordingActivity extends AppCompatActivity {
 
             }
         };
+
         handler.postDelayed(myRunnable, 1000);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
 //                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
-//                finish();
+                recordAudio("greeting");
                 myDialog.dismiss();
             }
         }, 30 * 1050);
@@ -287,8 +289,12 @@ public class StartRecordingActivity extends AppCompatActivity {
         stop_recorder_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                playBGMusic();
+                stopRecording();
                 myDialog.dismiss();
-                handler.postDelayed(myRunnable,100);
+                recordAudio("static recorded story");
+                handler.postDelayed(myRunnable, 100);
+
             }
         });
         myDialog.show();
@@ -378,9 +384,12 @@ public class StartRecordingActivity extends AppCompatActivity {
             mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
             if (mydirRecording.exists()) {
                 File from = new File(mydirRecording, "static recorded story.mp3");
+                File fromGreeting = new File(mydirRecording, "greeting.mp3");
                 File to = new File(mydirRecording, audio_filename + ".mp3");
-                if (from.exists())
+                File toGreet = new File(mydirRecording, "greeting_" + audio_filename + ".mp3");
+                if (from.exists() && fromGreeting.exists())
                     from.renameTo(to);
+                fromGreeting.renameTo(toGreet);
 
             }
             startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
