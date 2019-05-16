@@ -236,6 +236,7 @@ public class StartRecordingActivity extends AppCompatActivity {
             mediaPlayer.start();
 
 
+
         } catch (IOException e) {
             e.printStackTrace();
         }
