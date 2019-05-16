@@ -79,6 +79,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="70dp"
         android:layout_marginRight="70dp"
+        android:visibility="gone"
         android:src="@drawable/use_bg_music_pressed" />
 
     <ImageView
