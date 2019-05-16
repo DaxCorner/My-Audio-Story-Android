@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.doozycod.childrenaudiobook.R;
@@ -38,7 +40,6 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
-
 
 
         record_btn = findViewById(R.id.recording_start);
@@ -144,13 +145,48 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-
-                startActivity(intent);
-
-                finish();
                 myDialog.dismiss();
+
+                RecordPersonalGreetingPopUp();
+//                finish();
             }
         }, 3 * 1100);
+        myDialog.show();
+    }
+
+    public void RecordPersonalGreetingPopUp() {
+
+        myDialog.setContentView(R.layout.custom_yes_or_no_greeting);
+        TextView greeting_dialog_txt = myDialog.findViewById(R.id.record_personal_greeting);
+        ImageView record_greeting = myDialog.findViewById(R.id.yes_btn_record_greeting);
+        ImageView donot_record_greeting = myDialog.findViewById(R.id.no_btn_record_greeting);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
+
+        greeting_dialog_txt.setTypeface(custom_font);
+        myDialog.show();
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        donot_record_greeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                startActivity(intent);
+
+
+            }
+        });
+        record_greeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean("yes",true);
+                intent.putExtras(bundle);
+                startActivity(intent);
+                myDialog.dismiss();
+
+
+            }
+        });
         myDialog.show();
     }
 

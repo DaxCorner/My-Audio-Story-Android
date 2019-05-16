@@ -206,7 +206,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            playLibraryAudio(filePath, seekBar);
+            playLibraryAudio(filePath, seekBar, play_btn);
         }
         myDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -283,7 +283,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void playLibraryAudio(String filePath, SeekBar seekBar) {
+    public void playLibraryAudio(String filePath, SeekBar seekBar, ImageView play_btn) {
 
         try {
             mediaPlayer = new MediaPlayer();
@@ -301,8 +301,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 public void run() {
                     if (mediaPlayer != null) {
                         int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
-                        seekBar.setMax(mediaPlayer.getDuration()/1000);
+                        seekBar.setMax(mediaPlayer.getDuration() / 1000);
                         seekBar.setProgress(mCurrentPosition);
+                        if (mCurrentPosition == mediaPlayer.getDuration() / 1000) {
+                            play_btn.setImageResource(R.drawable.play_button);
+                        }
+
                     }
                     mHandler.postDelayed(this, 1000);
                 }

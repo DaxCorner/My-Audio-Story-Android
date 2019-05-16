@@ -216,7 +216,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            playBGMusic(seekBar);
+            playBGMusic(seekBar, play_btn);
         }
 
 
@@ -310,7 +310,7 @@ public class BookDetailActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void playBGMusic(SeekBar seekBar) {
+    public void playBGMusic(SeekBar seekBar, ImageView play_btn) {
 
         try {
             mediaPlayer = new MediaPlayer();
@@ -329,6 +329,9 @@ public class BookDetailActivity extends AppCompatActivity {
                         int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
                         seekBar.setMax(mediaPlayer.getDuration()/1000);
                         seekBar.setProgress(mCurrentPosition);
+                        if (mCurrentPosition == mediaPlayer.getDuration() / 1000) {
+                            play_btn.setImageResource(R.drawable.play_button);
+                        }
                     }
                     mHandler.postDelayed(this, 1000);
                 }

@@ -35,7 +35,7 @@
                 android:layout_marginTop="175dp"
                 android:layout_weight="1"
                 android:padding="5dp"
-                android:src="@drawable/delete_no_press" />
+                android:src="@drawable/delete_no_pressed" />
 
             <ImageView
                 android:layout_width="wrap_content"

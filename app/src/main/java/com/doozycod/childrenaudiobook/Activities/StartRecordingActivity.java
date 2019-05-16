@@ -4,10 +4,10 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -22,9 +22,7 @@ import android.widget.Toast;
 
 import com.doozycod.childrenaudiobook.R;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
@@ -132,23 +130,28 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         background_music = getIntent().getExtras().getBoolean("music");
         Log.e("background_music =====", background_music + "");
+        Bundle extra = getIntent().getExtras();
+        if (extra.getBoolean("yes")) {
+            ShowPopup();
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recordAudio("static recorded story");
-                if (background_music) {
-                    playBGMusic();
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    recordAudio("static recorded story");
+                    if (background_music) {
+                        playBGMusic();
+
+                    }
 
                 }
-
-            }
-        }, 500);
+            }, 500);
+        }
 
         start_personal_greeting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup();
+                RecordPersonalGreetingPopUp();
             }
         });
 
@@ -259,7 +262,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         stop_recorder_btn = myDialog.findViewById(R.id.stop_recorder_btn);
 
         final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        Runnable myRunnable = new Runnable() {
             public void run() {
                 if (i < 30) {
                     imageView.setImageResource(count_down_timer_img[i]);
@@ -268,12 +271,13 @@ public class StartRecordingActivity extends AppCompatActivity {
                 handler.postDelayed(this, 1000);
 
             }
-        }, 1000);
+        };
+        handler.postDelayed(myRunnable, 1000);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
-                finish();
+//                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
+//                finish();
                 myDialog.dismiss();
             }
         }, 30 * 1050);
@@ -284,7 +288,37 @@ public class StartRecordingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                handler.removeCallbacksAndMessages(null);
+                handler.postDelayed(myRunnable,100);
+            }
+        });
+        myDialog.show();
+    }
+
+    public void RecordPersonalGreetingPopUp() {
+
+        myDialog.setContentView(R.layout.custom_yes_or_no_greeting);
+        TextView greeting_dialog_txt = myDialog.findViewById(R.id.record_personal_greeting);
+        ImageView record_greeting = myDialog.findViewById(R.id.yes_btn_record_greeting);
+        ImageView donot_record_greeting = myDialog.findViewById(R.id.no_btn_record_greeting);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
+
+        greeting_dialog_txt.setTypeface(custom_font);
+        myDialog.show();
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        donot_record_greeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+
+            }
+        });
+        record_greeting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                ShowPopup();
+
             }
         });
         myDialog.show();

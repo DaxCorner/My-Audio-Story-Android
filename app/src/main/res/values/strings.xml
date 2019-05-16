@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Children\'s Book</string>
     <string name="who_do_you_want_to_share_your_n_recorded_story_with">Who do you want to share your \n  recorded story with:</string>
+    <string name="personal_greeting_string">Do you want record personal greeting ?</string>
 </resources>
