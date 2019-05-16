@@ -106,6 +106,10 @@ public class StartRecordingActivity extends AppCompatActivity {
         lib_btn_recorded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mediaPlayer.isPlaying()) {
+                    stopRecording();
+                    stopBGMusic();
+                }
                 startActivity(new Intent(StartRecordingActivity.this, LibraryActivity.class));
 
             }
@@ -173,9 +177,14 @@ public class StartRecordingActivity extends AppCompatActivity {
         home_btn_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mediaPlayer.isPlaying()) {
+                    stopRecording();
+                    stopBGMusic();
+                }
                 Intent intent = new Intent(StartRecordingActivity.this, ChooseYourBookActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+
             }
         });
         lib_btn_recording.setOnClickListener(new View.OnClickListener() {
