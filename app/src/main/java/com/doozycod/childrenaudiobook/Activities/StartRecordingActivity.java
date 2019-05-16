@@ -45,7 +45,6 @@ public class StartRecordingActivity extends AppCompatActivity {
             R.drawable.countdown_13, R.drawable.countdown_12, R.drawable.countdown_11, R.drawable.countdown_10, R.drawable.countdown_09, R.drawable.countdown_08,
             R.drawable.countdown_07, R.drawable.countdown_06, R.drawable.countdown_05, R.drawable.countdown_04, R.drawable.countdown_03, R.drawable.countdown_02,
             R.drawable.countdown_01, R.drawable.countdown_00};
-    View view;
     File mydir;
     File mydirRecording;
     boolean background_music;
@@ -59,7 +58,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         mediaPlayer = new MediaPlayer();
         mediaRecorder = new MediaRecorder();
 
-        view = new View(this);
+
         myDialog = new Dialog(this);
 
         start_personal_greeting = findViewById(R.id.record_personal_msg);
