@@ -3,4 +3,8 @@
     <color name="colorPrimary">#FF269FF1</color>
     <color name="colorPrimaryDark">#FF269FF1</color>
     <color name="colorAccent">#211868</color>
+    <color name="seek_bar_background">#ababab</color>
+    <color name="seek_bar_progress">#FFC946</color>
+    <color name="seek_bar_thumb">#ffb600</color>
+    <color name="seek_bar_secondary_progress">#3399CC</color>
 </resources>

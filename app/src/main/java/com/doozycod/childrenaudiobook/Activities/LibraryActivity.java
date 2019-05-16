@@ -35,6 +35,7 @@ public class LibraryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
+
         myDialog = new Dialog(this);
         recyclerView = findViewById(R.id.recycler_view_lib);
         recyclerView.setHasFixedSize(true);

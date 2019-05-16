@@ -6,7 +6,9 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.doozycod.childrenaudiobook.R.drawable.bg;
 import static com.doozycod.childrenaudiobook.R.drawable.dark_line;
 import static com.doozycod.childrenaudiobook.R.drawable.light_line;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
@@ -69,7 +72,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         final Model fileModel = (Model) this.modelArrayList.get(i);
 
+        Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
+        holder.book_name_txt.setTypeface(custom_font);
         holder.book_name_txt.setText(fileModel.getName());
         if (i % 2 == 1) {
             holder.relativeLayout.setBackground(holder.relativeLayout.getResources().getDrawable(light_line));
@@ -95,7 +100,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             public void onClick(View v) {
 
                 Log.e("File for Music", fileModel.getPath());
-                ShowMediaPlayerPopoup(fileModel.getPath(), v, i);
+                ShowMediaPlayerPopoup(fileModel.getPath(), v, i, fileModel.getName());
             }
         });
     }
@@ -158,7 +163,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void ShowMediaPlayerPopoup(String filePath, View v, int i) {
+    public void ShowMediaPlayerPopoup(String filePath, View v, int i, String audioFileName) {
         SeekBar seekBar;
         Dialog myDialog = new Dialog(c);
         myDialog.setContentView(R.layout.custom_popup_media_player);
@@ -166,9 +171,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         ImageView play_btn = myDialog.findViewById(R.id.play_pause_btn);
         ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
         ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
+        TextView audio_file_name = myDialog.findViewById(R.id.audio_file_name);
         seekBar = myDialog.findViewById(R.id.seekbar);
+        Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
-
+        audio_file_name.setTypeface(custom_font);
+        audio_file_name.setText(audioFileName);
         seekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -235,10 +243,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     length = mediaPlayer.getCurrentPosition();
-                    play_btn.setImageResource(R.drawable.ic_play);
+                    play_btn.setImageResource(R.drawable.play_button);
 
                 } else {
-                    play_btn.setImageResource(R.drawable.ic_pause);
+                    play_btn.setImageResource(R.drawable.pause_button);
 
                     mediaPlayer.seekTo(length);
                     mediaPlayer.start();
@@ -268,7 +276,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         });
 
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.getWindow().setBackgroundDrawable(v.getResources().getDrawable(pop_up_bg));
+//        myDialog.getWindow().setBackgroundDrawable(v.getResources().getDrawable(bg));
 
         myDialog.show();
     }
@@ -277,12 +285,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @RequiresApi(api = Build.VERSION_CODES.M)
     public void playLibraryAudio(String filePath, SeekBar seekBar) {
 
-
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource(filePath);
             mediaPlayer.prepare();
             mediaPlayer.start();
+
             mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(1.0f));
 
             mediaPlayer.setLooping(false);
@@ -293,6 +301,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                 public void run() {
                     if (mediaPlayer != null) {
                         int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                        seekBar.setMax(mediaPlayer.getDuration()/1000);
                         seekBar.setProgress(mCurrentPosition);
                     }
                     mHandler.postDelayed(this, 1000);

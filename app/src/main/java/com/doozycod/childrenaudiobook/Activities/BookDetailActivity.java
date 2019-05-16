@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -19,12 +20,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 
 import com.doozycod.childrenaudiobook.R;
 
 import java.io.IOException;
 
+import static com.doozycod.childrenaudiobook.R.drawable.bg;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class BookDetailActivity extends AppCompatActivity {
@@ -167,7 +170,12 @@ public class BookDetailActivity extends AppCompatActivity {
         ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
         ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
         seekBar = myDialog.findViewById(R.id.seekbar);
+//        TextView audio_file_name = myDialog.findViewById(R.id.audio_file_name);
+        seekBar = myDialog.findViewById(R.id.seekbar);
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
 
+//        audio_file_name.setTypeface(custom_font);
+//        audio_file_name.setText(audioFileName);
 
         seekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -237,14 +245,14 @@ public class BookDetailActivity extends AppCompatActivity {
                 if (mediaPlayer != null && mediaPlayer.isPlaying()) {
                     mediaPlayer.pause();
                     length = mediaPlayer.getCurrentPosition();
-                    play_btn.setImageResource(R.drawable.ic_play);
+                    play_btn.setImageResource(R.drawable.play_button);
 
                 } else {
-                    play_btn.setImageResource(R.drawable.ic_pause);
+                    play_btn.setImageResource(R.drawable.pause_button);
 
                     mediaPlayer.seekTo(length);
                     mediaPlayer.start();
-                    seekBar.setMax(mediaPlayer.getDuration());
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(1.0f));
                     }
@@ -271,7 +279,7 @@ public class BookDetailActivity extends AppCompatActivity {
         });
 
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+//        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(bg));
 
         myDialog.show();
     }
@@ -319,6 +327,7 @@ public class BookDetailActivity extends AppCompatActivity {
                 public void run() {
                     if (mediaPlayer != null) {
                         int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                        seekBar.setMax(mediaPlayer.getDuration()/1000);
                         seekBar.setProgress(mCurrentPosition);
                     }
                     mHandler.postDelayed(this, 1000);
