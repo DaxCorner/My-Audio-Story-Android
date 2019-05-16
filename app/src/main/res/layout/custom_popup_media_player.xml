@@ -29,6 +29,7 @@
 <TextView
     android:textAppearance="@style/TextAppearance.AppCompat.Large"
     android:layout_width="200dp"
+    android:text="Eli's Star.mp3"
     android:textColor="#fff"
     android:layout_marginBottom="10dp"
     android:layout_gravity="center_horizontal"
