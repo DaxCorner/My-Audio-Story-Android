@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import com.doozycod.childrenaudiobook.Adapter.RecyclerAdapter;
 import com.doozycod.childrenaudiobook.Helper.Model;
 import com.doozycod.childrenaudiobook.R;
+import com.doozycod.childrenaudiobook.Service.Config;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,7 +37,8 @@ public class LibraryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
-
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+        FirebaseMessaging.getInstance().subscribeToTopic("all");
         myDialog = new Dialog(this);
         recyclerView = findViewById(R.id.recycler_view_lib);
         recyclerView.setHasFixedSize(true);
