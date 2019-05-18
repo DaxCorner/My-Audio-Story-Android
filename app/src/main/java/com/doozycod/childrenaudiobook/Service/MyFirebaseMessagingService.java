@@ -90,8 +90,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
-                this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
-        );
+                this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri sound = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/raw/notification");
 
 
@@ -115,106 +114,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notificationBuilder.build());
-    }
-
-    private void handleNotification(String message) {
-
-        if (!NotificationUtils.isAppIsInBackground(getApplicationContext())) {
-
-            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-            notificationUtils.playNotificationSound();
-            Long tsLong = System.currentTimeMillis() / 1000;
-            Intent intent = new Intent(getApplicationContext(), LibraryActivity.class);
-            String ts = tsLong.toString();
-            notificationUtils.showNotificationMessage("Notification", message, ts, intent, null);
-
-        } else {
-            NotificationUtils notificationUtils = new NotificationUtils(getApplicationContext());
-            notificationUtils.playNotificationSound();
-            // If the app is in background, firebase itself handles the notification
-        }
-    }
-
-    public static long getTimeMilliSec(String timeStamp) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            Date date = format.parse(timeStamp);
-            return date.getTime();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    private void handleDataMessage(JSONObject json) {
-        Log.e(TAG, "push json: " + json.toString());
-
-        try {
-            JSONObject data = json.getJSONObject("data");
-
-            String title = data.getString("title");
-            String message = data.getString("message");
-            String imageUrl = data.getString("image");
-            String timestamp = data.getString("timestamp");
-            JSONObject payload = data.getJSONObject("payload");
-
-            Log.e(TAG, "title: " + title);
-            Log.e(TAG, "message: " + message);
-            Log.e(TAG, "payload: " + payload.toString());
-            Log.e(TAG, "imageUrl: " + imageUrl);
-            Log.e(TAG, "timestamp: " + timestamp);
-
-
-//            Intent resultIntent = null;
-//            if(ViewPost.isInFront) {
-//                Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-//                pushNotification.putExtra("title",title);
-//                pushNotification.putExtra("postID",postID);
-//                pushNotification.putExtra("thumbUrl",thumbUrl);
-//                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-//            }else {
-//                resultIntent = new Intent(getApplicationContext(), ViewPost.class);
-//                resultIntent.putExtra("title", title);
-//                resultIntent.putExtra("postID", postID);
-//                resultIntent.putExtra("thumbUrl", thumbUrl);
-//                resultIntent.putExtra("fvrt",false);
-//            }
-            Intent resultIntent = new Intent(getApplicationContext(), Notification.class);
-            resultIntent.putExtra("title", title);
-            resultIntent.putExtra("message", message);
-
-
-            // check for image attachment
-            if (TextUtils.isEmpty(imageUrl)) {
-                showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
-            } else {
-                // image is present, show notification with image
-                showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp, resultIntent, imageUrl);
-            }
-//            }
-        } catch (JSONException e) {
-            Log.e(TAG, "Json Exception: " + e.getMessage());
-        } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Showing notification with text only
-     */
-    private void showNotificationMessage(Context context, String title, String message, String timeStamp, Intent intent) {
-        notificationUtils = new NotificationUtils(context);
-        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        notificationUtils.showNotificationMessage(title, message, timeStamp, intent);
-    }
-
-    /**
-     * Showing notification with text and image
-     */
-    private void showNotificationMessageWithBigImage(Context context, String title, String message, String timeStamp, Intent intent, String imageUrl) {
-        notificationUtils = new NotificationUtils(context);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        notificationUtils.showNotificationMessage(title, message, timeStamp, intent, imageUrl);
     }
 
     private void sendRegistrationToServer(final String token) {

@@ -44,16 +44,6 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         checkPermission();
         setContentView(R.layout.activity_main);
-        //      Checking that run is first time of the app or not
-        Boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE)
-                .getBoolean("isFirstRun", true);
-
-//      Condition for Checking isFirstRun or not
-        if (isFirstRun) {
-            startActivity(new Intent(this, SplashActivity.class));
-        }
-        getSharedPreferences("PREFERENCE", MODE_PRIVATE).edit()
-                .putBoolean("isFirstRun", false).apply();
 
 
         home_btn = findViewById(R.id.home_btn);

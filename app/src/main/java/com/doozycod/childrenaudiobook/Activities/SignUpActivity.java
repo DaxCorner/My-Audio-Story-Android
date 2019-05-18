@@ -41,7 +41,7 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class SignUpActivity extends AppCompatActivity {
     Button sign_up_user;
     ImageView login_button, library_buton, home_button;
-    EditText et_firstname, et_lastname, et_email, et_pass, et_confirmpass;
+    EditText et_firstname, et_lastname, et_email, et_pass, et_confirmpass, et_phone;
     Dialog myDialog;
     ImageView login_dialog;
     SharedPreferenceMethod sharedPreferenceMethod;
@@ -49,7 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
     TextView lastname;
     TextView emailtxt;
     TextView passwordtxt;
-    TextView retypepass;
+    TextView retypepass, phone_txt;
 
 
     @Override
@@ -66,16 +66,18 @@ public class SignUpActivity extends AppCompatActivity {
         et_email = findViewById(R.id.email_phone);
         et_pass = findViewById(R.id.password);
         et_confirmpass = findViewById(R.id.confirm_pass);
+        et_phone = findViewById(R.id.et_phone);
 
         first_name = (TextView) findViewById(R.id.firstname);
         lastname = (TextView) findViewById(R.id.lastname);
         emailtxt = (TextView) findViewById(R.id.emailtext);
         passwordtxt = (TextView) findViewById(R.id.passwordtxt);
         retypepass = (TextView) findViewById(R.id.retypepass);
+        phone_txt = findViewById(R.id.phone_no_txt);
 
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
 
-
+        phone_txt.setTypeface(custom_font);
         first_name.setTypeface(custom_font);
         lastname.setTypeface(custom_font);
         emailtxt.setTypeface(custom_font);
@@ -160,6 +162,7 @@ public class SignUpActivity extends AppCompatActivity {
         final String fname = et_firstname.getText().toString().trim();
         final String lname = et_lastname.getText().toString().trim();
         final String user_password = et_pass.getText().toString().trim();
+        final String mobile_number = et_phone.getText().toString().trim();
 
 
         Log.e("Sign Up Details", user_email + fname + lname + user_password);
@@ -169,7 +172,11 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
 
-                Log.e("Response ---->", response);
+                if(response!=null){
+
+                    Log.e("response===>",response);
+
+                }
 
             }
         }, new Response.ErrorListener() {
@@ -177,17 +184,17 @@ public class SignUpActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
             }
-        })
-        {
+        }) {
 
             protected Map<String, String> getParams() {
-                Map<String, String> parm = new HashMap<>();
+                Map<String, String> parm = new HashMap<String, String>();
 
-                parm.put("email", user_email);
-                parm.put("password", user_password);
+
                 parm.put("first_name", fname);
                 parm.put("last_name", lname);
-                parm.put("mobile_number", "");
+                parm.put("email", user_email);
+                parm.put("password", user_password);
+                parm.put("mobile_number", mobile_number);
 
                 return parm;
 
@@ -202,10 +209,11 @@ public class SignUpActivity extends AppCompatActivity {
 
         Log.e("Email and Password", email_id + " --- " + password);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://www.doozycod.in/books-manager/api/User/login.php", new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, API.LOGIN_API, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
+                    Log.e("Response",response);
                     JSONObject jsonObject = new JSONObject(response);
 
                     String status = jsonObject.getString("status");
@@ -234,7 +242,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() {
 
-                Map<String, String> param = new HashMap<>();
+                Map<String, String> param = new HashMap<String,String>();
 
                 param.put("email", email_id);
                 param.put("password", password);
