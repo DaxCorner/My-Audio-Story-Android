@@ -7,23 +7,33 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
+import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class ShareYourStoryActivity extends AppCompatActivity {
     ImageView home_btn_share, library_btn_share, login_btn_share, login_dialog, popup_login, popup_signup, share_your_story;
     Dialog myDialog;
+    APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_share_story);
+        apiService = ApiUtils.getAPIService();
 
         home_btn_share = findViewById(R.id.home_btn_share);
         library_btn_share = findViewById(R.id.lib_btn_share_story);
@@ -107,14 +117,44 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
         login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
 
+        EditText et_email_btn = myDialog.findViewById(R.id.et_login_dialog);
+        EditText et_password_btn = myDialog.findViewById(R.id.et_password_dialog);
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myDialog.dismiss();
+                if (et_email_btn.getText().toString().equals("") || et_email_btn.getText().toString().equals("")) {
+                    Toast.makeText(ShareYourStoryActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                } else {
+                    String login_email = et_email_btn.getText().toString();
+                    String login_password = et_password_btn.getText().toString();
+                    loginRequest(login_email, login_password);
+                }
+
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
+    }
+
+    public void loginRequest(String entered_email, String entered_password) {
+        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+
+            @Override
+            public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
+
+                if (response.isSuccessful()) {
+                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Login_model> call, Throwable t) {
+                Log.e("API call => ", "Unable to submit post to API.");
+
+            }
+
+        });
     }
 }

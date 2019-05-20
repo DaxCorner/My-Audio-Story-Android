@@ -26,17 +26,26 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.doozycod.childrenaudiobook.Activities.APIService;
 import com.doozycod.childrenaudiobook.Activities.LibraryActivity;
 import com.doozycod.childrenaudiobook.Helper.Model;
+import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Activities.ShareYourStoryActivity;
+import com.doozycod.childrenaudiobook.Utils.API;
+import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.doozycod.childrenaudiobook.R.drawable.bg;
 import static com.doozycod.childrenaudiobook.R.drawable.dark_line;
@@ -50,11 +59,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     private int length;
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000;
+    APIService apiService;
 
-
-    public RecyclerAdapter(Context c, ArrayList<Model> modelArrayList) {
+    public RecyclerAdapter(Context c, ArrayList<Model> modelArrayList, APIService apiService) {
         this.c = c;
         this.modelArrayList = modelArrayList;
+        this.apiService = apiService;
     }
 
 
@@ -329,5 +339,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
 
     }
+
 
 }

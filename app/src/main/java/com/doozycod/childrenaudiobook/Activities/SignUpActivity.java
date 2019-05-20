@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,8 +18,10 @@ import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
+import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.Signup_model;
 import com.doozycod.childrenaudiobook.R;
+import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import java.util.regex.Matcher;
@@ -47,7 +50,7 @@ public class SignUpActivity extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
     private String url = "http://www.doozycod.in/books-manager/api/User/sign_up.php";
-APIService apiService;
+    APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +104,7 @@ APIService apiService;
                 entered_lname = et_lastname.getText().toString().trim();
                 entered_password = et_pass.getText().toString().trim();
                 entered_mobile = et_phone.getText().toString().trim();
-                signUpRequest(entered_fname,entered_lname,entered_email,entered_password,entered_mobile);
-
+                SignUpValidation();
             }
         });
         login_button.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +125,6 @@ APIService apiService;
     }
 
     private void SignUpValidation() {
-
         String validemail = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 
                 "\\@" +
@@ -141,21 +142,44 @@ APIService apiService;
 
         Matcher matcher = Pattern.compile(validemail).matcher(email);
 
+        if (TextUtils.isEmpty(et_firstname.getText().toString())) {
+            Toast.makeText(this, "First Name can't be Empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(et_lastname.getText().toString())) {
+            Toast.makeText(this, "Last Name can't be Empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-//        if (!matcher.matches()) {
-//
-//            Toast.makeText(getApplicationContext(), "Please Enter A  Valid Email" + email, Toast.LENGTH_LONG).show();
-//            return;
-//
-//        }
+        if (!matcher.matches()) {
+
+            Toast.makeText(getApplicationContext(), "Please Enter A  Valid Email" + email, Toast.LENGTH_LONG).show();
+            return;
+
+        }
+        if (TextUtils.isEmpty(et_phone.getText().toString())) {
+            Toast.makeText(this, "Enter phone no.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (TextUtils.isEmpty(et_pass.getText().toString())) {
+            Toast.makeText(this, "Enter your password!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (et_pass.getText().toString().length() <= 6) {
+            Toast.makeText(this, "password must be 6 letters or above", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (!et_pass.getText().toString().equals(et_confirmpass.getText().toString())) {
             Toast.makeText(SignUpActivity.this, "password did not matched!", Toast.LENGTH_SHORT).show();
             return;
-        } else {
-
         }
-    }
+        if (et_phone.getText().toString().length() <= 7) {
+            Toast.makeText(SignUpActivity.this, "Mobile Number Should Be of At least 8 digits", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile);
 
+    }
 
 
     public void ShowPopup(View v) {
@@ -172,13 +196,15 @@ APIService apiService;
             @Override
             public void onClick(View v) {
 
-                Log.e("email password", et_login_dialog.getText().toString() + "  " + et_password_dialog.getText().toString());
+//                Log.e("email password", et_login_dialog.getText().toString() + "  " + et_password_dialog.getText().toString());
 
 
                 if (et_login_dialog.getText().toString().equals("") || et_password_dialog.getText().toString().equals("")) {
-                    Toast.makeText(SignUpActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SignUpActivity.this, "Username and password can't be empty!", Toast.LENGTH_SHORT).show();
                 } else {
-//                    loginUser(et_login_dialog.getText().toString(), et_password_dialog.getText().toString());
+                    String login_email = et_login_dialog.getText().toString();
+                    String login_password = et_password_dialog.getText().toString();
+                    loginRequest(login_email, login_password);
                 }
 //                    myDialog.dismiss();
 
@@ -189,8 +215,28 @@ APIService apiService;
         myDialog.show();
     }
 
+    public void loginRequest(String entered_email, String entered_password) {
+        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
 
+            @Override
+            public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus().equals("true")) {
+                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Login_model> call, Throwable t) {
+                Log.e("API call => ", "Unable to submit post to API.");
+
+            }
+
+        });
+    }
 
     public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile) {
         apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile).enqueue(new Callback<Signup_model>() {
@@ -198,13 +244,9 @@ APIService apiService;
             @Override
             public void onResponse(Call<Signup_model> call, retrofit2.Response<Signup_model> response) {
 
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
 //                    Toast.makeText(SignUpActivity.this, "sucess=>"+response.body(), Toast.LENGTH_LONG).show();
-                    Log.e("response=>",response.body().toString()+"");
-                    Toast.makeText(SignUpActivity.this, response.body().getStatus(), Toast.LENGTH_SHORT).show();
-                }else{
-
-                    Toast.makeText(SignUpActivity.this, "error=>"+response.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
                 }
 
 
