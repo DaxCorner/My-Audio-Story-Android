@@ -29,16 +29,14 @@ public class ViewPagerAdapter extends PagerAdapter {
     GridView gridView;
     ChooseYourBookActivity chooseYourBookActivity;
     LayoutInflater mLayoutInflater;
-    int[] grid_icon;
     APIService apiService;
     List<String> book_image = new ArrayList<String>();
     List<String> book_name = new ArrayList<String>();
     List<String> book_audio_file = new ArrayList<String>();
 
-    public ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, int[] grid_icon, APIService apiService, List<String> book_image, List<String> book_name, List<String> book_audio_file) {
+    public ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, APIService apiService, List<String> book_image, List<String> book_name, List<String> book_audio_file) {
         this.chooseYourBookActivity = chooseYourBookActivity;
         mLayoutInflater = (LayoutInflater) chooseYourBookActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.grid_icon = grid_icon;
         this.apiService = apiService;
         this.book_image = book_image;
         this.book_name = book_name;
@@ -47,7 +45,7 @@ public class ViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return grid_icon.length;
+        return book_name.size();
     }
 
     @Override

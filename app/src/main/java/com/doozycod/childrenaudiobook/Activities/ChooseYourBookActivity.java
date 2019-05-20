@@ -42,7 +42,7 @@ import retrofit2.Response;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class ChooseYourBookActivity extends AppCompatActivity {
-    public static int[] grid_image = {R.drawable.book_01, R.drawable.book_02, R.drawable.book_03, R.drawable.book_04};
+
     SharedPreferenceMethod sharedPreferenceMethod;
     List<String> book_image = new ArrayList<String>();
     List<String> book_name = new ArrayList<String>();
@@ -66,16 +66,14 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         checkPermission();
         setContentView(R.layout.activity_main);
 
-        if(sharedPreferenceMethod.checkLogin())
-        {   // condition true means user is already login
-//            Intent i = new Intent(this,);
-//            startActivityForResult(i, 1);
-        }
+//        if (sharedPreferenceMethod.checkLogin()) {
+//            login_btn.setEnabled(false);
+//        }
+//        else {
+//
+//            // condition false take it user on login form
+//        }
 
-        else
-        {
-            // condition false take it user on login form
-        }
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
         apiService = ApiUtils.getAPIService();
         home_btn = findViewById(R.id.home_btn);
@@ -94,7 +92,12 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup(v);
+                if (sharedPreferenceMethod.checkLogin()) {
+                    login_btn.setEnabled(false);
+                    Toast.makeText(ChooseYourBookActivity.this, "Already Logged in!", Toast.LENGTH_SHORT).show();
+                } else {
+                    ShowPopup(v);
+                }
             }
         });
 
@@ -304,7 +307,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                     book_id.add(response.body().getBook_list_data().get(index).getBook_id());
 
                 }
-                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, grid_image, apiService, book_image, book_name, book_audio_file);
+                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image, book_name, book_audio_file);
                 viewPager = findViewById(R.id.photos_viewpager);
 
                 viewPager.setAdapter(viewPagerAdapter);

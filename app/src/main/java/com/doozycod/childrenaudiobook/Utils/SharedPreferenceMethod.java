@@ -17,7 +17,7 @@ public class SharedPreferenceMethod {
 
 
     public void spInsert(String semail, String spassword) {
-        SharedPreferences sp = context.getSharedPreferences("Dwiggur", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
@@ -28,7 +28,7 @@ public class SharedPreferenceMethod {
     }
 
     public String getData() {
-        SharedPreferences sp = context.getSharedPreferences("Dwiggur", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
@@ -38,7 +38,7 @@ public class SharedPreferenceMethod {
     }
 
     public boolean checkLogin() {
-        SharedPreferences sp = context.getSharedPreferences("Dwiggur", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
@@ -49,7 +49,7 @@ public class SharedPreferenceMethod {
     }
 
     public void Logout() {
-        SharedPreferences sp = context.getSharedPreferences("Dwiggur", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 

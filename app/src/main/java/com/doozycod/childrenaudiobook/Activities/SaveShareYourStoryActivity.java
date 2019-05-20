@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,13 +28,15 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
     Dialog myDialog;
     EditText name_recorded_story;
     APIService apiService;
+    SharedPreferenceMethod sharedPreferenceMethod;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorded_audio);
 
         apiService = ApiUtils.getAPIService();
-
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
         save_btn = findViewById(R.id.save_story_btn);
         share_btn = findViewById(R.id.share_story_btn_on_record);
@@ -49,8 +52,7 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!name_recorded_et.equals("")) {
                     Toast.makeText(SaveShareYourStoryActivity.this, "Saved!", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(SaveShareYourStoryActivity.this, "", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -81,7 +83,12 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup(v);
+                if (sharedPreferenceMethod.checkLogin()) {
+                    login_btn.setEnabled(false);
+                    Toast.makeText(SaveShareYourStoryActivity.this, "Already Logged in!", Toast.LENGTH_SHORT).show();
+                } else {
+                    ShowPopup(v);
+                }
 
             }
         });
@@ -105,6 +112,7 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
+
     public void showLoginPopUp(View v) {
 
         myDialog.setContentView(R.layout.custom_login_popup);
@@ -116,7 +124,7 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginRequest(et_email_btn.getText().toString(),et_password_btn.getText().toString());
+                loginRequest(et_email_btn.getText().toString(), et_password_btn.getText().toString());
                 myDialog.dismiss();
             }
         });
@@ -124,6 +132,7 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
     }
+
     public void loginRequest(String entered_email, String entered_password) {
         apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
 
