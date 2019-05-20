@@ -113,6 +113,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
             }
         });
+
         home_btn_recorded.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -176,6 +177,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         home_btn_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (mediaPlayer.isPlaying()) {
                     stopRecording();
                     stopBGMusic();

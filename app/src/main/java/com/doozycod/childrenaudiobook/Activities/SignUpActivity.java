@@ -7,34 +7,25 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.doozycod.childrenaudiobook.Models.Signup_model;
 import com.doozycod.childrenaudiobook.R;
-import com.doozycod.childrenaudiobook.Utils.API;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
@@ -50,12 +41,21 @@ public class SignUpActivity extends AppCompatActivity {
     TextView emailtxt;
     TextView passwordtxt;
     TextView retypepass, phone_txt;
+    String entered_email, entered_fname, entered_lname, entered_password, entered_mobile;
 
+    //init volley
+    private RequestQueue mRequestQueue;
+    private StringRequest mStringRequest;
+    private String url = "http://www.doozycod.in/books-manager/api/User/sign_up.php";
+APIService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+
+        apiService = ApiUtils.getAPIService();
+
         myDialog = new Dialog(this);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
         sign_up_user = findViewById(R.id.sign_upactivity_btn);
@@ -96,12 +96,13 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                entered_email = et_email.getText().toString().trim();
+                entered_fname = et_firstname.getText().toString().trim();
+                entered_lname = et_lastname.getText().toString().trim();
+                entered_password = et_pass.getText().toString().trim();
+                entered_mobile = et_phone.getText().toString().trim();
+                signUpRequest(entered_fname,entered_lname,entered_email,entered_password,entered_mobile);
 
-                signUpUser();
-
-
-//                  startActivity(new Intent(SignUpActivity.this, SaveShareYourStoryActivity.class));
-//                finish();
             }
         });
         login_button.setOnClickListener(new View.OnClickListener() {
@@ -155,107 +156,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void signUpUser() {
 
-
-        final String user_email = et_email.getText().toString().trim();
-        final String fname = et_firstname.getText().toString().trim();
-        final String lname = et_lastname.getText().toString().trim();
-        final String user_password = et_pass.getText().toString().trim();
-        final String mobile_number = et_phone.getText().toString().trim();
-
-
-        Log.e("Sign Up Details", user_email + fname + lname + user_password);
-
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, API.SIGN_UP_API, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-
-                if(response!=null){
-
-                    Log.e("response===>",response);
-
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(SignUpActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-
-            protected Map<String, String> getParams() {
-                Map<String, String> parm = new HashMap<String, String>();
-
-
-                parm.put("first_name", fname);
-                parm.put("last_name", lname);
-                parm.put("email", user_email);
-                parm.put("password", user_password);
-                parm.put("mobile_number", mobile_number);
-
-                return parm;
-
-            }
-
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
-
-    private void loginUser(String email_id, String password) {
-
-        Log.e("Email and Password", email_id + " --- " + password);
-
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, API.LOGIN_API, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    Log.e("Response",response);
-                    JSONObject jsonObject = new JSONObject(response);
-
-                    String status = jsonObject.getString("status");
-                    String message = jsonObject.getString("message");
-                    String id = jsonObject.getString("id");
-                    String email = jsonObject.getString("email");
-                    String first_name = jsonObject.getString("first_name");
-                    String last_name = jsonObject.getString("last_name");
-                    String mobile_number = jsonObject.getString("mobile_number");
-
-
-                    Log.e("Login Message Response", jsonObject + "");
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Volley Error :=", error.toString());
-            }
-        }) {
-
-            @Override
-            protected Map<String, String> getParams() {
-
-                Map<String, String> param = new HashMap<String,String>();
-
-                param.put("email", email_id);
-                param.put("password", password);
-
-                return param;
-            }
-
-
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
 
     public void ShowPopup(View v) {
 
@@ -277,7 +178,7 @@ public class SignUpActivity extends AppCompatActivity {
                 if (et_login_dialog.getText().toString().equals("") || et_password_dialog.getText().toString().equals("")) {
                     Toast.makeText(SignUpActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
                 } else {
-                    loginUser(et_login_dialog.getText().toString(), et_password_dialog.getText().toString());
+//                    loginUser(et_login_dialog.getText().toString(), et_password_dialog.getText().toString());
                 }
 //                    myDialog.dismiss();
 
@@ -286,6 +187,34 @@ public class SignUpActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
+    }
+
+
+
+
+    public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile) {
+        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile).enqueue(new Callback<Signup_model>() {
+
+            @Override
+            public void onResponse(Call<Signup_model> call, retrofit2.Response<Signup_model> response) {
+
+                if(response.isSuccessful()){
+//                    Toast.makeText(SignUpActivity.this, "sucess=>"+response.body(), Toast.LENGTH_LONG).show();
+                    Log.e("response=>",response.body().toString()+"");
+                    Toast.makeText(SignUpActivity.this, response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                }else{
+
+                    Toast.makeText(SignUpActivity.this, "error=>"+response.toString(), Toast.LENGTH_LONG).show();
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<Signup_model> call, Throwable t) {
+                Log.e("API call => ", "Unable to submit post to API.");
+            }
+        });
     }
 
 
