@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -27,6 +28,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
     ImageView home_btn_share, library_btn_share, login_btn_share, login_dialog, popup_login, popup_signup, share_your_story;
     Dialog myDialog;
     APIService apiService;
+    SharedPreferenceMethod sharedPreferenceMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +36,8 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_share_story);
         apiService = ApiUtils.getAPIService();
+
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
         home_btn_share = findViewById(R.id.home_btn_share);
         library_btn_share = findViewById(R.id.lib_btn_share_story);
@@ -49,12 +53,27 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         tx.setTypeface(custom_font);
         phone_no.setTypeface(custom_font);
 
-        login_btn_share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopup(v);
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_btn_share.setImageResource(R.drawable.profile_btn_pressed);
+                login_btn_share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(ShareYourStoryActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_btn_share.setImageResource(R.drawable.login_btn_pressed);
+                login_btn_share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ShowPopup(v);
+
+                    }
+                });
             }
-        });
+        }
 
         home_btn_share.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,12 +158,16 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
     public void loginRequest(String entered_email, String entered_password) {
         apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
-
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    if (response.body().getStatus().equals("true")) {
+                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        sharedPreferenceMethod.spInsert("",response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        myDialog.dismiss();
+
+                    }
                 }
 
             }

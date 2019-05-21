@@ -38,17 +38,16 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
+import static com.doozycod.childrenaudiobook.Utils.ApiUtils.BASE_URL;
 
 public class ChooseYourBookActivity extends AppCompatActivity {
 
     SharedPreferenceMethod sharedPreferenceMethod;
-    List<String> book_image = new ArrayList<String>();
-    List<String> book_name = new ArrayList<String>();
-    List<String> book_audio_file = new ArrayList<String>();
-    List<String> book_id = new ArrayList<String>();
-    List<String> book_content_file = new ArrayList<String>();
+
     View view;
     ImageView login_btn, home_btn, library_btn, popup_login, popup_signup, login_dialog;
     ViewPager viewPager;
@@ -59,29 +58,46 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     Boolean isPressed = true;
     APIService apiService;
     ViewPagerAdapter viewPagerAdapter;
+    List<Books_model.book_detail> book_list = null;
+
+    String book_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkPermission();
         setContentView(R.layout.activity_main);
-
-//        if (sharedPreferenceMethod.checkLogin()) {
-//            login_btn.setEnabled(false);
-//        }
-//        else {
-//
-//            // condition false take it user on login form
-//        }
+        login_btn = findViewById(R.id.login_btn_main);
 
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_btn.setImageResource(R.drawable.profile_btn_pressed);
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(ChooseYourBookActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_btn.setImageResource(R.drawable.login_btn_pressed);
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ShowPopup();
+
+                    }
+                });
+            }
+        }
+
         apiService = ApiUtils.getAPIService();
         home_btn = findViewById(R.id.home_btn);
         library_btn = findViewById(R.id.lib_btn_main);
         myDialog = new Dialog(this);
         sliderDotspanel = (LinearLayout) findViewById(R.id.SliderDots);
         view = new View(this);
-        login_btn = findViewById(R.id.login_btn_main);
 
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,17 +105,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 //                startActivity(new Intent(ChooseYourBookActivity.this, RecordYourOwnActivity.class));
             }
         });
-        login_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sharedPreferenceMethod.checkLogin()) {
-                    login_btn.setEnabled(false);
-                    Toast.makeText(ChooseYourBookActivity.this, "Already Logged in!", Toast.LENGTH_SHORT).show();
-                } else {
-                    ShowPopup(v);
-                }
-            }
-        });
+
 
         library_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,7 +133,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     }
 
 
-    public void ShowPopup(View v) {
+    public void ShowPopup() {
 
         myDialog.setContentView(R.layout.custom_popup);
         popup_login = myDialog.findViewById(R.id.select_login);
@@ -188,10 +194,24 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
-                    if (response.body().getStatus() == "true") {
-                        sharedPreferenceMethod.spInsert(entered_email, entered_password);
+                    if (response.body().getStatus().equals("true")) {
+
+                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
+                        myDialog.dismiss();
+                        login_btn.setImageResource(R.drawable.profile_btn_pressed);
+                        if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                            login_btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(ChooseYourBookActivity.this, ProfileActivity.class));
+                                }
+                            });
+                        } else {
+                            ShowPopup();
+                        }
+
                     }
-                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
                 }
 
             }
@@ -295,19 +315,20 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
     public void fetchBookDataAndViewPager() {
         apiService = ApiUtils.getAPIService();
-        apiService.getAllBooks().enqueue(new Callback<Books_model>() {
+
+
+        apiService.getAllBooks(sharedPreferenceMethod.getUserId()).enqueue(new Callback<Books_model>() {
             @Override
             public void onResponse(Call<Books_model> call, Response<Books_model> response) {
                 for (int index = 0; index < response.body().getBook_list_data().size(); index++) {
 
-                    book_name.add(response.body().getBook_list_data().get(index).getBook_name());
-                    book_image.add(response.body().getBook_list_data().get(index).getBook_image());
-                    book_audio_file.add(response.body().getBook_list_data().get(index).getBook_audio_file());
-                    book_content_file.add(response.body().getBook_list_data().get(index).getBook_content_file());
-                    book_id.add(response.body().getBook_list_data().get(index).getBook_id());
+                    book_list = response.body().getBook_list_data();
+
 
                 }
-                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image, book_name, book_audio_file);
+//                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image_list, book_name_list, book_audio_file_list);
+
+                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, book_list, sharedPreferenceMethod);
                 viewPager = findViewById(R.id.photos_viewpager);
 
                 viewPager.setAdapter(viewPagerAdapter);
@@ -363,6 +384,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
 
     }
+
+
 }
 
 

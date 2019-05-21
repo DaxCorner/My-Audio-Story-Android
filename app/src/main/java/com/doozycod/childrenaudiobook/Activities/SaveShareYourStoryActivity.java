@@ -80,18 +80,27 @@ public class SaveShareYourStoryActivity extends AppCompatActivity {
 
             }
         });
-        login_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sharedPreferenceMethod.checkLogin()) {
-                    login_btn.setEnabled(false);
-                    Toast.makeText(SaveShareYourStoryActivity.this, "Already Logged in!", Toast.LENGTH_SHORT).show();
-                } else {
-                    ShowPopup(v);
-                }
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_btn.setImageResource(R.drawable.profile_btn_pressed);
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(SaveShareYourStoryActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_btn.setImageResource(R.drawable.login_btn_pressed);
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
+                        ShowPopup(v);
+
+                    }
+                });
             }
-        });
+        }
 
     }
 

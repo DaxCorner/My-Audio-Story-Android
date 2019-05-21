@@ -6,6 +6,17 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class Books_model {
+    @SerializedName("user_id")
+    @Expose
+    private String user_id;
+
+    public String getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(String user_id) {
+        this.user_id = user_id;
+    }
 
     @SerializedName("status")
     @Expose
@@ -60,6 +71,17 @@ public class Books_model {
         @SerializedName("book_content_file")
         @Expose
         private String book_content_file;
+        @SerializedName("is_paid")
+        @Expose
+        private String is_paid;
+
+        public String getIs_paid() {
+            return is_paid;
+        }
+
+        public void setIs_paid(String is_paid) {
+            this.is_paid = is_paid;
+        }
 
         public String getBook_id() {
             return book_id;

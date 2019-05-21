@@ -2,7 +2,6 @@ package com.doozycod.childrenaudiobook.Adapter;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +12,10 @@ import com.doozycod.childrenaudiobook.Activities.APIService;
 import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.R;
-import com.doozycod.childrenaudiobook.Utils.API;
-import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ViewPagerAdapter extends PagerAdapter {
 
@@ -29,23 +23,21 @@ public class ViewPagerAdapter extends PagerAdapter {
     GridView gridView;
     ChooseYourBookActivity chooseYourBookActivity;
     LayoutInflater mLayoutInflater;
-    APIService apiService;
-    List<String> book_image = new ArrayList<String>();
-    List<String> book_name = new ArrayList<String>();
-    List<String> book_audio_file = new ArrayList<String>();
+    List<Books_model.book_detail> Book_list_data = new ArrayList<>();
+    SharedPreferenceMethod sharedPreferenceMethod;
 
-    public ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, APIService apiService, List<String> book_image, List<String> book_name, List<String> book_audio_file) {
+    public ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, List<Books_model.book_detail> Book_list_data, SharedPreferenceMethod sharedPreferenceMethod) {
+
+        this.sharedPreferenceMethod = sharedPreferenceMethod;
         this.chooseYourBookActivity = chooseYourBookActivity;
         mLayoutInflater = (LayoutInflater) chooseYourBookActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.apiService = apiService;
-        this.book_image = book_image;
-        this.book_name = book_name;
-        this.book_audio_file = book_audio_file;
+
+        this.Book_list_data = Book_list_data;
     }
 
     @Override
     public int getCount() {
-        return book_name.size();
+        return Book_list_data.size();
     }
 
     @Override
@@ -59,7 +51,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         container.addView(itemView);
 
         gridView = itemView.findViewById(R.id.gridview);
-        gridView.setAdapter(new GridAdapter(chooseYourBookActivity, apiService, book_image, book_name, book_audio_file));
+        gridView.setAdapter(new GridAdapter(chooseYourBookActivity, Book_list_data,sharedPreferenceMethod));
 
         return itemView;
     }

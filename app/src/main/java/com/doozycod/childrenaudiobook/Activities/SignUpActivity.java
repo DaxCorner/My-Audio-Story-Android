@@ -87,6 +87,7 @@ public class SignUpActivity extends AppCompatActivity {
         passwordtxt.setTypeface(custom_font);
         retypepass.setTypeface(custom_font);
         login_button = findViewById(R.id.login_btn_signup);
+
         home_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -107,12 +108,27 @@ public class SignUpActivity extends AppCompatActivity {
                 SignUpValidation();
             }
         });
-        login_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopup(v);
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_button.setImageResource(R.drawable.profile_btn_pressed);
+                login_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(SignUpActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_button.setImageResource(R.drawable.login_btn_pressed);
+                login_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ShowPopup(v);
+
+                    }
+                });
             }
-        });
+        }
         library_buton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -224,6 +240,9 @@ public class SignUpActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
                         Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        myDialog.dismiss();
+
                     }
                 }
 
@@ -239,21 +258,26 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile) {
-        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile).enqueue(new Callback<Signup_model>() {
+        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile).enqueue(new Callback<Login_model>() {
 
             @Override
-            public void onResponse(Call<Signup_model> call, retrofit2.Response<Signup_model> response) {
+            public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
-//                    Toast.makeText(SignUpActivity.this, "sucess=>"+response.body(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(getApplicationContext(), response.body().getStatus()
+                            + response.body().getMessage()
+                            + response.body().getUser_id()
+
+                            + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                    sharedPreferenceMethod.spInsert("", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                 }
 
 
             }
 
             @Override
-            public void onFailure(Call<Signup_model> call, Throwable t) {
+            public void onFailure(Call<Login_model> call, Throwable t) {
                 Log.e("API call => ", "Unable to submit post to API.");
             }
         });

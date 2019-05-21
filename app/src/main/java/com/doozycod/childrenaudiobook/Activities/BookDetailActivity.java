@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import java.io.IOException;
 
@@ -48,6 +49,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private int seekBackwardTime = 5000;
     APIService apiService;
     Bundle bundle;
+    SharedPreferenceMethod sharedPreferenceMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,30 +57,58 @@ public class BookDetailActivity extends AppCompatActivity {
 
         bundle = getIntent().getExtras();
         setContentView(R.layout.activity_listen_audio_story);
-        apiService = ApiUtils.getAPIService();
-
-
-        recordAudioButton = findViewById(R.id.record_audio);
         login_btn_listen = findViewById(R.id.login_btn_listen);
+        recordAudioButton = findViewById(R.id.record_audio);
         listen_book = findViewById(R.id.listen_book);
         use_bg_music = findViewById(R.id.use_background_audio);
         home_btn_listen_audio = findViewById(R.id.home_btn_listen_audio);
         library_btn_listen = findViewById(R.id.lib_btn_listen_audio);
+        apiService = ApiUtils.getAPIService();
+
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
+//        Check user Logged in or Not
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
+                login_btn_listen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(BookDetailActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_btn_listen.setImageResource(R.drawable.login_btn_pressed);
+                login_btn_listen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ShowPopup(v);
+
+                    }
+                });
+            }
+        }
+
 
         myDialog = new Dialog(this);
 
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String audio_file = bundle.getString("audio");
+                String book_id = bundle.getString("book_id");
+                String user_id = bundle.getString("user_id");
+                String is_paid = bundle.getString("is_paid");
+                Bundle extras = new Bundle();
+                extras.putString("audio_file", audio_file);
+                extras.putString("book_id", book_id);
+                extras.putString("user_id", user_id);
+                extras.putString("is_paid", is_paid);
+
                 startActivity(new Intent(BookDetailActivity.this, RecordYourOwnActivity.class));
             }
         });
-        login_btn_listen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopup(v);
-            }
-        });
+
         listen_book.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -363,7 +393,11 @@ public class BookDetailActivity extends AppCompatActivity {
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    if (response.body().getStatus().equals("true")) {
+                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        myDialog.dismiss();
+                    }
                 }
 
             }

@@ -23,6 +23,7 @@ import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Service.Config;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.File;
@@ -42,20 +43,47 @@ public class LibraryActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     RecyclerAdapter recyclerAdapter;
     APIService apiService;
+    SharedPreferenceMethod sharedPreferenceMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
 
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
         apiService = ApiUtils.getAPIService();
+
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
         myDialog = new Dialog(this);
+
         recyclerView = findViewById(R.id.recycler_view_lib);
         recyclerView.setHasFixedSize(true);
         home_btn = findViewById(R.id.home_btn_lib);
         login_btn_main = findViewById(R.id.login_btn_lib);
+
+
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_btn_main.setImageResource(R.drawable.profile_btn_pressed);
+                login_btn_main.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(LibraryActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_btn_main.setImageResource(R.drawable.login_btn_pressed);
+                login_btn_main.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ShowPopup(v);
+
+                    }
+                });
+            }
+        }
 
 //        recycler Adapater
         recyclerAdapter = new RecyclerAdapter(this, GetFiles(), apiService);
@@ -64,12 +92,6 @@ public class LibraryActivity extends AppCompatActivity {
         recyclerView.setAdapter(recyclerAdapter);
 
 
-        login_btn_main.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopup(v);
-            }
-        });
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,11 +163,11 @@ public class LibraryActivity extends AppCompatActivity {
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
-                    if (response.body().getStatus().equals("false")) {
-                        Toast.makeText(LibraryActivity.this, "Check username and password!", Toast.LENGTH_SHORT).show();
-                    } else {
+                    if (response.body().getStatus().equals("true")) {
+                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        sharedPreferenceMethod.spInsert("true",response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         myDialog.dismiss();
+
                     }
                 }
 

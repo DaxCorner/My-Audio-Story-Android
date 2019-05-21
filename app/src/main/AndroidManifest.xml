@@ -17,6 +17,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.ProfileActivity"></activity>
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
@@ -32,7 +33,6 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
-
             </intent-filter>
         </service>
 
@@ -40,10 +40,10 @@
         <activity android:name=".Service.Notification" />
         <activity
             android:name=".Activities.LibraryActivity"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
             android:excludeFromRecents="true"
-            android:exported="true" />
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="" />
         <activity android:name=".Activities.BookDetailActivity" />
         <activity
             android:name=".Activities.SignUpActivity"
@@ -60,9 +60,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.ChooseYourBookActivity">
-
-        </activity>
+        <activity android:name=".Activities.ChooseYourBookActivity"></activity>
     </application>
 
 </manifest>

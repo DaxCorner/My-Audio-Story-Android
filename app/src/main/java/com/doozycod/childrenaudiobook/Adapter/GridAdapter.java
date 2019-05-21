@@ -30,6 +30,7 @@ import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,17 +48,14 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class GridAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
     Context context;
-    APIService apiService;
-    List<String> book_image = new ArrayList<String>();
-    List<String> book_name = new ArrayList<String>();
-    List<String> book_audio_file = new ArrayList<String>();
+    List<Books_model.book_detail> Book_list_data = new ArrayList<>();
+    SharedPreferenceMethod sharedPreferenceMethod;
 
-    public GridAdapter(ChooseYourBookActivity chooseYourBookActivity, APIService apiService, List<String> book_image, List<String> book_name, List<String> book_audio_file) {
+    public GridAdapter(ChooseYourBookActivity chooseYourBookActivity, List<Books_model.book_detail> Book_list_data, SharedPreferenceMethod sharedPreferenceMethod) {
+
         context = chooseYourBookActivity;
-        this.apiService = apiService;
-        this.book_image = book_image;
-        this.book_name = book_name;
-        this.book_audio_file = book_audio_file;
+        this.sharedPreferenceMethod = sharedPreferenceMethod;
+        this.Book_list_data = Book_list_data;
         inflater = (LayoutInflater) context.
                 getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -65,7 +63,7 @@ public class GridAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return book_image.size();
+        return Book_list_data.size();
     }
 
     @Override
@@ -85,7 +83,7 @@ public class GridAdapter extends BaseAdapter {
         View view = inflater.inflate(R.layout.grid_list_view, null);
         holder.audioBookImage = view.findViewById(R.id.imageview);
 
-        Glide.with(view.getContext()).load("http://" + book_image.get(position)).into(holder.audioBookImage);
+        Glide.with(view.getContext()).load("http://" + Book_list_data.get(position).getBook_image()).into(holder.audioBookImage);
 
         holder.relativeLayout = view.findViewById(R.id.relativelayout);
 
@@ -95,7 +93,10 @@ public class GridAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Intent intent = new Intent(context, BookDetailActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("audio_file", book_audio_file.get(position));
+                bundle.putString("audio_file", Book_list_data.get(position).getBook_audio_file());
+                bundle.putString("book_id", Book_list_data.get(position).getBook_id());
+                bundle.putString("is_paid", Book_list_data.get(position).getIs_paid());
+                bundle.putString("user_id", sharedPreferenceMethod.getUserId());
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }

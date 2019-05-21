@@ -1,5 +1,6 @@
 package com.doozycod.childrenaudiobook.Activities;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,13 +18,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingResult;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 
+import static com.android.billingclient.api.BillingClient.BillingResponseCode.OK;
 import static com.doozycod.childrenaudiobook.R.drawable.bg_music_off_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.bg_music_on_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.large_font_btn;
@@ -41,11 +47,15 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     final Handler handler = new Handler();
     Intent intent;
     APIService apiService;
+    private BillingClient billingClient;
+    SharedPreferenceMethod sharedPreferenceMethod;
+    Bundle bundle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        bundle = getIntent().getExtras();
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
 
@@ -56,6 +66,28 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         login_btn = findViewById(R.id.login_btn_record_your_own);
         home_btn_record = findViewById(R.id.home_btn_record_own);
 
+
+        if (sharedPreferenceMethod != null) {
+            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                login_btn.setImageResource(R.drawable.profile_btn_pressed);
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(RecordYourOwnActivity.this, ProfileActivity.class));
+                    }
+                });
+            } else {
+                login_btn.setImageResource(R.drawable.login_btn_pressed);
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ShowPopup(v);
+
+                    }
+                });
+            }
+        }
         large_font.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +106,13 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (hasMicrophone()) {
-                    RecordPersonalGreetingPopUp();
+                    String is_paid = bundle.getString("is_paid");
+                    if (is_paid.equals("1")) {
+                        RecordPersonalGreetingPopUp();
+                    }
+                    else{
+                        Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
                 }
@@ -97,12 +135,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                 startActivity(new Intent(RecordYourOwnActivity.this, LibraryActivity.class));
             }
         });
-        login_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowPopupSignInSignUp(v);
-            }
-        });
+
 
         bg_music_btn = findViewById(R.id.bg_music_btn);
 
@@ -177,6 +210,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
+
                 ShowPopup(v);
 
 
@@ -231,11 +265,12 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
         EditText et_email_btn = myDialog.findViewById(R.id.et_login_dialog);
         EditText et_password_btn = myDialog.findViewById(R.id.et_password_dialog);
+
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (et_email_btn.getText().toString().equals("") || et_email_btn.getText().toString().equals("")) {
-                    Toast.makeText(RecordYourOwnActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RecordYourOwnActivity.this, "Username and password can't be empty!", Toast.LENGTH_SHORT).show();
                 } else {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();
@@ -257,7 +292,12 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(), response.body().getStatus(), Toast.LENGTH_SHORT).show();
+                    if (response.body().getStatus().equals("true")) {
+                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        myDialog.dismiss();
+
+                    }
                 }
 
             }
