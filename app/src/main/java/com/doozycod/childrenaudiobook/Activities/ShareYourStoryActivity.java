@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +30,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
     Dialog myDialog;
     APIService apiService;
     SharedPreferenceMethod sharedPreferenceMethod;
+    String android_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +49,15 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         TextView phone_no = findViewById(R.id.phone_no);
 
         myDialog = new Dialog(this);
-
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
 
         tx.setTypeface(custom_font);
         phone_no.setTypeface(custom_font);
 
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+            if (sharedPreferenceMethod.checkLogin()) {
                 login_btn_share.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_share.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -68,7 +71,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        ShowPopup(v);
+                        ShowPopup();
 
                     }
                 });
@@ -101,7 +104,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
     }
 
-    public void ShowPopup(View v) {
+    public void ShowPopup() {
 
         myDialog.setContentView(R.layout.custom_popup);
         popup_login = myDialog.findViewById(R.id.select_login);
@@ -157,15 +160,29 @@ public class ShareYourStoryActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
+
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
-                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                        sharedPreferenceMethod.spInsert("",response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
+                        sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
+                        login_btn_share.setImageResource(R.drawable.profile_btn_pressed);
+                        if (sharedPreferenceMethod.checkLogin()) {
+                            login_btn_share.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(ShareYourStoryActivity.this, ProfileActivity.class));
+                                }
+                            });
+                        } else {
+                            ShowPopup();
+                        }
 
                     }
                 }

@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -50,7 +51,7 @@ public class BookDetailActivity extends AppCompatActivity {
     APIService apiService;
     Bundle bundle;
     SharedPreferenceMethod sharedPreferenceMethod;
-
+    String android_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,10 +66,12 @@ public class BookDetailActivity extends AppCompatActivity {
         library_btn_listen = findViewById(R.id.lib_btn_listen_audio);
         apiService = ApiUtils.getAPIService();
 
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
 //        Check user Logged in or Not
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+            if (sharedPreferenceMethod.checkLogin()) {
                 login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_listen.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -82,30 +85,31 @@ public class BookDetailActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        ShowPopup(v);
+                        ShowPopup();
 
                     }
                 });
             }
         }
-
+        String audio_file = bundle.getString("audio_file");
+        String book_id = bundle.getString("book_id");
+        String user_id = bundle.getString("user_id");
+        String is_paid = bundle.getString("is_paid");
 
         myDialog = new Dialog(this);
 
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String audio_file = bundle.getString("audio");
-                String book_id = bundle.getString("book_id");
-                String user_id = bundle.getString("user_id");
-                String is_paid = bundle.getString("is_paid");
+                Intent intent =new Intent(BookDetailActivity.this, RecordYourOwnActivity.class);
+                Toast.makeText(BookDetailActivity.this, audio_file+book_id+user_id+is_paid, Toast.LENGTH_SHORT).show();
                 Bundle extras = new Bundle();
                 extras.putString("audio_file", audio_file);
                 extras.putString("book_id", book_id);
                 extras.putString("user_id", user_id);
                 extras.putString("is_paid", is_paid);
-
-                startActivity(new Intent(BookDetailActivity.this, RecordYourOwnActivity.class));
+                intent.putExtras(extras);
+                startActivity(intent);
             }
         });
 
@@ -141,7 +145,7 @@ public class BookDetailActivity extends AppCompatActivity {
         });
     }
 
-    public void ShowPopup(View v) {
+    public void ShowPopup() {
 
         myDialog.setContentView(R.layout.custom_popup);
         popup_login = myDialog.findViewById(R.id.select_login);
@@ -387,16 +391,30 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password,android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
-                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id()+"\n"+response.body().getDevice_id() );
+                        sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
+                        login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
+                        if (sharedPreferenceMethod.checkLogin()) {
+                            login_btn_listen.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(BookDetailActivity.this, ProfileActivity.class));
+                                }
+                            });
+                        } else {
+                            ShowPopup();
+                        }
+
                     }
                 }
 

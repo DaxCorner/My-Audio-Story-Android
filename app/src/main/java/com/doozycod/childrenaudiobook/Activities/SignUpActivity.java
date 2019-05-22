@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -51,6 +52,7 @@ public class SignUpActivity extends AppCompatActivity {
     private StringRequest mStringRequest;
     private String url = "http://www.doozycod.in/books-manager/api/User/sign_up.php";
     APIService apiService;
+    String android_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +63,10 @@ public class SignUpActivity extends AppCompatActivity {
 
         myDialog = new Dialog(this);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+
+
         sign_up_user = findViewById(R.id.sign_upactivity_btn);
         home_button = findViewById(R.id.home_btn_signup);
         library_buton = findViewById(R.id.lib_btn_on_signup);
@@ -109,7 +115,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+            if (sharedPreferenceMethod.checkLogin()) {
                 login_button.setImageResource(R.drawable.profile_btn_pressed);
                 login_button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -123,7 +129,7 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        ShowPopup(v);
+                        ShowPopup();
 
                     }
                 });
@@ -193,12 +199,12 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this, "Mobile Number Should Be of At least 8 digits", Toast.LENGTH_SHORT).show();
             return;
         }
-        signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile);
+        signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id);
 
     }
 
 
-    public void ShowPopup(View v) {
+    public void ShowPopup() {
 
 
         myDialog.setContentView(R.layout.custom_login_popup);
@@ -232,16 +238,29 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
-                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
-                        myDialog.dismiss();
+
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
+                        sharedPreferenceMethod.saveLogin(true);
+                        login_button.setImageResource(R.drawable.profile_btn_pressed);
+                        if (sharedPreferenceMethod.checkLogin()) {
+                            login_button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(SignUpActivity.this, ProfileActivity.class));
+                                }
+                            });
+                            myDialog.dismiss();
+                        } else {
+                            ShowPopup();
+                        }
 
                     }
                 }
@@ -257,7 +276,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile) {
+    public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile, String device_id) {
         apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile).enqueue(new Callback<Login_model>() {
 
             @Override
@@ -270,7 +289,7 @@ public class SignUpActivity extends AppCompatActivity {
                             + response.body().getUser_id()
 
                             + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                    sharedPreferenceMethod.spInsert("", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                    sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                 }
 
 

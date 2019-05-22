@@ -9,6 +9,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -50,7 +51,8 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     private BillingClient billingClient;
     SharedPreferenceMethod sharedPreferenceMethod;
     Bundle bundle;
-
+    String android_id;
+    String book_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,8 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
 
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         apiService = ApiUtils.getAPIService();
         record_btn = findViewById(R.id.recording_start);
         large_font = findViewById(R.id.large_font);
@@ -68,7 +72,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
 
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+            if (sharedPreferenceMethod.checkLogin()) {
                 login_btn.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -88,6 +92,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                 });
             }
         }
+
         large_font.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,13 +111,13 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (hasMicrophone()) {
-                    String is_paid = bundle.getString("is_paid");
-                    if (is_paid.equals("1")) {
-                        RecordPersonalGreetingPopUp();
-                    }
-                    else{
-                        Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
-                    }
+//                    String is_paid = bundle.getString("is_paid");
+//                    if (is_paid.equals("1")) {
+                    RecordPersonalGreetingPopUp();
+//                    }
+//                    else{
+                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+//                    }
                 } else {
                     Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
                 }
@@ -186,6 +191,14 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Intent intent = new Intent(RecordYourOwnActivity.this, StartRecordingActivity.class);
+                String audio = bundle.getString("audio_file");
+                String book_id = bundle.getString("book_id");
+                String is_paid = bundle.getString("is_paid");
+
+                intent.putExtra("audio_file",audio);
+                intent.putExtra("book_id",book_id);
+//                Toast.makeText(RecordYourOwnActivity.this, book_id, Toast.LENGTH_SHORT).show();
                 myDialog.dismiss();
                 startActivity(intent);
 //                finish();
@@ -219,9 +232,11 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         record_greeting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
+                bundle = new Bundle();
                 bundle.putBoolean("yes", true);
+
                 intent.putExtras(bundle);
+
                 startActivity(intent);
                 myDialog.dismiss();
 
@@ -231,7 +246,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void ShowPopupSignInSignUp(View v) {
+    public void ShowPopupSignInSignUp() {
 
         myDialog.setContentView(R.layout.custom_popup);
         popup_login = myDialog.findViewById(R.id.select_login);
@@ -286,16 +301,29 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
-                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
+                        sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
+                        login_btn.setImageResource(R.drawable.profile_btn_pressed);
+                        if (sharedPreferenceMethod.checkLogin()) {
+                            login_btn.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(RecordYourOwnActivity.this, ProfileActivity.class));
+                                }
+                            });
+                        } else {
+                            ShowPopupSignInSignUp();
+                        }
 
                     }
                 }

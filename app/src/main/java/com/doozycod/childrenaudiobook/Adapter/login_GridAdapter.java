@@ -1,32 +1,58 @@
 package com.doozycod.childrenaudiobook.Adapter;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.doozycod.childrenaudiobook.Activities.APIService;
 import com.doozycod.childrenaudiobook.Activities.BookDetailActivity;
 import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
+import com.doozycod.childrenaudiobook.Models.BooksModel_login;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.R;
+import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GridAdapter extends BaseAdapter {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
+
+public class login_GridAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
     Context context;
-    List<Books_model.book_detail> Book_list_data = new ArrayList<>();
+    List<BooksModel_login.book_detail> Book_list_data = new ArrayList<>();
     SharedPreferenceMethod sharedPreferenceMethod;
 
-    public GridAdapter(ChooseYourBookActivity chooseYourBookActivity, List<Books_model.book_detail> Book_list_data, SharedPreferenceMethod sharedPreferenceMethod) {
+    public login_GridAdapter(ChooseYourBookActivity chooseYourBookActivity, List<BooksModel_login.book_detail> Book_list_data, SharedPreferenceMethod sharedPreferenceMethod) {
 
         context = chooseYourBookActivity;
         this.sharedPreferenceMethod = sharedPreferenceMethod;
@@ -70,6 +96,7 @@ public class GridAdapter extends BaseAdapter {
                 Bundle bundle = new Bundle();
                 bundle.putString("audio_file", Book_list_data.get(position).getBook_audio_file());
                 bundle.putString("book_id", Book_list_data.get(position).getBook_id());
+                bundle.putString("is_paid", Book_list_data.get(position).getIs_paid());
                 bundle.putString("user_id", sharedPreferenceMethod.getUserId());
                 intent.putExtras(bundle);
                 context.startActivity(intent);

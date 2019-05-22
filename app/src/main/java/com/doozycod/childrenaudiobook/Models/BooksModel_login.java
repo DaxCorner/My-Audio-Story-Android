@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class Books_model {
+public class BooksModel_login {
 
     @SerializedName("status")
     @Expose
@@ -60,8 +60,17 @@ public class Books_model {
         @SerializedName("book_content_file")
         @Expose
         private String book_content_file;
+        @SerializedName("is_paid")
+        @Expose
+        private String is_paid;
 
+        public String getIs_paid() {
+            return is_paid;
+        }
 
+        public void setIs_paid(String is_paid) {
+            this.is_paid = is_paid;
+        }
 
         public String getBook_id() {
             return book_id;

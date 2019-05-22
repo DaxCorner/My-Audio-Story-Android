@@ -11,25 +11,34 @@ import com.doozycod.childrenaudiobook.Models.SharedModel;
 
 public class SharedPreferenceMethod {
     Context context;
-    public static String spemail, sppassword, spfirst_name, splast_name, spMobileNumber, spUser_id, spBook_id,spBook_name;
+    public static String spemail, sppassword, spfirst_name, splast_name, spMobileNumber, spUser_id, spBook_id, spBook_name;
 
     public SharedPreferenceMethod(Context context) {
         this.context = context;
     }
 
 
-    public void spInsert(String login,String semail, String spassword, String spfirst_name, String splast_name, String spMobileNumber, String spUser_id) {
+    public void spInsert(String semail, String spassword, String spfirst_name, String splast_name, String spMobileNumber, String spUser_id) {
         SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
-        sp_editior.putString("login", login);
         sp_editior.putString("spUser_id", spUser_id);
         sp_editior.putString("email", semail);
         sp_editior.putString("password", spassword);
         sp_editior.putString("firstname", spfirst_name);
         sp_editior.putString("lastname", splast_name);
         sp_editior.putString("spphone", spMobileNumber);
+        sp_editior.commit();
+
+    }
+
+    public void saveLogin(boolean login) {
+        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences.Editor sp_editior = sp.edit();
+
+
+        sp_editior.putBoolean("login", login);
         sp_editior.commit();
 
     }
@@ -45,21 +54,22 @@ public class SharedPreferenceMethod {
         return spUser_id;
     }
 
-    public String checkLogin() {
+    public boolean checkLogin() {
         SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
-        String login = sp.getString("login", "");
+        boolean login = sp.getBoolean("login", true);
 
         return login;
     }
 
-    public void Logout() {
+    public void Logout(boolean logout) {
         SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
+        sp_editior.putBoolean("login", logout);
+        sp_editior.commit();
 
-        sp_editior.clear().commit();
     }
 }

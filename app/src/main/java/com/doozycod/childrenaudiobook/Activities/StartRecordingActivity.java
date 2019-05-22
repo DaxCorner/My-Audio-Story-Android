@@ -1,5 +1,6 @@
 package com.doozycod.childrenaudiobook.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -12,12 +13,14 @@ import android.media.MediaRecorder;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -33,8 +36,15 @@ import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.doozycod.childrenaudiobook.Utils.Upload;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
 
 import cz.msebera.android.httpclient.util.TextUtils;
 import okhttp3.MediaType;
@@ -71,20 +81,43 @@ public class StartRecordingActivity extends AppCompatActivity {
     boolean background_music;
     APIService apiService;
     SharedPreferenceMethod sharedPreferenceMethod;
-    Bundle bundle;
+    String book_id;
+    String android_id;
+    Bundle extra;
 
+
+    private static final int PICK_FILE_REQUEST = 1;
+    private static final String TAG = StartRecordingActivity.class.getSimpleName();
+    private String selectedFilePath;
+    private String SERVER_URL = "http://www.doozycod.in/books-manager/api/Library/add-library.php";
+    ImageView ivAttachment;
+    Button bUpload;
+//    TextView tvFileName;
+//    ProgressDialog dialog;
+
+    @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_start_recording);
 
+        extra = getIntent().getExtras();
         mediaPlayer = new MediaPlayer();
         mediaRecorder = new MediaRecorder();
-        bundle = new Bundle();
+        book_id = getIntent().getStringExtra("book_id");
+        Log.e("Book ID", book_id);
+
+        if (book_id != null) {
+            Toast.makeText(this, book_id, Toast.LENGTH_SHORT).show();
+        }
         apiService = ApiUtils.getAPIService();
         myDialog = new Dialog(this);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+
+
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
 
         start_personal_greeting = findViewById(R.id.record_personal_msg);
         start_recording_layout = findViewById(R.id.recording_layout);
@@ -101,7 +134,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
 
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+            if (sharedPreferenceMethod.checkLogin()) {
                 login_btn_recording.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_recording.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -123,7 +156,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        ShowPopupSignInSignUp(v);
+                        ShowPopupSignInSignUp();
 
                     }
                 });
@@ -132,7 +165,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        ShowPopupSignInSignUp(v);
+                        ShowPopupSignInSignUp();
 
                     }
                 });
@@ -192,7 +225,8 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         background_music = getIntent().getExtras().getBoolean("music");
         Log.e("background_music =====", background_music + "");
-        Bundle extra = getIntent().getExtras();
+
+
         if (extra.getBoolean("yes")) {
             ShowPopupGreeting();
 
@@ -340,6 +374,8 @@ public class StartRecordingActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+
+
 //                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
                 recordAudio("greeting");
                 myDialog.dismiss();
@@ -422,7 +458,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void ShowPopupSignInSignUp(View v) {
+    public void ShowPopupSignInSignUp() {
 
         myDialog.setContentView(R.layout.custom_popup);
         popup_login = myDialog.findViewById(R.id.select_login);
@@ -477,16 +513,36 @@ public class StartRecordingActivity extends AppCompatActivity {
 
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
-                        Toast.makeText(getApplicationContext(), response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         myDialog.dismiss();
+                        sharedPreferenceMethod.saveLogin(true);
+                        login_btn_recording.setImageResource(R.drawable.profile_btn_pressed);
+                        login_btn_recorded.setImageResource(R.drawable.profile_btn_pressed);
+                        if (sharedPreferenceMethod.checkLogin()) {
+                            login_btn_recording.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(StartRecordingActivity.this, ProfileActivity.class));
+                                }
+                            });
+                            login_btn_recorded.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    startActivity(new Intent(StartRecordingActivity.this, ProfileActivity.class));
+                                }
+                            });
+                        } else {
+                            ShowPopupSignInSignUp();
+                        }
 
                     }
                 }
@@ -506,7 +562,8 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         final EditText editText = findViewById(R.id.name_recorded_story);
         String audio_filename = editText.getText().toString();
-        String book_id;
+
+
         if (!audio_filename.equals("")) {
 
             mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
@@ -515,9 +572,10 @@ public class StartRecordingActivity extends AppCompatActivity {
                 File fromGreeting = new File(mydirRecording, "greeting.mp3");
                 File to = new File(mydirRecording, audio_filename + ".mp3");
 
-                book_id = bundle.getString("book_id");
+
                 String audioFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + audio_filename + ".mp3";
                 String greetingFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "greeting-" + audio_filename + ".mp3";
+                String fromgreet = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "greeting.mp3";
 
                 File toGreet = new File(mydirRecording, "greeting-" + audio_filename + ".mp3");
                 if (from.exists() && fromGreeting.exists() || from.exists()) {
@@ -525,16 +583,18 @@ public class StartRecordingActivity extends AppCompatActivity {
                     fromGreeting.renameTo(toGreet);
                     SharedModel sharedModel = new SharedModel();
                     if (toGreet.exists()) {
+//                        uploadFile(audioFilePath);
                         uploadAudioToServer(audioFile, greetingFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
 
                     } else {
-                        uploadAudioToServer(audioFile, "", sharedPreferenceMethod.getUserId(), audio_filename, book_id);
+//                        uploadFile(audioFilePath);
+                        uploadAudioToServer(audioFile, fromgreet, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
                     }
                 }
 
             }
-            startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
-            finish();
+//            startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
+//            finish();
 
         } else {
             Toast.makeText(this, "Please enter story name!", Toast.LENGTH_SHORT).show();
@@ -544,15 +604,26 @@ public class StartRecordingActivity extends AppCompatActivity {
     private void uploadAudioToServer(String pathToAudioFile, String greetingPath, String user_id, String name, String book_id) {
         File audioFile = new File(pathToAudioFile);
         File greetingFile = new File(greetingPath);
-        RequestBody greetingBody = RequestBody.create(MediaType.parse("audio/*"), greetingFile);
-        RequestBody audioBody = RequestBody.create(MediaType.parse("audio/*"), audioFile);
-        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio", audioFile.getName(), greetingBody);
-        MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio", audioFile.getName(), audioBody);
-        Call<ResultObject> serverCom = apiService.uploadAudioToServer(user_id, name, book_id, greeting, audiofile);
+        RequestBody userId = RequestBody.create(okhttp3.MultipartBody.FORM, user_id);
+        RequestBody userName = RequestBody.create(okhttp3.MultipartBody.FORM, name);
+        RequestBody bookId = RequestBody.create(okhttp3.MultipartBody.FORM, book_id);
+        RequestBody greetingBody = RequestBody.create(MediaType.parse("*/*"), greetingFile);
+        RequestBody audioBody = RequestBody.create(MediaType.parse("*/*"), audioFile);
+        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio_message", audioFile.getName(), greetingBody);
+        MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio_story", audioFile.getName(), audioBody);
+        HashMap<String, RequestBody> map = new HashMap<>();
+
+        map.put("user_id", userId);
+        map.put("name", userId);
+        map.put("book_id", bookId);
+        Call<ResultObject> serverCom = apiService.uploadAudioToServer(map, greeting, audiofile);
         serverCom.enqueue(new Callback<ResultObject>() {
             @Override
             public void onResponse(Call<ResultObject> call, Response<ResultObject> response) {
                 ResultObject result = response.body();
+                if (response.isSuccessful()) {
+                    Log.e("Response", response.body().getSuccess());
+                }
                 if (!TextUtils.isEmpty(result.getSuccess())) {
                     Toast.makeText(StartRecordingActivity.this, "Result " + result.getSuccess(), Toast.LENGTH_LONG).show();
                     Log.d("Recording Result", "Result " + result.getSuccess());
@@ -592,6 +663,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                     if (toGreet.exists()) {
                         uploadAudioToServer(audioFile, greetingFile, "", "", "");
 
+
                     } else {
                         uploadAudioToServer(audioFile, "", "", "", "");
                     }
@@ -606,34 +678,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         }
     }
 
-    private void uploadAudio(String path) {
-        class UploadAudio extends AsyncTask<Void, Void, String> {
 
-            ProgressDialog uploading;
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                uploading = ProgressDialog.show(StartRecordingActivity.this, "Uploading File", "Please wait...", false, false);
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                uploading.dismiss();
-
-            }
-
-            @Override
-            protected String doInBackground(Void... params) {
-                Upload u = new Upload();
-                String msg = u.uploadAudio(path);
-                return msg;
-            }
-        }
-        UploadAudio uv = new UploadAudio();
-        uv.execute();
-    }
 //    private void uploadAudioWithGreeting(String pathToAudioFile, String greetingPath) {
 //        File audioFile = new File(pathToAudioFile);
 //        File greetingFile = new File(greetingPath);
@@ -674,6 +719,129 @@ public class StartRecordingActivity extends AppCompatActivity {
                 from.delete();
         }
         super.onBackPressed();
+
+    }
+
+    public int uploadFile(final String selectedFilePath) {
+
+        int serverResponseCode = 0;
+
+        HttpURLConnection connection;
+        DataOutputStream dataOutputStream;
+        String lineEnd = "\r\n";
+        String twoHyphens = "--";
+        String boundary = "*****";
+
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+        File selectedFile = new File(selectedFilePath);
+
+
+        String[] parts = selectedFilePath.split("/");
+        final String fileName = parts[parts.length - 1];
+
+        if (!selectedFile.isFile()) {
+//            dialog.dismiss();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(StartRecordingActivity.this, "File not Found !!", Toast.LENGTH_SHORT).show();
+                }
+            });
+            return 0;
+        } else {
+            try {
+                FileInputStream fileInputStream = new FileInputStream(selectedFile);
+                URL url = new URL(SERVER_URL);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setDoInput(true);//Allow Inputs
+                connection.setDoOutput(true);//Allow Outputs
+                connection.setUseCaches(false);//Don't use a cached Copy
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Connection", "Keep-Alive");
+                connection.setRequestProperty("ENCTYPE", "multipart/form-data");
+                connection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                connection.setRequestProperty("user_id", "3");
+                connection.setRequestProperty("name", "My audio File");
+                connection.setRequestProperty("book_id", "1");
+                connection.setRequestProperty("audio_story", selectedFilePath);
+
+
+                //creating new dataoutputstream
+                dataOutputStream = new DataOutputStream(connection.getOutputStream());
+
+                //writing bytes to data outputstream
+                dataOutputStream.writeBytes(twoHyphens + boundary + lineEnd);
+                dataOutputStream.writeBytes("Content-Disposition: form-data; audio_story=\"audio_story\";filename=\""
+                        + selectedFilePath + "\"" + lineEnd);
+
+                dataOutputStream.writeBytes(lineEnd);
+
+                //returns no. of bytes present in fileInputStream
+                bytesAvailable = fileInputStream.available();
+                //selecting the buffer size as minimum of available bytes or 1 MB
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                //setting the buffer as byte array of size of bufferSize
+                buffer = new byte[bufferSize];
+
+                //reads bytes from FileInputStream(from 0th index of buffer to buffersize)
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+
+                //loop repeats till bytesRead = -1, i.e., no bytes are left to read
+                while (bytesRead > 0) {
+                    //write the bytes read from inputstream
+                    dataOutputStream.write(buffer, 0, bufferSize);
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                }
+
+                dataOutputStream.writeBytes(lineEnd);
+                dataOutputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+                serverResponseCode = connection.getResponseCode();
+                String serverResponseMessage = connection.getResponseMessage();
+
+                Log.i(TAG, "Server Response is: " + serverResponseMessage + ": " + serverResponseCode);
+
+                //response code of 200 indicates the server status OK
+                if (serverResponseCode == 200) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            tvFileName.setText("File Upload completed.\n\n You can see the uploaded file here: \n\n" + "http://coderefer.com/extras/uploads/" + fileName);
+                            Toast.makeText(StartRecordingActivity.this, "File Uplaoded!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                //closing the input and output streams
+                fileInputStream.close();
+                dataOutputStream.flush();
+                dataOutputStream.close();
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(StartRecordingActivity.this, "File Not Found", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                Toast.makeText(StartRecordingActivity.this, "URL error!", Toast.LENGTH_SHORT).show();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(StartRecordingActivity.this, "Cannot Read/Write File!", Toast.LENGTH_SHORT).show();
+            }
+            return serverResponseCode;
+        }
 
     }
 }

@@ -3,34 +3,35 @@ package com.doozycod.childrenaudiobook.Models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class ResultObject {
+import java.util.List;
 
+public class updateProfileModel {
 
     @SerializedName("status")
     @Expose
-    private String success;
+    private String status;
+
+
     @SerializedName("message")
     @Expose
     private String message;
 
-    public void setSuccess(String success) {
-        this.success = success;
+    public String getStatus() {
+        return status;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 
     public String getMessage() {
         return message;
     }
 
-
     public void setMessage(String message) {
         this.message = message;
     }
 
-    public ResultObject(String success) {
-        this.success = success;
-    }
 
-    public String getSuccess() {
-        return success;
-    }
 }

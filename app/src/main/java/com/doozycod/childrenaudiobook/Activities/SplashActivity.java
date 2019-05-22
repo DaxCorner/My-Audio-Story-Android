@@ -9,6 +9,7 @@ import android.widget.ImageView;
 
 
 import com.doozycod.childrenaudiobook.R;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 public class SplashActivity extends AppCompatActivity {
     int[] images = {R.drawable.a01,
@@ -17,15 +18,17 @@ public class SplashActivity extends AppCompatActivity {
             R.drawable.a16, R.drawable.a17, R.drawable.a18, R.drawable.a19, R.drawable.a20, R.drawable.a21, R.drawable.a22};
     ImageView loading_bar;
     int i = 0;
+    SharedPreferenceMethod sharedPreferenceMethod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         setContentView(R.layout.activity_splash);
         loading_bar = findViewById(R.id.loading);
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
+        sharedPreferenceMethod.saveLogin(false);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

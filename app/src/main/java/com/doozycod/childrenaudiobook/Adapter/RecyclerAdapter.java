@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
@@ -28,12 +29,14 @@ import android.widget.TextView;
 
 import com.doozycod.childrenaudiobook.Activities.APIService;
 import com.doozycod.childrenaudiobook.Helper.Model;
+import com.doozycod.childrenaudiobook.Models.LibraryModel;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Activities.ShareYourStoryActivity;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.doozycod.childrenaudiobook.R.drawable.dark_line;
 import static com.doozycod.childrenaudiobook.R.drawable.light_line;
@@ -47,10 +50,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000;
     APIService apiService;
+    List<LibraryModel.LibraryDetails> libraryModels;
 
-    public RecyclerAdapter(Context c, ArrayList<Model> modelArrayList, APIService apiService) {
+    public RecyclerAdapter(Context c, List<LibraryModel.LibraryDetails> libraryModels, APIService apiService) {
         this.c = c;
-        this.modelArrayList = modelArrayList;
+        this.libraryModels = libraryModels;
         this.apiService = apiService;
     }
 
@@ -67,7 +71,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @Override
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int i) {
 
-        final Model fileModel = (Model) this.modelArrayList.get(i);
+        final LibraryModel.LibraryDetails fileModel = this.libraryModels.get(i);
 
         Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
@@ -88,7 +92,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.delete_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup(fileModel.getPath(), v, i);
+                ShowPopup(fileModel.getAudio_story(), v, i);
 
             }
         });
@@ -96,15 +100,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             @Override
             public void onClick(View v) {
 
-                Log.e("File for Music", fileModel.getPath());
-                ShowMediaPlayerPopoup(fileModel.getPath(), v, i, fileModel.getName());
+                Log.e("File for Music", fileModel.getAudio_story());
+                ShowMediaPlayerPopoup(fileModel.getAudio_story(), v, i, fileModel.getName());
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return modelArrayList.size();
+        return libraryModels.size();
     }
 
     class RecyclerHolder extends RecyclerView.ViewHolder {
@@ -284,7 +288,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         try {
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.setDataSource(filePath);
+            mediaPlayer.setDataSource("http://" + filePath);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepare();
             mediaPlayer.start();
 

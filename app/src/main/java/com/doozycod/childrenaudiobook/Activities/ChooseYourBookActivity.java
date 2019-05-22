@@ -9,6 +9,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
@@ -24,25 +25,23 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 
+import com.doozycod.childrenaudiobook.Adapter.Login_ViewPagerAdapter;
 import com.doozycod.childrenaudiobook.Adapter.ViewPagerAdapter;
 
+import com.doozycod.childrenaudiobook.Models.BooksModel_login;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
-import static com.doozycod.childrenaudiobook.Utils.ApiUtils.BASE_URL;
 
 public class ChooseYourBookActivity extends AppCompatActivity {
 
@@ -58,8 +57,9 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     Boolean isPressed = true;
     APIService apiService;
     ViewPagerAdapter viewPagerAdapter;
+    List<BooksModel_login.book_detail> book_list_login = null;
     List<Books_model.book_detail> book_list = null;
-
+    String android_id;
     String book_id;
 
     @Override
@@ -69,9 +69,29 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         login_btn = findViewById(R.id.login_btn_main);
 
+        //      Checking that run is first time of the app or not
+        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
+                .getBoolean("isFirstRun", true);
+
+//      Condition for Checking isFirstRun or not
+        if (isFirstRun) {
+            startActivity(new Intent(ChooseYourBookActivity.this, SplashActivity.class));
+        }
+        getSharedPreferences("children", MODE_PRIVATE).edit()
+                .putBoolean("isFirstRun", false).apply();
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
+        Log.e("Device_id", android_id);
+        login_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowPopup();
+            }
+        });
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin().equals("true")) {
+            if (sharedPreferenceMethod.checkLogin()) {
+                fetchBookDataAndLoginViewPager();
                 login_btn.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -80,6 +100,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                     }
                 });
             } else {
+                fetchBookDataAndViewPager();
                 login_btn.setImageResource(R.drawable.login_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -89,6 +110,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
                     }
                 });
+
             }
         }
 
@@ -114,7 +136,6 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             }
         });
 
-        fetchBookDataAndViewPager();
 
     }
 
@@ -172,12 +193,18 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (et_email_btn.getText().toString().equals("") || et_email_btn.getText().toString().equals("")) {
+                if (et_email_btn.getText().toString().equals("") || et_password_btn.getText().toString().equals("")) {
                     Toast.makeText(ChooseYourBookActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
                 } else {
-                    String login_email = et_email_btn.getText().toString();
-                    String login_password = et_password_btn.getText().toString();
-                    loginRequest(login_email, login_password);
+                    String pass = et_password_btn.getText().toString();
+                    if (pass.length() > 6) {
+                        String login_email = et_email_btn.getText().toString();
+                        String login_password = et_password_btn.getText().toString();
+                        loginRequest(login_email, login_password);
+                    } else {
+                        Toast.makeText(ChooseYourBookActivity.this, "Password is at least 7 words!", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
 
             }
@@ -188,7 +215,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
@@ -196,11 +223,13 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
-                        sharedPreferenceMethod.spInsert("true", response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        sharedPreferenceMethod.saveLogin(true);
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         myDialog.dismiss();
                         login_btn.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin().equals("true")) {
+                        Log.e("Shared CheckLogin", sharedPreferenceMethod.checkLogin() + "");
+                        if (sharedPreferenceMethod.checkLogin()) {
                             login_btn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -313,11 +342,84 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     }
 
 
+    public void fetchBookDataAndLoginViewPager() {
+        apiService = ApiUtils.getAPIService();
+
+
+        apiService.getAllBooks_login(sharedPreferenceMethod.getUserId()).enqueue(new Callback<BooksModel_login>() {
+            @Override
+            public void onResponse(Call<BooksModel_login> call, Response<BooksModel_login> response) {
+                for (int index = 0; index < response.body().getBook_list_data().size(); index++) {
+
+                    book_list_login = response.body().getBook_list_data();
+
+
+                }
+//                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image_list, book_name_list, book_audio_file_list);
+
+                Login_ViewPagerAdapter loginViewPagerAdapter = new Login_ViewPagerAdapter(ChooseYourBookActivity.this, book_list_login, sharedPreferenceMethod);
+                viewPager = findViewById(R.id.photos_viewpager);
+
+                viewPager.setAdapter(loginViewPagerAdapter);
+
+
+                dotscount = loginViewPagerAdapter.getCount();
+                dots = new ImageView[dotscount];
+
+                for (int i = 0; i < dotscount; i++) {
+
+                    dots[i] = new ImageView(ChooseYourBookActivity.this);
+                    dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                    params.setMargins(10, 0, 10, 0);
+
+                    sliderDotspanel.addView(dots[i], params);
+
+                }
+
+                dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
+
+                viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                    @Override
+                    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                    }
+
+                    @Override
+                    public void onPageSelected(int position) {
+
+                        for (int i = 0; i < dotscount; i++) {
+                            dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+                        }
+
+                        dots[position].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
+
+                    }
+
+                    @Override
+                    public void onPageScrollStateChanged(int state) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Call<BooksModel_login> call, Throwable t) {
+
+            }
+
+        });
+
+
+    }
+
     public void fetchBookDataAndViewPager() {
         apiService = ApiUtils.getAPIService();
 
 
-        apiService.getAllBooks(sharedPreferenceMethod.getUserId()).enqueue(new Callback<Books_model>() {
+        apiService.getAllBooks().enqueue(new Callback<Books_model>() {
             @Override
             public void onResponse(Call<Books_model> call, Response<Books_model> response) {
                 for (int index = 0; index < response.body().getBook_list_data().size(); index++) {
@@ -380,6 +482,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             public void onFailure(Call<Books_model> call, Throwable t) {
 
             }
+
+
         });
 
 

@@ -9,6 +9,7 @@ import android.widget.GridView;
 import android.widget.RelativeLayout;
 
 import com.doozycod.childrenaudiobook.Activities.ChooseYourBookActivity;
+import com.doozycod.childrenaudiobook.Models.BooksModel_login;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
@@ -16,16 +17,16 @@ import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class Login_ViewPagerAdapter extends PagerAdapter {
 
 
     GridView gridView;
     private ChooseYourBookActivity chooseYourBookActivity;
     LayoutInflater mLayoutInflater;
-    List<Books_model.book_detail> Book_list_data = new ArrayList<>();
+    List<BooksModel_login.book_detail> Book_list_data = new ArrayList<>();
     SharedPreferenceMethod sharedPreferenceMethod;
 
-    public ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, List<Books_model.book_detail> Book_list_data, SharedPreferenceMethod sharedPreferenceMethod) {
+    public Login_ViewPagerAdapter(ChooseYourBookActivity chooseYourBookActivity, List<BooksModel_login.book_detail> Book_list_data, SharedPreferenceMethod sharedPreferenceMethod) {
 
         this.sharedPreferenceMethod = sharedPreferenceMethod;
         this.chooseYourBookActivity = chooseYourBookActivity;
@@ -50,7 +51,7 @@ public class ViewPagerAdapter extends PagerAdapter {
         container.addView(itemView);
 
         gridView = itemView.findViewById(R.id.gridview);
-        gridView.setAdapter(new GridAdapter(chooseYourBookActivity, Book_list_data,sharedPreferenceMethod));
+        gridView.setAdapter(new login_GridAdapter(chooseYourBookActivity, Book_list_data,sharedPreferenceMethod));
 
         return itemView;
     }
