@@ -101,18 +101,19 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_start_recording);
 
+        sharedPreferenceMethod = new SharedPreferenceMethod(this);
         extra = getIntent().getExtras();
         mediaPlayer = new MediaPlayer();
         mediaRecorder = new MediaRecorder();
         book_id = getIntent().getStringExtra("book_id");
-        Log.e("Book ID", book_id);
+
+        Log.e("Book ID and User_id", book_id + sharedPreferenceMethod.getUserId());
 
         if (book_id != null) {
             Toast.makeText(this, book_id, Toast.LENGTH_SHORT).show();
         }
         apiService = ApiUtils.getAPIService();
         myDialog = new Dialog(this);
-        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
 
         android_id = Settings.Secure.getString(this.getContentResolver(),
@@ -601,27 +602,30 @@ public class StartRecordingActivity extends AppCompatActivity {
     }
 
     private void uploadAudioToServer(String pathToAudioFile, String greetingPath, String user_id, String name, String book_id) {
+
         File audioFile = new File(pathToAudioFile);
         File greetingFile = new File(greetingPath);
+        Log.e("User ID", user_id);
+        Log.e("Audio Path Split", audioFile.getName());
+//        Log.e("FIle PATH -->", audioFile + "\n" + greetingFile + "\n" + sharedPreferenceMethod.getUserId() + "\n" + audioFile + "\n" + book_id);
+
         RequestBody userId = RequestBody.create(okhttp3.MultipartBody.FORM, user_id);
         RequestBody userName = RequestBody.create(okhttp3.MultipartBody.FORM, name);
         RequestBody bookId = RequestBody.create(okhttp3.MultipartBody.FORM, book_id);
-        RequestBody greetingBody = RequestBody.create(MediaType.parse("*/*"), greetingFile);
-        RequestBody audioBody = RequestBody.create(MediaType.parse("*/*"), audioFile);
-        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio_message", audioFile.getName(), greetingBody);
-        MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio_story", audioFile.getName(), audioBody);
-        HashMap<String, RequestBody> map = new HashMap<>();
 
-        map.put("user_id", userId);
-        map.put("name", userId);
-        map.put("book_id", bookId);
-        Call<ResultObject> serverCom = apiService.uploadAudioToServer(map, greeting, audiofile);
+        RequestBody greetingBody = RequestBody.create(MediaType.parse("multipart/form-data"), greetingFile);
+        RequestBody audioBody = RequestBody.create(MediaType.parse("multipart/form-data"), audioFile);
+        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio_message", audioFile.getName(), audioBody);
+        MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio_story", audioFile.getName(), audioBody);
+
+        Call<ResultObject> serverCom = apiService.uploadAudioToServer(userId, bookId, userName, greeting, audiofile);
+
         serverCom.enqueue(new Callback<ResultObject>() {
             @Override
             public void onResponse(Call<ResultObject> call, Response<ResultObject> response) {
                 ResultObject result = response.body();
                 if (response.isSuccessful()) {
-                    Log.e("Response", response.body().getSuccess());
+                    Log.e("Response", response.body().getSuccess() + response.body().getMessage());
                 }
                 if (!TextUtils.isEmpty(result.getSuccess())) {
                     Toast.makeText(StartRecordingActivity.this, "Result " + result.getSuccess(), Toast.LENGTH_LONG).show();

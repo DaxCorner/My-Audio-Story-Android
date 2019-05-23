@@ -119,6 +119,17 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         record_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (hasMicrophone()) {
+//                    String is_paid = bundle.getString("is_paid");
+//                    if (is_paid.equals("1")) {
+                    RecordPersonalGreetingPopUp();
+//                    }
+//                    else{
+                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+//                    }
+                } else {
+                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
+                }
                 inAppBilling();
                 bp.purchase(RecordYourOwnActivity.this, PRODUCT_ID);
 
@@ -177,17 +188,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
                 Toast.makeText(RecordYourOwnActivity.this, productId + "  " + details  , Toast.LENGTH_SHORT).show();
-                if (hasMicrophone()) {
-//                    String is_paid = bundle.getString("is_paid");
-//                    if (is_paid.equals("1")) {
-                    RecordPersonalGreetingPopUp();
-//                    }
-//                    else{
-                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
-//                    }
-                } else {
-                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
-                }
+
 
             }
 

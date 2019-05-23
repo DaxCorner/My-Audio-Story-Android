@@ -91,7 +91,9 @@ public interface APIService {
 //                                           @Part("audio_story") RequestBody audio_story);
     @Multipart
     @POST("Library/add-library.php")
-    Call<ResultObject> uploadAudioToServer(@PartMap() Map<String, RequestBody> partMap,
+    Call<ResultObject> uploadAudioToServer(@Part("user_id") RequestBody user_id,
+                                           @Part("book_id") RequestBody book_id,
+                                           @Part("name") RequestBody name,
                                            @Part MultipartBody.Part audio_message,
                                            @Part MultipartBody.Part audio_story);
 
