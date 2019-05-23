@@ -10,12 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#269FF1">
+
         <ImageView
             android:id="@+id/home_btn_listen_audio"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
             android:src="@drawable/home_btn_pressed" />
+
         <ImageView
             android:id="@+id/homepage_logo"
             android:layout_width="250dp"
@@ -36,8 +38,8 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="7dp"
             android:src="@drawable/login_btn_pressed" />
 
@@ -56,8 +58,8 @@
         android:id="@+id/book_cover"
         android:layout_width="wrap_content"
         android:layout_height="220dp"
-        android:layout_marginTop="10dp"
         android:layout_below="@id/choose_book"
+        android:layout_marginTop="10dp"
         android:src="@drawable/book_cover" />
 
     <ImageView
@@ -65,8 +67,8 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_below="@id/book_cover"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="70dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="70dp"
         android:src="@drawable/listen_audio_btn_pressed" />
 
@@ -76,20 +78,34 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_below="@id/listen_book"
-        android:layout_marginTop="10dp"
         android:layout_marginLeft="70dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="70dp"
-        android:visibility="gone"
-        android:src="@drawable/use_bg_music_pressed" />
+        android:src="@drawable/use_bg_music_pressed"
+        android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/record_audio"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="60dp"
-        android:layout_below="@id/use_background_audio"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="70dp"
-        android:layout_marginRight="70dp"
-        android:src="@drawable/record_my_own_audio_btn_pressed" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/use_background_audio">
 
+        <ImageView
+            android:id="@+id/record_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="70dp"
+            android:src="@drawable/record_my_own_audio_btn_pressed" />
+
+        <ImageView
+            android:id="@+id/consume_record_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="70dp"
+            android:src="@drawable/record_my_own_audio_btn_pressed"
+            android:visibility="gone" />
+    </RelativeLayout>
 </RelativeLayout>

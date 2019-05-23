@@ -37,7 +37,6 @@
         </service>
 
         <activity android:name=".Activities.StartRecordingActivity" />
-        <activity android:name=".Activities.BillingActivity" />
         <activity android:name=".Service.Notification" />
         <activity
             android:name=".Activities.LibraryActivity"

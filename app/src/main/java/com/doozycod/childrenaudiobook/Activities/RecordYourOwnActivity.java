@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -19,9 +21,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.billingclient.api.BillingClient;
-import com.android.billingclient.api.BillingClientStateListener;
-import com.android.billingclient.api.BillingResult;
+
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
@@ -30,7 +32,6 @@ import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import retrofit2.Call;
 import retrofit2.Callback;
 
-import static com.android.billingclient.api.BillingClient.BillingResponseCode.OK;
 import static com.doozycod.childrenaudiobook.R.drawable.bg_music_off_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.bg_music_on_btn;
 import static com.doozycod.childrenaudiobook.R.drawable.large_font_btn;
@@ -48,11 +49,13 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     final Handler handler = new Handler();
     Intent intent;
     APIService apiService;
-    private BillingClient billingClient;
+    private boolean readyToPurchase = false;
+    private BillingProcessor bp;
     SharedPreferenceMethod sharedPreferenceMethod;
     Bundle bundle;
     String android_id;
-    String book_id;
+    String PRODUCT_ID = "record_feature";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +76,8 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+
+
                 login_btn.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -80,6 +85,9 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                         startActivity(new Intent(RecordYourOwnActivity.this, ProfileActivity.class));
                     }
                 });
+                if (!BillingProcessor.isIabServiceAvailable(this)) {
+                    Toast.makeText(this, "In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 login_btn.setImageResource(R.drawable.login_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
@@ -92,6 +100,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                 });
             }
         }
+
 
         large_font.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,17 +119,9 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         record_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (hasMicrophone()) {
-//                    String is_paid = bundle.getString("is_paid");
-//                    if (is_paid.equals("1")) {
-                    RecordPersonalGreetingPopUp();
-//                    }
-//                    else{
-                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
-//                    }
-                } else {
-                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
-                }
+                inAppBilling();
+                bp.purchase(RecordYourOwnActivity.this, PRODUCT_ID);
+
 
             }
         });
@@ -171,6 +172,43 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
     }
 
+    public void inAppBilling() {
+        bp = new BillingProcessor(this, getString(R.string.license_key), new BillingProcessor.IBillingHandler() {
+            @Override
+            public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+                Toast.makeText(RecordYourOwnActivity.this, productId + "  " + details  , Toast.LENGTH_SHORT).show();
+                if (hasMicrophone()) {
+//                    String is_paid = bundle.getString("is_paid");
+//                    if (is_paid.equals("1")) {
+                    RecordPersonalGreetingPopUp();
+//                    }
+//                    else{
+                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+//                    }
+                } else {
+                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onPurchaseHistoryRestored() {
+
+            }
+
+            @Override
+            public void onBillingError(int errorCode, @Nullable Throwable error) {
+
+            }
+
+            @Override
+            public void onBillingInitialized() {
+                readyToPurchase = true;
+
+            }
+        });
+    }
+
     public void ShowPopup(final View v) {
         myDialog.setContentView(R.layout.custom_record_timer);
         imageView = myDialog.findViewById(R.id.counter_image);
@@ -196,8 +234,8 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                 String book_id = bundle.getString("book_id");
                 String is_paid = bundle.getString("is_paid");
 
-                intent.putExtra("audio_file",audio);
-                intent.putExtra("book_id",book_id);
+                intent.putExtra("audio_file", audio);
+                intent.putExtra("book_id", book_id);
 //                Toast.makeText(RecordYourOwnActivity.this, book_id, Toast.LENGTH_SHORT).show();
                 myDialog.dismiss();
                 startActivity(intent);
@@ -344,4 +382,31 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         return pmanager.hasSystemFeature(PackageManager.FEATURE_MICROPHONE);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!bp.handleActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
+    public void recordClick(View v) {
+        if (!readyToPurchase) {
+            Toast.makeText(this, "Billing not initialized.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        switch (v.getId()) {
+            case R.id.record_audio:
+                bp.purchase(this, PRODUCT_ID);
+                break;
+            case R.id.consume_record_audio:
+                Boolean consumed = bp.consumePurchase(PRODUCT_ID);
+                if (consumed)
+                    Toast.makeText(this, "Successfully Consumed", Toast.LENGTH_SHORT).show();
+                break;
+
+            default:
+                break;
+        }
+    }
 }
