@@ -30,13 +30,19 @@ import android.widget.TextView;
 import com.doozycod.childrenaudiobook.Activities.APIService;
 import com.doozycod.childrenaudiobook.Helper.Model;
 import com.doozycod.childrenaudiobook.Models.LibraryModel;
+import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Activities.ShareYourStoryActivity;
+import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.doozycod.childrenaudiobook.R.drawable.dark_line;
 import static com.doozycod.childrenaudiobook.R.drawable.light_line;
@@ -51,11 +57,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     private int seekBackwardTime = 5000;
     APIService apiService;
     List<LibraryModel.LibraryDetails> libraryModels;
+    SharedPreferenceMethod sharedPreferenceMethod;
 
-    public RecyclerAdapter(Context c, List<LibraryModel.LibraryDetails> libraryModels, APIService apiService) {
+    public RecyclerAdapter(Context c, List<LibraryModel.LibraryDetails> libraryModels, APIService apiService, SharedPreferenceMethod sharedPreferenceMethod) {
         this.c = c;
         this.libraryModels = libraryModels;
         this.apiService = apiService;
+        this.sharedPreferenceMethod = sharedPreferenceMethod;
     }
 
 
@@ -92,7 +100,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.delete_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ShowPopup(fileModel.getAudio_story(), v, i);
+                ShowPopup(fileModel.getAudio_story(), v, i, fileModel.getLibrary_id());
 
             }
         });
@@ -130,7 +138,24 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         }
     }
 
-    public void ShowPopup(String filePath, View v, int i) {
+    public void DeleteLibrary(String library_id) {
+
+
+        apiService.delete_LibraryBook(sharedPreferenceMethod.getUserId(), library_id).enqueue(new Callback<ResultObject>() {
+            @Override
+            public void onResponse(Call<ResultObject> call, Response<ResultObject> response) {
+                Log.e("Response", response.body().getSuccess() + response.body().getMessage());
+            }
+
+            @Override
+            public void onFailure(Call<ResultObject> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    public void ShowPopup(String filePath, View v, int i, String Library_id) {
 
         Dialog myDialog = new Dialog(c);
 
@@ -148,9 +173,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         delete_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                File deleteFile = new File(filePath);
-                deleteFile.delete();
+                DeleteLibrary(Library_id);
                 modelArrayList.remove(i);
                 myDialog.dismiss();
                 notifyItemRemoved(i);

@@ -70,15 +70,17 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         login_btn = findViewById(R.id.login_btn_main);
 
         //      Checking that run is first time of the app or not
-        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
-                .getBoolean("isFirstRun", true);
+//        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
+//                .getBoolean("isFirstRun", true);
+//
+////      Condition for Checking isFirstRun or not
+//        if (isFirstRun) {
+//            startActivity(new Intent(ChooseYourBookActivity.this, SplashActivity.class));
+//        }
+//        getSharedPreferences("children", MODE_PRIVATE).edit()
+//                .putBoolean("isFirstRun", false).apply();
 
-//      Condition for Checking isFirstRun or not
-        if (isFirstRun) {
-            startActivity(new Intent(ChooseYourBookActivity.this, SplashActivity.class));
-        }
-        getSharedPreferences("children", MODE_PRIVATE).edit()
-                .putBoolean("isFirstRun", false).apply();
+
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
         android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -170,7 +172,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                showLoginPopUp(v);
+                showLoginPopUp();
 
             }
         });
@@ -182,7 +184,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
     }
 
-    public void showLoginPopUp(View v) {
+    public void showLoginPopUp() {
 
         myDialog.setContentView(R.layout.custom_login_popup);
 

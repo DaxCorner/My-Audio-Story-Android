@@ -32,7 +32,8 @@ public interface APIService {
                              @Field("last_name") String last_name,
                              @Field("email") String email,
                              @Field("password") String password,
-                             @Field("mobile_number") String mobile_number);
+                             @Field("mobile_number") String mobile_number,
+                             @Field("device_id") String device_id);
 
     //Update Profile
     @POST("User/profile_update.php")
@@ -66,6 +67,16 @@ public interface APIService {
     //books
     @GET("Book/books.php")
     Call<BooksModel_login> getAllBooks_login(@Query("user_id") String username);
+
+    //books
+    @POST("Library/delete_library.php")
+    Call<ResultObject> delete_LibraryBook(@Field("user_id") String user_id,
+                                          @Field("library_id") String library_id);
+
+    //books
+    @POST("Book/paid_book.php")
+    Call<ResultObject> PaidBooks(@Field("user_id") String user_id,
+                                 @Field("book_id") String book_id);
 
     //getLibrary
     @GET("Library/get_all_library.php")

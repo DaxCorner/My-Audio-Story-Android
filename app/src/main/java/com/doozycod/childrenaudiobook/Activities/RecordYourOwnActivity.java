@@ -49,12 +49,10 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     final Handler handler = new Handler();
     Intent intent;
     APIService apiService;
-    private boolean readyToPurchase = false;
-    private BillingProcessor bp;
     SharedPreferenceMethod sharedPreferenceMethod;
     Bundle bundle;
     String android_id;
-    String PRODUCT_ID = "record_feature";
+//    String PRODUCT_ID = "purchase_book";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +99,6 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             }
         }
 
-
         large_font.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,19 +116,18 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         record_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (hasMicrophone()) {
-//                    String is_paid = bundle.getString("is_paid");
-//                    if (is_paid.equals("1")) {
-                    RecordPersonalGreetingPopUp();
-//                    }
-//                    else{
-                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
-//                    }
-                } else {
-                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
-                }
-                inAppBilling();
-                bp.purchase(RecordYourOwnActivity.this, PRODUCT_ID);
+
+//                if (hasMicrophone()) {
+////                    String is_paid = bundle.getString("is_paid");
+////                    if (is_paid.equals("1")) {
+//                    RecordPersonalGreetingPopUp();
+////                    }
+////                    else{
+//                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+////                    }
+//                } else {
+//                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
+//                }
 
 
             }
@@ -183,32 +179,6 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
     }
 
-    public void inAppBilling() {
-        bp = new BillingProcessor(this, getString(R.string.license_key), new BillingProcessor.IBillingHandler() {
-            @Override
-            public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
-                Toast.makeText(RecordYourOwnActivity.this, productId + "  " + details  , Toast.LENGTH_SHORT).show();
-
-
-            }
-
-            @Override
-            public void onPurchaseHistoryRestored() {
-
-            }
-
-            @Override
-            public void onBillingError(int errorCode, @Nullable Throwable error) {
-
-            }
-
-            @Override
-            public void onBillingInitialized() {
-                readyToPurchase = true;
-
-            }
-        });
-    }
 
     public void ShowPopup(final View v) {
         myDialog.setContentView(R.layout.custom_record_timer);
@@ -384,30 +354,8 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (!bp.handleActivityResult(requestCode, resultCode, data))
-            super.onActivityResult(requestCode, resultCode, data);
-    }
 
 
-    public void recordClick(View v) {
-        if (!readyToPurchase) {
-            Toast.makeText(this, "Billing not initialized.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        switch (v.getId()) {
-            case R.id.record_audio:
-                bp.purchase(this, PRODUCT_ID);
-                break;
-            case R.id.consume_record_audio:
-                Boolean consumed = bp.consumePurchase(PRODUCT_ID);
-                if (consumed)
-                    Toast.makeText(this, "Successfully Consumed", Toast.LENGTH_SHORT).show();
-                break;
 
-            default:
-                break;
-        }
-    }
+
 }

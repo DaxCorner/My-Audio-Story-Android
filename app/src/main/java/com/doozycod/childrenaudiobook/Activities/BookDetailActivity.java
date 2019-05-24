@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -25,7 +27,10 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
 import com.doozycod.childrenaudiobook.Models.Login_model;
+import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
@@ -34,6 +39,7 @@ import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
@@ -52,11 +58,19 @@ public class BookDetailActivity extends AppCompatActivity {
     Bundle bundle;
     SharedPreferenceMethod sharedPreferenceMethod;
     String android_id;
+    private BillingProcessor bp;
+    private boolean readyToPurchase = false;
+    String PRODUCT_ID = "android.test.purchased";
+    String book_id;
+    String user_id;
+    String is_paid;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         bundle = getIntent().getExtras();
+        inAppBilling();
         setContentView(R.layout.activity_listen_audio_story);
         login_btn_listen = findViewById(R.id.login_btn_listen);
         recordAudioButton = findViewById(R.id.record_audio);
@@ -92,24 +106,33 @@ public class BookDetailActivity extends AppCompatActivity {
             }
         }
         String audio_file = bundle.getString("audio_file");
-        String book_id = bundle.getString("book_id");
-        String user_id = bundle.getString("user_id");
-        String is_paid = bundle.getString("is_paid");
+        book_id = bundle.getString("book_id");
+        user_id = bundle.getString("user_id");
+        is_paid = bundle.getString("is_paid");
 
         myDialog = new Dialog(this);
 
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent =new Intent(BookDetailActivity.this, RecordYourOwnActivity.class);
-                Toast.makeText(BookDetailActivity.this, audio_file+book_id+user_id+is_paid, Toast.LENGTH_SHORT).show();
-                Bundle extras = new Bundle();
-                extras.putString("audio_file", audio_file);
-                extras.putString("book_id", book_id);
-                extras.putString("user_id", user_id);
-                extras.putString("is_paid", is_paid);
-                intent.putExtras(extras);
-                startActivity(intent);
+                if (!BillingProcessor.isIabServiceAvailable(BookDetailActivity.this)) {
+                    Toast.makeText(BookDetailActivity.this, "In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16", Toast.LENGTH_SHORT).show();
+                }
+                Log.e("ispaid", is_paid);
+                if (is_paid.equals("1")) {
+                    Intent intent = new Intent(BookDetailActivity.this, RecordYourOwnActivity.class);
+                    Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
+                    Bundle extras = new Bundle();
+                    extras.putString("audio_file", audio_file);
+                    extras.putString("book_id", book_id);
+                    extras.putString("user_id", user_id);
+                    extras.putString("is_paid", is_paid);
+                    intent.putExtras(extras);
+                    startActivity(intent);
+                } else {
+                    bp.purchase(BookDetailActivity.this, PRODUCT_ID);
+                    bookPurchased();
+                }
             }
         });
 
@@ -141,6 +164,34 @@ public class BookDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(BookDetailActivity.this, LibraryActivity.class));
+            }
+        });
+    }
+
+    public void inAppBilling() {
+        bp = new BillingProcessor(this, null, new BillingProcessor.IBillingHandler() {
+            @Override
+            public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+                Toast.makeText(BookDetailActivity.this, productId + "  " + details, Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            @Override
+            public void onPurchaseHistoryRestored() {
+
+            }
+
+            @Override
+            public void onBillingError(int errorCode, @Nullable Throwable error) {
+
+            }
+
+            @Override
+            public void onBillingInitialized() {
+                readyToPurchase = true;
+                Toast.makeText(BookDetailActivity.this, "onBillingInitialized", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -203,6 +254,19 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
+    public void bookPurchased() {
+        apiService.PaidBooks(sharedPreferenceMethod.getUserId(), book_id).enqueue(new Callback<ResultObject>() {
+            @Override
+            public void onResponse(Call<ResultObject> call, Response<ResultObject> response) {
+                Log.e("Response PaidBooks", response.body().getSuccess() + "  " + response.body().getMessage());
+            }
+
+            @Override
+            public void onFailure(Call<ResultObject> call, Throwable t) {
+
+            }
+        });
+    }
 
     public void ShowMediaPlayerPopoup() {
         SeekBar seekBar;
@@ -391,7 +455,7 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password,android_id).enqueue(new Callback<Login_model>() {
+        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
@@ -400,7 +464,7 @@ public class BookDetailActivity extends AppCompatActivity {
                     if (response.body().getStatus().equals("true")) {
 
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
-                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id()+"\n"+response.body().getDevice_id() );
+                        Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id() + "\n" + response.body().getDevice_id());
                         sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
                         login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
@@ -435,5 +499,10 @@ public class BookDetailActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (!bp.handleActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
+    }
 
 }

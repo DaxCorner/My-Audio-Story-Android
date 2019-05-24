@@ -277,7 +277,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile, String device_id) {
-        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile).enqueue(new Callback<Login_model>() {
+        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile,device_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {

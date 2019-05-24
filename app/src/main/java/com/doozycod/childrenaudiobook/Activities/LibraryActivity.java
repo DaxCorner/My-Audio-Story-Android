@@ -217,7 +217,7 @@ public class LibraryActivity extends AppCompatActivity {
                     Log.e("Library JSON", response.body().getStatus() + "\n " + response.body().getLibrary_list_data());
                     if (response.body().getStatus().equals("true")) {
                         libraryModelList = response.body().getLibrary_list_data();
-                        recyclerAdapter = new RecyclerAdapter(LibraryActivity.this, libraryModelList, apiService);
+                        recyclerAdapter = new RecyclerAdapter(LibraryActivity.this, libraryModelList, apiService,sharedPreferenceMethod);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
                         recyclerView.setLayoutManager(new LinearLayoutManager(LibraryActivity.this));
                         recyclerView.setAdapter(recyclerAdapter);
