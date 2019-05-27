@@ -20,6 +20,7 @@ import com.doozycod.childrenaudiobook.Models.updateProfileModel;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
+import com.hmomeni.progresscircula.ProgressCircula;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,11 +29,12 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class ProfileActivity extends AppCompatActivity {
     Dialog myDialog;
-    ImageView change_submit_btn, change_pass_btn, logout_btn, home_btn_profile, lib_btn_profile, login_profile;
+    ImageView change_submit_btn, change_pass_btn, logout_btn, home_btn_profile, lib_btn_profile, login_profile, update_btn;
     EditText et_first_name, et_last_name, et_email, et_phone_no;
     String shared_email, shared_phoneno, shared_firstname, shared_lastname;
     SharedPreferenceMethod sharedPreferenceMethod;
     APIService apiService;
+    ProgressCircula progressCircula;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,7 @@ public class ProfileActivity extends AppCompatActivity {
         et_last_name = findViewById(R.id.et_last_name);
         et_email = findViewById(R.id.et_email);
         et_phone_no = findViewById(R.id.et_phone_no);
+        update_btn = findViewById(R.id.update_profile_btn);
 
         et_email.requestFocus();
         et_first_name.requestFocus();
@@ -85,8 +88,16 @@ public class ProfileActivity extends AppCompatActivity {
         change_pass_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                ShowPopup(v);
+            }
+        });
+        update_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowProgressDialog();
                 updateProfile(sharedPreferenceMethod.getUserId(), shared_firstname, shared_lastname, shared_email, shared_phoneno);
-//                ShowPopup(v);
+
             }
         });
         logout_btn.setOnClickListener(new View.OnClickListener() {
@@ -114,6 +125,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (et_confirm_password.getText().toString().equals(et_password.getText().toString())) {
+                    ShowProgressDialog();
                     changePassword(sharedPreferenceMethod.getUserId(), et_current_pass.getText().toString(), et_password.getText().toString());
                 } else {
                     Toast.makeText(ProfileActivity.this, "check your password!", Toast.LENGTH_SHORT).show();
@@ -132,7 +144,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call<updateProfileModel> call, retrofit2.Response<updateProfileModel> response) {
-
+                        HideProgressDialog();
                         if (response.isSuccessful()) {
 
                             Toast.makeText(getApplicationContext(), response.body().getMessage()
@@ -145,8 +157,25 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<updateProfileModel> call, Throwable t) {
                         Log.e("API call => ", "Unable to submit post to API.");
+                        HideProgressDialog();
                     }
                 });
+
+    }
+
+    public void ShowProgressDialog() {
+        myDialog.setContentView(R.layout.custom_dialog);
+        progressCircula = myDialog.findViewById(R.id.progressBar);
+        progressCircula.setShowProgress(true);
+        progressCircula.setVisibility(View.VISIBLE);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    public void HideProgressDialog() {
+        progressCircula = myDialog.findViewById(R.id.progressBar);
+        progressCircula.setVisibility(View.GONE);
+        myDialog.dismiss();
 
     }
 
@@ -156,7 +185,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call<ResultObject> call, retrofit2.Response<ResultObject> response) {
-
+                        HideProgressDialog();
                         if (response.isSuccessful()) {
 
                             Toast.makeText(getApplicationContext(), response.body().getMessage()

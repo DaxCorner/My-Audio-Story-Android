@@ -15,13 +15,6 @@ public class LibraryModel {
     @Expose
     private String message;
 
-    public List<LibraryDetails> getLibrary_list_data() {
-        return library_list_data;
-    }
-
-    public void setLibrary_list_data(List<LibraryDetails> library_list_data) {
-        this.library_list_data = library_list_data;
-    }
 
     @SerializedName("library_list_data")
     @Expose
@@ -45,6 +38,15 @@ public class LibraryModel {
     }
 
 
+    public List<LibraryDetails> getLibrary_list_data() {
+        return library_list_data;
+    }
+
+    public void setLibrary_list_data(List<LibraryDetails> library_list_data) {
+        this.library_list_data = library_list_data;
+    }
+
+
     public class LibraryDetails {
         @SerializedName("library_id")
         @Expose
@@ -58,6 +60,15 @@ public class LibraryModel {
         @SerializedName("audio_story")
         @Expose
         private String audio_story;
+
+        @SerializedName("updated")
+        @Expose
+        private String updated;
+        @SerializedName("created")
+        @Expose
+        private String created;
+
+
 
         public String getLibrary_id() {
             return library_id;
@@ -92,7 +103,57 @@ public class LibraryModel {
         }
 
 
-    }
+        public book_details getBook_details() {
+            return book_details;
+        }
 
+        public void setBook_details(book_details book_details) {
+            this.book_details = book_details;
+        }
+
+        public book_details book_details;
+
+        public  class book_details{
+
+
+            @SerializedName("id")
+            @Expose
+            private String id;
+
+            @SerializedName("name")
+            @Expose
+            private String name;
+            @SerializedName("book_image")
+            @Expose
+            private String book_image;
+
+
+            public String getId() {
+                return id;
+            }
+
+            public void setId(String id) {
+                this.id = id;
+            }
+
+            public String getName() {
+                return name;
+            }
+
+            public void setName(String name) {
+                this.name = name;
+            }
+
+            public String getBook_image() {
+                return book_image;
+            }
+
+            public void setBook_image(String book_image) {
+                this.book_image = book_image;
+            }
+        }
+
+
+    }
 
 }

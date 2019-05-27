@@ -1,5 +1,6 @@
 package com.doozycod.childrenaudiobook.Activities;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,10 +26,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
+import com.bumptech.glide.Glide;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.R;
@@ -43,6 +47,7 @@ import retrofit2.Response;
 
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
+import static com.loopj.android.http.AsyncHttpClient.LOG_TAG;
 
 public class BookDetailActivity extends AppCompatActivity {
     ImageView recordAudioButton, home_btn_listen_audio, library_btn_listen, login_btn_listen, popup_login, popup_signup, login_dialog, listen_book, use_bg_music;
@@ -60,10 +65,8 @@ public class BookDetailActivity extends AppCompatActivity {
     String android_id;
     private BillingProcessor bp;
     private boolean readyToPurchase = false;
-    String PRODUCT_ID = "android.test.purchased";
-    String book_id;
-    String user_id;
-    String is_paid;
+    String PRODUCT_ID = "purchase_book";
+    String book_id, user_id, is_paid, book_image, book_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,21 +121,27 @@ public class BookDetailActivity extends AppCompatActivity {
                 if (!BillingProcessor.isIabServiceAvailable(BookDetailActivity.this)) {
                     Toast.makeText(BookDetailActivity.this, "In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16", Toast.LENGTH_SHORT).show();
                 }
-                Log.e("ispaid", is_paid);
-                if (is_paid.equals("1")) {
-                    Intent intent = new Intent(BookDetailActivity.this, RecordYourOwnActivity.class);
-                    Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
-                    Bundle extras = new Bundle();
-                    extras.putString("audio_file", audio_file);
-                    extras.putString("book_id", book_id);
-                    extras.putString("user_id", user_id);
-                    extras.putString("is_paid", is_paid);
-                    intent.putExtras(extras);
-                    startActivity(intent);
-                } else {
-                    bp.purchase(BookDetailActivity.this, PRODUCT_ID);
-                    bookPurchased();
-                }
+                bp.purchase(BookDetailActivity.this, PRODUCT_ID);
+
+
+                SkuDetails sku = bp.getPurchaseListingDetails(PRODUCT_ID);
+                Log.e("Purchased History", PRODUCT_ID + " is purchased   " + bp.isPurchased(PRODUCT_ID));
+                Log.e("Purchased History", sku != null ? sku.toString() : "Failed to load SKU details");
+
+//                if (is_paid.equals("1")) {
+//                    Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
+//                    Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
+//                    Bundle extras = new Bundle();
+//                    extras.putString("audio_file", audio_file);
+//                    extras.putString("book_id", book_id);
+//                    extras.putString("user_id", user_id);
+//                    extras.putString("is_paid", is_paid);
+//                    intent.putExtras(extras);
+//                    startActivity(intent);
+//                } else {
+////                    bp.consumePurchase(PRODUCT_ID);
+////                    bookPurchased();
+//                }
             }
         });
 
@@ -179,6 +188,8 @@ public class BookDetailActivity extends AppCompatActivity {
 
             @Override
             public void onPurchaseHistoryRestored() {
+                for (String sku : bp.listOwnedProducts())
+                    Log.d(LOG_TAG, "Owned Managed Product: " + sku);
 
             }
 
@@ -190,7 +201,7 @@ public class BookDetailActivity extends AppCompatActivity {
             @Override
             public void onBillingInitialized() {
                 readyToPurchase = true;
-                Toast.makeText(BookDetailActivity.this, "onBillingInitialized", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(BookDetailActivity.this, "onBillingInitialized", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -268,21 +279,31 @@ public class BookDetailActivity extends AppCompatActivity {
         });
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void ShowMediaPlayerPopoup() {
         SeekBar seekBar;
-        Dialog myDialog = new Dialog(this);
+        Dialog myDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         myDialog.setContentView(R.layout.custom_popup_media_player);
 
         ImageView play_btn = myDialog.findViewById(R.id.play_pause_btn);
         ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
         ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
-        seekBar = myDialog.findViewById(R.id.seekbar);
-//        TextView audio_file_name = myDialog.findViewById(R.id.audio_file_name);
+        ImageView book_img = myDialog.findViewById(R.id.book_img_player);
+        ImageView back_btn = myDialog.findViewById(R.id.back_press_player);
+        TextView audio_fileName = myDialog.findViewById(R.id.audio_file_name);
+
+        String book_image = bundle.getString("player_book_img");
+        String book_name = bundle.getString("player_book_name");
+
+        Log.e("Bundle Data", book_image + book_name);
+        Glide.with(this).load("http://" + book_image).into(book_img);
+        audio_fileName.setText(book_name);
+
         seekBar = myDialog.findViewById(R.id.seekbar);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
 
-//        audio_file_name.setTypeface(custom_font);
-//        audio_file_name.setText(audioFileName);
+        audio_fileName.setTypeface(custom_font);
+        audio_fileName.setText(book_name);
 
         seekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -290,6 +311,15 @@ public class BookDetailActivity extends AppCompatActivity {
                 return true;
             }
 
+        });
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopBGMusic();
+                myDialog.dismiss();
+
+            }
         });
         myDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
@@ -426,6 +456,9 @@ public class BookDetailActivity extends AppCompatActivity {
             AssetFileDescriptor afd = getAssets().openFd("raw/eli_s_star.mp3");
 
             String audio = bundle.getString("audio_file");
+
+            Log.e("Audio_File_from", audio);
+            Log.e("Book_image_act", bundle.getString("player_book_img"));
             mediaPlayer.setDataSource("http://" + audio);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepare();
@@ -497,6 +530,14 @@ public class BookDetailActivity extends AppCompatActivity {
     public void onBackPressed() {
         stopBGMusic();
         super.onBackPressed();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        if (bp != null)
+            bp.release();
+        super.onDestroy();
     }
 
     @Override

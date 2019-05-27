@@ -26,9 +26,9 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
         loading_bar = findViewById(R.id.loading);
-        sharedPreferenceMethod = new SharedPreferenceMethod(this);
+//        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
-        sharedPreferenceMethod.saveLogin(false);
+//        sharedPreferenceMethod.saveLogin(false);
 
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

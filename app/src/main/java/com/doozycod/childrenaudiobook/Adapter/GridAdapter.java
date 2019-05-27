@@ -3,12 +3,14 @@ package com.doozycod.childrenaudiobook.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.doozycod.childrenaudiobook.Activities.BookDetailActivity;
@@ -54,23 +56,25 @@ public class GridAdapter extends BaseAdapter {
     @Override
     public View getView(final int position, final View convertView, ViewGroup parent) {
         Holder holder = new Holder();
+        Bundle bundle = new Bundle();
 
         View view = inflater.inflate(R.layout.grid_list_view, null);
         holder.audioBookImage = view.findViewById(R.id.imageview);
+        holder.relativeLayout = view.findViewById(R.id.relativelayout);
 
         Glide.with(view.getContext()).load("http://" + Book_list_data.get(position).getBook_image()).into(holder.audioBookImage);
-
-        holder.relativeLayout = view.findViewById(R.id.relativelayout);
 
 
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, BookDetailActivity.class);
-                Bundle bundle = new Bundle();
                 bundle.putString("audio_file", Book_list_data.get(position).getBook_audio_file());
                 bundle.putString("book_id", Book_list_data.get(position).getBook_id());
                 bundle.putString("user_id", sharedPreferenceMethod.getUserId());
+
+                bundle.putString("player_book_img", Book_list_data.get(position).getBook_image());
+
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }

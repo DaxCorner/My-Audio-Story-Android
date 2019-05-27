@@ -24,6 +24,7 @@ import com.doozycod.childrenaudiobook.Models.Signup_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
+import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,7 +47,7 @@ public class SignUpActivity extends AppCompatActivity {
     TextView passwordtxt;
     TextView retypepass, phone_txt;
     String entered_email, entered_fname, entered_lname, entered_password, entered_mobile;
-
+    ProgressCircula progressCircula;
     //init volley
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
@@ -146,6 +147,22 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
+    public void ShowProgressDialog() {
+        myDialog.setContentView(R.layout.custom_dialog);
+        progressCircula = myDialog.findViewById(R.id.progressBar);
+        progressCircula.setShowProgress(true);
+        progressCircula.setVisibility(View.VISIBLE);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    public void HideProgressDialog() {
+        progressCircula = myDialog.findViewById(R.id.progressBar);
+        progressCircula.setVisibility(View.GONE);
+        myDialog.dismiss();
+
+    }
+
     private void SignUpValidation() {
         String validemail = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 
@@ -200,6 +217,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
         signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id);
+        ShowProgressDialog();
 
     }
 
@@ -227,6 +245,7 @@ public class SignUpActivity extends AppCompatActivity {
                     String login_email = et_login_dialog.getText().toString();
                     String login_password = et_password_dialog.getText().toString();
                     loginRequest(login_email, login_password);
+                    ShowProgressDialog();
                 }
 //                    myDialog.dismiss();
 
@@ -242,7 +261,7 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-
+                HideProgressDialog();
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
@@ -270,6 +289,7 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Login_model> call, Throwable t) {
                 Log.e("API call => ", "Unable to submit post to API.");
+                HideProgressDialog();
 
             }
 
@@ -277,11 +297,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile, String device_id) {
-        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile,device_id).enqueue(new Callback<Login_model>() {
+        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, device_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-
+                HideProgressDialog();
                 if (response.isSuccessful()) {
 
                     Toast.makeText(getApplicationContext(), response.body().getStatus()

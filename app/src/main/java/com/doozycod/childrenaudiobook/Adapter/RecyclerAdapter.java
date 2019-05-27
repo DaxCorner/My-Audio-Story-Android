@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
@@ -27,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.doozycod.childrenaudiobook.Activities.APIService;
 import com.doozycod.childrenaudiobook.Helper.Model;
 import com.doozycod.childrenaudiobook.Models.LibraryModel;
@@ -83,8 +85,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
         Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
+
         holder.book_name_txt.setTypeface(custom_font);
         holder.book_name_txt.setText(fileModel.getName());
+
         if (i % 2 == 1) {
             holder.relativeLayout.setBackground(holder.relativeLayout.getResources().getDrawable(light_line));
         } else {
@@ -109,7 +113,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             public void onClick(View v) {
 
                 Log.e("File for Music", fileModel.getAudio_story());
-                ShowMediaPlayerPopoup(fileModel.getAudio_story(), v, i, fileModel.getName());
+
+                ShowMediaPlayerPopoup(fileModel.getAudio_story(), v, i, fileModel.getName(), fileModel.book_details.getBook_image());
             }
         });
     }
@@ -187,20 +192,34 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    public void ShowMediaPlayerPopoup(String filePath, View v, int i, String audioFileName) {
+    public void ShowMediaPlayerPopoup(String filePath, View v, int i, String audioFileName, String book_image) {
         SeekBar seekBar;
-        Dialog myDialog = new Dialog(c);
+        Bundle bundle = new Bundle();
+        Dialog myDialog = new Dialog(c, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         myDialog.setContentView(R.layout.custom_popup_media_player);
 
         ImageView play_btn = myDialog.findViewById(R.id.play_pause_btn);
         ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
         ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
-        TextView audio_file_name = myDialog.findViewById(R.id.audio_file_name);
+        ImageView back_btn = myDialog.findViewById(R.id.back_press_player);
+        ImageView book_img = myDialog.findViewById(R.id.book_img_player);
+        TextView audio_fileName = myDialog.findViewById(R.id.audio_file_name);
         seekBar = myDialog.findViewById(R.id.seekbar);
+
         Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
-        audio_file_name.setTypeface(custom_font);
-        audio_file_name.setText(audioFileName);
+        audio_fileName.setTypeface(custom_font);
+        audio_fileName.setText(audioFileName);
+
+        back_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopBGMusic();
+                myDialog.dismiss();
+
+            }
+        });
+        Glide.with(c).load("http://" + book_image).into(book_img);
         seekBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

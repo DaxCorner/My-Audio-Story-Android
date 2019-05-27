@@ -75,6 +75,7 @@ public interface APIService {
 
     //books
     @POST("Book/paid_book.php")
+    @FormUrlEncoded
     Call<ResultObject> PaidBooks(@Field("user_id") String user_id,
                                  @Field("book_id") String book_id);
 

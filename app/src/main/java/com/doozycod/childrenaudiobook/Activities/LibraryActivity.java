@@ -28,6 +28,7 @@ import com.doozycod.childrenaudiobook.Service.Config;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,7 +42,6 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
 public class LibraryActivity extends AppCompatActivity {
     RecyclerView recyclerView;
-    String[] book_name = {"Amelia Bebelia", "Cat in The Hat", "Drive the Bus", "Frog and Toad", "Go, Dog. Go"};
     Dialog myDialog;
     ImageView login_dialog, login_btn_main, home_btn;
     private MediaPlayer mediaPlayer;
@@ -50,6 +50,7 @@ public class LibraryActivity extends AppCompatActivity {
     SharedPreferenceMethod sharedPreferenceMethod;
     String android_id;
     List<LibraryModel.LibraryDetails> libraryModelList;
+    ProgressCircula progressCircula;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,15 +95,10 @@ public class LibraryActivity extends AppCompatActivity {
         }
         if (sharedPreferenceMethod.checkLogin()) {
             getLibrary(sharedPreferenceMethod.getUserId());
+            ShowProgressDialog();
         } else {
             Log.e("Library", "Nothing here");
         }
-
-//        recycler Adapater
-//        recyclerAdapter = new RecyclerAdapter(this, GetFiles(), apiService);
-//        recyclerView.setItemAnimator(new DefaultItemAnimator());
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(recyclerAdapter);
 
 
         home_btn.setOnClickListener(new View.OnClickListener() {
@@ -115,9 +111,7 @@ public class LibraryActivity extends AppCompatActivity {
         });
     }
 
-
     public void ShowPopup() {
-
         myDialog.setContentView(R.layout.custom_popup);
         ImageView popup_login = myDialog.findViewById(R.id.select_login);
         ImageView popup_signup = myDialog.findViewById(R.id.sign_upact_btn);
@@ -133,13 +127,11 @@ public class LibraryActivity extends AppCompatActivity {
             public void onClick(View v) {
                 myDialog.dismiss();
                 showLoginPopUp(v);
-
             }
         });
 
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
-
         myDialog.show();
     }
 
@@ -161,7 +153,6 @@ public class LibraryActivity extends AppCompatActivity {
                     String login_password = et_password_btn.getText().toString();
                     loginRequest(login_email, login_password);
                 }
-
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -174,7 +165,7 @@ public class LibraryActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-
+                HideProgressDialog();
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
@@ -202,25 +193,44 @@ public class LibraryActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Login_model> call, Throwable t) {
                 Log.e("API call => ", "Unable to submit post to API.");
-
+                HideProgressDialog();
             }
 
         });
     }
 
+    public void ShowProgressDialog() {
+        myDialog.setContentView(R.layout.custom_dialog);
+        progressCircula = myDialog.findViewById(R.id.progressBar);
+        progressCircula.setShowProgress(true);
+        progressCircula.setVisibility(View.VISIBLE);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    public void HideProgressDialog() {
+        progressCircula = myDialog.findViewById(R.id.progressBar);
+        progressCircula.setVisibility(View.GONE);
+        myDialog.dismiss();
+
+    }
 
     public void getLibrary(String userId) {
         apiService.getLibrary(userId).enqueue(new Callback<LibraryModel>() {
             @Override
             public void onResponse(Call<LibraryModel> call, Response<LibraryModel> response) {
                 if (response.isSuccessful()) {
+                    HideProgressDialog();
                     Log.e("Library JSON", response.body().getStatus() + "\n " + response.body().getLibrary_list_data());
                     if (response.body().getStatus().equals("true")) {
                         libraryModelList = response.body().getLibrary_list_data();
-                        recyclerAdapter = new RecyclerAdapter(LibraryActivity.this, libraryModelList, apiService,sharedPreferenceMethod);
+                        recyclerAdapter = new RecyclerAdapter(LibraryActivity.this, libraryModelList, apiService, sharedPreferenceMethod);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
                         recyclerView.setLayoutManager(new LinearLayoutManager(LibraryActivity.this));
                         recyclerView.setAdapter(recyclerAdapter);
+                        Log.e("lib book image", libraryModelList.get(0).book_details.getBook_image());
+
+//                        Log.e("book image lib", response.body().LibraryDetails.book_details.getBook_image());
                     }
                 }
             }
