@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "798976514720",
-    "firebase_url": "https://children-sbook.firebaseio.com",
-    "project_id": "children-sbook",
-    "storage_bucket": "children-sbook.appspot.com"
+    "project_number": "865308061395",
+    "firebase_url": "https://my-audio-story-35c76.firebaseio.com",
+    "project_id": "my-audio-story-35c76",
+    "storage_bucket": "my-audio-story-35c76.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:798976514720:android:c06a36cb9fdaad71",
+        "mobilesdk_app_id": "1:865308061395:android:c06a36cb9fdaad71",
         "android_client_info": {
           "package_name": "com.doozycod.childrenaudiobook"
         }
       },
       "oauth_client": [
         {
-          "client_id": "798976514720-hbgq9ndqtpm30r9ui3c3cnul31vkdnhj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.doozycod.childrenaudiobook",
-            "certificate_hash": "61ce8522fc201b38245d9518ed1d95a4c61be7d7"
-          }
-        },
-        {
-          "client_id": "798976514720-k6rtokqbluafmu5gpa8m8k7iuo5c82ja.apps.googleusercontent.com",
+          "client_id": "865308061395-o8o46ngg0r95tun9rbq2fkg7n4ugbfrb.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAU2juthxvMcYwXHpQba1COL3N82-PPv6E"
+          "current_key": "AIzaSyDrFJYW4HydGiSFheZBJXRzByazHUAQ7E0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "798976514720-k6rtokqbluafmu5gpa8m8k7iuo5c82ja.apps.googleusercontent.com",
+              "client_id": "865308061395-o8o46ngg0r95tun9rbq2fkg7n4ugbfrb.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
