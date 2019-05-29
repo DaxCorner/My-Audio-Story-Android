@@ -51,12 +51,16 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 import static com.loopj.android.http.AsyncHttpClient.LOG_TAG;
 
 public class BookDetailActivity extends AppCompatActivity {
+    int[] count_down_timer_img = {R.drawable.countdown_03, R.drawable.countdown_02,
+            R.drawable.countdown_01, R.drawable.countdown_00};
     ImageView recordAudioButton, home_btn_listen_audio, library_btn_listen, login_btn_listen, popup_login, popup_signup, login_dialog, listen_book, use_bg_music;
     Dialog myDialog;
     String AudioSavePathInDevice, audioFilePath;
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     int length;
+    int i = 0;
+
     boolean isPlaying = true;
     private int seekForwardTime = 5000; // 5000 milliseconds
     private int seekBackwardTime = 5000;
@@ -92,7 +96,7 @@ public class BookDetailActivity extends AppCompatActivity {
 //        Check user Logged in or Not
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
-                ShowProgressDialog();
+//                ShowProgressDialog();
 
                 login_btn_listen.setImageResource(R.drawable.login_btn_pressed);
 
@@ -103,7 +107,7 @@ public class BookDetailActivity extends AppCompatActivity {
                     }
                 });
             } else {
-                ShowProgressDialog();
+//                ShowProgressDialog();
                 login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_listen.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -118,6 +122,7 @@ public class BookDetailActivity extends AppCompatActivity {
         book_id = bundle.getString("book_id");
         user_id = bundle.getString("user_id");
         is_paid = bundle.getString("is_paid");
+        Toast.makeText(this, is_paid, Toast.LENGTH_SHORT).show();
 
         myDialog = new Dialog(this);
 
@@ -127,27 +132,54 @@ public class BookDetailActivity extends AppCompatActivity {
                 if (!BillingProcessor.isIabServiceAvailable(BookDetailActivity.this)) {
                     Toast.makeText(BookDetailActivity.this, "In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16", Toast.LENGTH_SHORT).show();
                 }
-                bp.purchase(BookDetailActivity.this, PRODUCT_ID);
 
-
+                bp.getPurchaseTransactionDetails(getString(R.string.license_key));
                 SkuDetails sku = bp.getPurchaseListingDetails(PRODUCT_ID);
                 Log.e("Purchased History", PRODUCT_ID + " is purchased   " + bp.isPurchased(PRODUCT_ID));
                 Log.e("Purchased History", sku != null ? sku.toString() : "Failed to load SKU details");
+                if (sharedPreferenceMethod.checkLogin()) {
 
-//                if (is_paid.equals("1")) {
-//                    Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
-//                    Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
-//                    Bundle extras = new Bundle();
-//                    extras.putString("audio_file", audio_file);
-//                    extras.putString("book_id", book_id);
-//                    extras.putString("user_id", user_id);
-//                    extras.putString("is_paid", is_paid);
-//                    intent.putExtras(extras);
+                    Toast.makeText(BookDetailActivity.this, "You must have to login first!", Toast.LENGTH_SHORT).show();
+
+
+                } else {
+
+                    if (is_paid.equals("1")) {
+                        Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
+                        Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
+                        Bundle extras = new Bundle();
+                        extras.putString("audio_file", audio_file);
+                        extras.putString("book_id", book_id);
+                        extras.putString("user_id", user_id);
+                        extras.putString("is_paid", is_paid);
+                        intent.putExtras(extras);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+//                    ShowCountTimer();
 //                    startActivity(intent);
-//                } else {
-////                    bp.consumePurchase(PRODUCT_ID);
-////                    bookPurchased();
-//                }
+
+                    } else {
+                        if (bp.isPurchased(PRODUCT_ID)) {
+                            Log.e("Book is Purchased", "Book is Purchased!");
+                        } else {
+
+                            if (bp.isPurchased(PRODUCT_ID)) {
+                                bookPurchased();
+                            }
+                            bp.purchase(BookDetailActivity.this, PRODUCT_ID);
+                            Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
+                            Bundle extras = new Bundle();
+                            extras.putString("audio_file", audio_file);
+                            extras.putString("book_id", book_id);
+                            extras.putString("user_id", user_id);
+                            extras.putString("is_paid", is_paid);
+                            intent.putExtras(extras);
+                            bp.consumePurchase(PRODUCT_ID);
+
+
+                        }
+                    }
+                }
             }
         });
 
@@ -155,7 +187,7 @@ public class BookDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
+                ShowProgressDialog();
                 ShowMediaPlayerPopoup();
 
 
@@ -182,6 +214,7 @@ public class BookDetailActivity extends AppCompatActivity {
             }
         });
     }
+
     public void ShowProgressDialog() {
         progressDialog.showProgress();
     }
@@ -190,6 +223,7 @@ public class BookDetailActivity extends AppCompatActivity {
         progressDialog.hideProgress();
 
     }
+
     public void inAppBilling() {
         bp = new BillingProcessor(this, null, new BillingProcessor.IBillingHandler() {
             @Override
@@ -366,7 +400,9 @@ public class BookDetailActivity extends AppCompatActivity {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            HideProgressDialog();
             playBGMusic(seekBar, play_btn);
+
         }
 
 
@@ -453,8 +489,21 @@ public class BookDetailActivity extends AppCompatActivity {
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginRequest(et_email_btn.getText().toString(), et_password_btn.getText().toString());
-                myDialog.dismiss();
+                if (et_email_btn.getText().toString().equals("") || et_password_btn.getText().toString().equals("")) {
+                    Toast.makeText(BookDetailActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                } else {
+                    String pass = et_password_btn.getText().toString();
+                    if (pass.length() > 6) {
+                        String login_email = et_email_btn.getText().toString();
+                        String login_password = et_password_btn.getText().toString();
+                        ShowProgressDialog();
+                        loginRequest(login_email, login_password);
+
+                    } else {
+                        Toast.makeText(BookDetailActivity.this, "Password is at least 7 words!", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
             }
         });
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -505,16 +554,17 @@ public class BookDetailActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-
+                HideProgressDialog();
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id() + "\n" + response.body().getDevice_id());
                         sharedPreferenceMethod.saveLogin(true);
+                        sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin()) {
+                        if (!sharedPreferenceMethod.checkLogin()) {
                             login_btn_listen.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -533,6 +583,7 @@ public class BookDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Login_model> call, Throwable t) {
                 Log.e("API call => ", "Unable to submit post to API.");
+                HideProgressDialog();
 
             }
 
@@ -542,6 +593,7 @@ public class BookDetailActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         stopBGMusic();
+        bp.release();
         super.onBackPressed();
     }
 

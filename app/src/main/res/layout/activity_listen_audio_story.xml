@@ -96,16 +96,8 @@
             android:layout_marginLeft="70dp"
             android:layout_marginTop="10dp"
             android:layout_marginRight="70dp"
-            android:src="@drawable/record_my_own_audio_btn_pressed" />
+            android:src="@drawable/record_this_story_button" />
 
-        <ImageView
-            android:id="@+id/consume_record_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="70dp"
-            android:src="@drawable/record_my_own_audio_btn_pressed"
-            android:visibility="gone" />
+
     </RelativeLayout>
 </RelativeLayout>

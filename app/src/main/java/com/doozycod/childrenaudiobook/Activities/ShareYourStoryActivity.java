@@ -108,6 +108,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         });
 
     }
+
     public void ShowProgressDialog() {
         progressDialog.showProgress();
     }
@@ -116,6 +117,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         progressDialog.hideProgress();
 
     }
+
     public void ShowPopup() {
 
         myDialog.setContentView(R.layout.custom_popup);
@@ -161,6 +163,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                 } else {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();
+                    ShowProgressDialog();
                     loginRequest(login_email, login_password);
                 }
 
@@ -179,10 +182,11 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
-
+                        HideProgressDialog();
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
+                        sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_share.setImageResource(R.drawable.profile_btn_pressed);
                         if (!sharedPreferenceMethod.checkLogin()) {
@@ -204,6 +208,8 @@ public class ShareYourStoryActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Login_model> call, Throwable t) {
                 Log.e("API call => ", "Unable to submit post to API.");
+                HideProgressDialog();
+
 
             }
 

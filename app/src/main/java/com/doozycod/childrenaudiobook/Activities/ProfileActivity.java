@@ -106,6 +106,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                sharedPreferenceMethod.saveLogin(false);
+                ShowProgressDialog();
                 logout(sharedPreferenceMethod.getUserId());
 
             }
@@ -206,7 +207,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(Call<ResultObject> call, retrofit2.Response<ResultObject> response) {
-
+                        HideProgressDialog();
                         if (response.isSuccessful()) {
 
                             Toast.makeText(getApplicationContext(), response.body().getMessage()
@@ -225,6 +226,7 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<ResultObject> call, Throwable t) {
                         Log.e("API call => ", "Unable to submit post to API.");
+                        HideProgressDialog();
                     }
                 });
 

@@ -109,12 +109,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             }
         });
         holder.story_ply_btn.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
 
                 Log.e("File for Music", fileModel.getAudio_story());
 
-                ShowMediaPlayerPopoup(fileModel.getAudio_story(), v, i, fileModel.getName(), fileModel.book_details.getBook_image());
+                if (fileModel.getAudio_message().equals("")) {
+                    ShowMediaPlayerPopoup("", fileModel.getAudio_story(), v, i, fileModel.getName(), fileModel.book_details.getBook_image());
+                } else {
+                    ShowMediaPlayerPopoup(fileModel.getAudio_message(), fileModel.getAudio_story(), v, i, fileModel.getName(), fileModel.book_details.getBook_image());
+                }
             }
         });
     }
@@ -191,18 +196,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         myDialog.show();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @SuppressLint("ClickableViewAccessibility")
-    public void ShowMediaPlayerPopoup(String filePath, View v, int i, String audioFileName, String book_image) {
+    public void ShowMediaPlayerPopoup(String greeting, String filePath, View v, int i, String audioFileName, String book_image) {
         SeekBar seekBar;
         Bundle bundle = new Bundle();
         Dialog myDialog = new Dialog(c, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        myDialog.setContentView(R.layout.custom_popup_media_player);
+        myDialog.setContentView(R.layout.custom_popup_media_player_with_skipbtn);
 
         ImageView play_btn = myDialog.findViewById(R.id.play_pause_btn);
         ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
         ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
         ImageView back_btn = myDialog.findViewById(R.id.back_press_player);
         ImageView book_img = myDialog.findViewById(R.id.book_img_player);
+        ImageView skip_btn = myDialog.findViewById(R.id.skip_btn);
         TextView audio_fileName = myDialog.findViewById(R.id.audio_file_name);
         seekBar = myDialog.findViewById(R.id.seekbar);
 
@@ -211,6 +218,45 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         audio_fileName.setTypeface(custom_font);
         audio_fileName.setText(audioFileName);
 
+
+        mediaPlayer= new MediaPlayer();
+
+        if (greeting.equals("")) {
+            if(mediaPlayer.isPlaying()){
+                stopBGMusic();
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                playLibraryAudio(filePath, seekBar, play_btn,mediaPlayer);
+            }
+        } else {
+            playLibraryAudio(greeting, seekBar, play_btn,mediaPlayer);
+            skip_btn.setVisibility(View.VISIBLE);
+
+            int  duration = mediaPlayer.getDuration();
+
+            if(mediaPlayer.getDuration() == duration){
+                skip_btn.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    playLibraryAudio(filePath,seekBar,play_btn, mediaPlayer);
+
+                }
+
+            }
+            skip_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    stopBGMusic();
+                    skip_btn.setVisibility(View.GONE);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        playLibraryAudio(filePath,seekBar,play_btn, mediaPlayer);
+
+                    }
+
+
+                }
+            });
+
+        }
         back_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -248,9 +294,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         });
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            playLibraryAudio(filePath, seekBar, play_btn);
-        }
         myDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
             @Override
             public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
@@ -326,10 +369,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void playLibraryAudio(String filePath, SeekBar seekBar, ImageView play_btn) {
+    public void playLibraryAudio(String filePath, SeekBar seekBar, ImageView play_btn,MediaPlayer mediaPlayer) {
 
         try {
-            mediaPlayer = new MediaPlayer();
             mediaPlayer.setDataSource("http://" + filePath);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepare();
@@ -349,6 +391,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
                         seekBar.setProgress(mCurrentPosition);
                         if (mCurrentPosition == mediaPlayer.getDuration() / 1000) {
                             play_btn.setImageResource(R.drawable.play_button);
+
                         }
 
                     }

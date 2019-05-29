@@ -14,6 +14,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -27,11 +29,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.Models.SharedModel;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.doozycod.childrenaudiobook.Utils.Upload;
 
@@ -56,17 +61,19 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
+import static com.loopj.android.http.AsyncHttpClient.LOG_TAG;
 
 public class StartRecordingActivity extends AppCompatActivity {
 
-    ImageView start_personal_greeting, save_story_btn, share_story_btn, stop_recording_btn,
+    ImageView save_story_btn, share_story_btn, stop_recording_btn,
             imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup,
-            home_btn_recording, lib_btn_recording, login_btn_recording, home_btn_recorded, lib_btn_recorded, login_btn_recorded;
+            home_btn_recording, lib_btn_recording, start_count_down_timer_dialog, login_btn_recording, home_btn_recorded, lib_btn_recorded, login_btn_recorded;
     Dialog myDialog;
     RelativeLayout start_recording_layout, save_recording_layout;
     int i = 0;
     String audioFilePath = "";
     boolean isRecording = false;
+    boolean readyToPurchase = false;
     MediaPlayer mediaPlayer;
     MediaRecorder mediaRecorder;
     int[] count_down_timer_img = {R.drawable.countdown_29, R.drawable.countdown_28, R.drawable.countdown_27, R.drawable.countdown_26, R.drawable.countdown_25
@@ -75,35 +82,40 @@ public class StartRecordingActivity extends AppCompatActivity {
             R.drawable.countdown_13, R.drawable.countdown_12, R.drawable.countdown_11, R.drawable.countdown_10, R.drawable.countdown_09, R.drawable.countdown_08,
             R.drawable.countdown_07, R.drawable.countdown_06, R.drawable.countdown_05, R.drawable.countdown_04, R.drawable.countdown_03, R.drawable.countdown_02,
             R.drawable.countdown_01, R.drawable.countdown_00};
+    int[] count_down_timer_img_for_3_sec = {R.drawable.countdown_03, R.drawable.countdown_02,
+            R.drawable.countdown_01, R.drawable.countdown_00};
     File mydir;
     File mydirRecording;
-    boolean background_music;
+    Bundle bundle;
     APIService apiService;
     SharedPreferenceMethod sharedPreferenceMethod;
     String book_id;
     String android_id;
     Bundle extra;
-
+    CustomProgressBar progressBar;
+    Intent intent;
+    private BillingProcessor bp;
 
     private static final String TAG = StartRecordingActivity.class.getSimpleName();
-    private String selectedFilePath;
-    private String SERVER_URL = "http://www.doozycod.in/books-manager/api/Library/add-library.php";
 
 
     @SuppressLint("HardwareIds")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        bundle = getIntent().getExtras();
         setContentView(R.layout.activity_start_recording);
 
+        progressBar = new CustomProgressBar(this);
+
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+
         extra = getIntent().getExtras();
         mediaPlayer = new MediaPlayer();
         mediaRecorder = new MediaRecorder();
         book_id = getIntent().getStringExtra("book_id");
-
         Log.e("Book ID and User_id", book_id + sharedPreferenceMethod.getUserId());
+        intent = new Intent(StartRecordingActivity.this, BookDetailActivity.class);
 
         if (book_id != null) {
             Toast.makeText(this, book_id, Toast.LENGTH_SHORT).show();
@@ -115,7 +127,6 @@ public class StartRecordingActivity extends AppCompatActivity {
         android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        start_personal_greeting = findViewById(R.id.record_personal_msg);
         start_recording_layout = findViewById(R.id.recording_layout);
         save_recording_layout = findViewById(R.id.save_share_layout);
         home_btn_recording = findViewById(R.id.home_btn_start_recording);
@@ -124,10 +135,9 @@ public class StartRecordingActivity extends AppCompatActivity {
         lib_btn_recorded = findViewById(R.id.lib_btn_recorded);
         login_btn_recording = findViewById(R.id.login_btn_recording);
         login_btn_recorded = findViewById(R.id.login_btn_recorded);
-        stop_recording_btn = findViewById(R.id.stop_recording_btn);
         save_story_btn = findViewById(R.id.save_story_btn);
         share_story_btn = findViewById(R.id.share_story_btn_on_end);
-
+        start_count_down_timer_dialog = findViewById(R.id.start_count_down_timer_dialog);
 
         if (sharedPreferenceMethod != null) {
             if (!sharedPreferenceMethod.checkLogin()) {
@@ -167,7 +177,16 @@ public class StartRecordingActivity extends AppCompatActivity {
                 });
             }
         }
-
+        String audio_fileforBook_act = bundle.getString("audio_file");
+        String book_id_forBook_act = bundle.getString("book_id");
+        String user_id_forBook_act = bundle.getString("user_id");
+        String is_paid_check_forBook_act = bundle.getString("is_paid");
+        Bundle extras = new Bundle();
+        extras.putString("audio_file", audio_fileforBook_act);
+        extras.putString("book_id", book_id_forBook_act);
+        extras.putString("user_id", user_id_forBook_act);
+        extras.putString("is_paid", is_paid_check_forBook_act);
+        intent.putExtras(extras);
         mydir = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/");
 
         if (!mydir.exists()) {
@@ -211,7 +230,12 @@ public class StartRecordingActivity extends AppCompatActivity {
             }
         });
 
-
+        start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShowCountdownTimerDialog();
+            }
+        });
         share_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -219,49 +243,7 @@ public class StartRecordingActivity extends AppCompatActivity {
             }
         });
 
-        background_music = getIntent().getExtras().getBoolean("music");
-        Log.e("background_music =====", background_music + "");
 
-
-        if (extra.getBoolean("yes")) {
-            ShowPopupGreeting();
-
-        } else {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    recordAudio("static recorded story");
-                    if (background_music) {
-                        playBGMusic();
-
-                    }
-
-                }
-            }, 500);
-        }
-
-        start_personal_greeting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                RecordPersonalGreetingPopUp();
-            }
-        });
-
-        stop_recording_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                start_recording_layout.setVisibility(View.GONE);
-                stopRecording();
-                save_recording_layout.setVisibility(View.VISIBLE);
-                stop_recording_btn.setEnabled(false);
-
-                if (background_music) {
-                    stopBGMusic();
-                }
-
-
-            }
-        });
         home_btn_recording.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -283,7 +265,65 @@ public class StartRecordingActivity extends AppCompatActivity {
             }
         });
 
+        inAppBilling();
 
+    }
+
+    private void ShowCountdownTimerDialog() {
+        myDialog.setContentView(R.layout.custom_record_or_nothanks_popup);
+        ImageView record_with_greeting_btn = myDialog.findViewById(R.id.pop_btn_record_with_greeting);
+        ImageView no_thanks_btn = myDialog.findViewById(R.id.no_thanks_btn);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+
+        record_with_greeting_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                ShowPopupGreeting();
+            }
+
+
+        });
+        no_thanks_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                myDialog.dismiss();
+                ShowPopup();
+            }
+        });
+        myDialog.show();
+
+    }
+
+    public void inAppBilling() {
+        bp = new BillingProcessor(this, null, new BillingProcessor.IBillingHandler() {
+            @Override
+            public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+                Toast.makeText(StartRecordingActivity.this, productId + "  " + details, Toast.LENGTH_SHORT).show();
+
+
+            }
+
+            @Override
+            public void onPurchaseHistoryRestored() {
+                for (String sku : bp.listOwnedProducts())
+                    Log.d(LOG_TAG, "Owned Managed Product: " + sku);
+
+            }
+
+            @Override
+            public void onBillingError(int errorCode, @Nullable Throwable error) {
+
+            }
+
+            @Override
+            public void onBillingInitialized() {
+                readyToPurchase = true;
+//                Toast.makeText(BookDetailActivity.this, "onBillingInitialized", Toast.LENGTH_SHORT).show();
+
+            }
+        });
     }
 
     public void recordAudio(String audio_filename) {
@@ -375,6 +415,8 @@ public class StartRecordingActivity extends AppCompatActivity {
 //                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
                 recordAudio("greeting");
                 myDialog.dismiss();
+                stopRecording();
+                ShowPopup();
             }
         }, 30 * 1050);
         myDialog.show();
@@ -386,7 +428,17 @@ public class StartRecordingActivity extends AppCompatActivity {
                 playBGMusic();
                 stopRecording();
                 myDialog.dismiss();
+                start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
+                start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        stopBGMusic();
+                        stopRecording();
+                        start_recording_layout.setVisibility(View.GONE);
+                        save_recording_layout.setVisibility(View.VISIBLE);
 
+                    }
+                });
                 recordAudio("static recorded story");
                 handler.postDelayed(myRunnable, 100);
 
@@ -404,7 +456,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 if (i < 3) {
-                    imageView.setImageResource(count_down_timer_img[i]);
+                    imageView.setImageResource(count_down_timer_img_for_3_sec[i]);
                     i++;
                 }
                 handler.postDelayed(this, 1000);
@@ -417,8 +469,18 @@ public class StartRecordingActivity extends AppCompatActivity {
             public void run() {
                 myDialog.dismiss();
 //                playBGMusic();
-                ShowPopupGreeting();
+                start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
+                recordAudio("static audio story");
 //                finish();
+                start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
+                start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        stopRecording();
+                        start_recording_layout.setVisibility(View.GONE);
+                        save_recording_layout.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         }, 3 * 1100);
         myDialog.show();
@@ -497,7 +559,9 @@ public class StartRecordingActivity extends AppCompatActivity {
                 } else {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();
+                    ShowProgressDialog();
                     loginRequest(login_email, login_password);
+
                 }
 
             }
@@ -513,7 +577,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-
+                HideProgressDialog();
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
@@ -521,6 +585,8 @@ public class StartRecordingActivity extends AppCompatActivity {
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         myDialog.dismiss();
                         sharedPreferenceMethod.saveLogin(true);
+                        sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
+
                         login_btn_recording.setImageResource(R.drawable.profile_btn_pressed);
                         login_btn_recorded.setImageResource(R.drawable.profile_btn_pressed);
                         if (!sharedPreferenceMethod.checkLogin()) {
@@ -548,10 +614,21 @@ public class StartRecordingActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Login_model> call, Throwable t) {
                 Log.e("API call => ", "Unable to submit post to API.");
+                HideProgressDialog();
+
 
             }
 
         });
+    }
+
+    public void ShowProgressDialog() {
+        progressBar.showProgress();
+    }
+
+    public void HideProgressDialog() {
+        progressBar.hideProgress();
+
     }
 
     void saveRecording() {
@@ -584,7 +661,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
                     } else {
 //                        uploadFile(audioFilePath);
-                        uploadAudioToServer(audioFile, fromgreet, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
+                        uploadAudioToServer(audioFile, "", sharedPreferenceMethod.getUserId(), audio_filename, book_id);
                     }
                 }
 
@@ -636,7 +713,6 @@ public class StartRecordingActivity extends AppCompatActivity {
         });
     }
 
-
     private void saveShareRecording() {
 
         final EditText editText = findViewById(R.id.name_recorded_story);
@@ -660,11 +736,12 @@ public class StartRecordingActivity extends AppCompatActivity {
                     from.renameTo(to);
                     fromGreeting.renameTo(toGreet);
                     if (toGreet.exists()) {
-                        uploadAudioToServer(audioFile, greetingFile, "", "", "");
-
+//                        uploadFile(audioFilePath);
+                        uploadAudioToServer(audioFile, greetingFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
 
                     } else {
-                        uploadAudioToServer(audioFile, "", "", "", "");
+//                        uploadFile(audioFilePath);
+                        uploadAudioToServer(audioFile, audioFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
                     }
                 }
 
@@ -678,39 +755,13 @@ public class StartRecordingActivity extends AppCompatActivity {
     }
 
 
-//    private void uploadAudioWithGreeting(String pathToAudioFile, String greetingPath) {
-//        File audioFile = new File(pathToAudioFile);
-//        File greetingFile = new File(greetingPath);
-//        RequestBody greetingBody = RequestBody.create(MediaType.parse("audio/*"), greetingFile);
-//        RequestBody audioBody = RequestBody.create(MediaType.parse("audio/*"), audioFile);
-//        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio", audioFile.getName(), greetingBody);
-//        MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio", audioFile.getName(), audioBody);
-//
-//        Call<ResultObject> serverCom = apiService.uploadAudioWithGreeting(greeting, audiofile);
-//        serverCom.enqueue(new Callback<ResultObject>() {
-//            @Override
-//            public void onResponse(Call<ResultObject> call, Response<ResultObject> response) {
-//                ResultObject result = response.body();
-//                if (!TextUtils.isEmpty(result.getSuccess())) {
-//
-//                    Toast.makeText(StartRecordingActivity.this, "Result " + result.getSuccess(), Toast.LENGTH_LONG).show();
-//                    Log.d("Recording Result", "Result " + result.getSuccess());
-//
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResultObject> call, Throwable t) {
-//                Log.d("Error Result", "Error message " + t.getMessage());
-//            }
-//        });
-//    }
-
     @Override
     public void onBackPressed() {
         stopBGMusic();
         stopRecording();
-
+        bp.release();
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
         mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
         if (mydirRecording.exists()) {
             File from = new File(mydirRecording, "static recorded story.mp3");

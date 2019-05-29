@@ -265,6 +265,7 @@ public class SignUpActivity extends AppCompatActivity {
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
+
                         login_button.setImageResource(R.drawable.profile_btn_pressed);
                         if (!sharedPreferenceMethod.checkLogin()) {
                             login_button.setOnClickListener(new View.OnClickListener() {
@@ -301,12 +302,16 @@ public class SignUpActivity extends AppCompatActivity {
                 HideProgressDialog();
                 if (response.isSuccessful()) {
 
-                    Toast.makeText(getApplicationContext(), response.body().getStatus()
-                            + response.body().getMessage()
-                            + response.body().getUser_id()
+                    if (response.body().getStatus().equals("true")) {
+                        Toast.makeText(getApplicationContext(), response.body().getStatus()
+                                + response.body().getMessage()
+                                + response.body().getUser_id()
 
-                            + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                    sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                                + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
+                        startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
+                        finish();
+                    }
                 }
 
 

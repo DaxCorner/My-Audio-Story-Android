@@ -18,10 +18,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -58,12 +61,13 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     Dialog myDialog;
     Boolean isPressed = true;
     APIService apiService;
-    ViewPagerAdapter viewPagerAdapter;
     List<BooksModel_login.book_detail> book_list_login = null;
     List<Books_model.book_detail> book_list = null;
     String android_id;
     String book_id;
     CustomProgressBar progressDialog;
+    LayoutInflater inflater;
+    RelativeLayout v0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         progressDialog = new CustomProgressBar(this);
 
         login_btn = findViewById(R.id.login_btn_main);
+        inflater = this.getLayoutInflater();
+        v0 = (RelativeLayout) inflater.inflate(R.layout.view_pager_layout, null);
 
         //      Checking that run is first time of the app or not
 //        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
@@ -208,6 +214,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                     if (pass.length() > 6) {
                         String login_email = et_email_btn.getText().toString();
                         String login_password = et_password_btn.getText().toString();
+                        ShowProgressDialog();
                         loginRequest(login_email, login_password);
 
                     } else {
@@ -230,9 +237,13 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 Log.e("signIn Response", response.body().getStatus());
-                progressDialog.hideProgress();
+                HideProgressDialog();
 
                 if (response.body().getStatus().equals("true")) {
+
+//                    fetchBookDataAndLoginViewPager();
+                    startActivity(new Intent(ChooseYourBookActivity.this, ChooseYourBookActivity.class));
+                    finish();
                     sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
 //                    sharedPreferenceMethod.saveLogin(true);
                     Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
@@ -244,6 +255,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 startActivity(new Intent(ChooseYourBookActivity.this, ProfileActivity.class));
+
                             }
                         });
                     } else {
@@ -378,6 +390,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 //                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image_list, book_name_list, book_audio_file_list);
 
                 Login_ViewPagerAdapter loginViewPagerAdapter = new Login_ViewPagerAdapter(ChooseYourBookActivity.this, book_list_login, sharedPreferenceMethod);
+                loginViewPagerAdapter.addView(v0, 0);
+                loginViewPagerAdapter.notifyDataSetChanged();
                 viewPager = findViewById(R.id.photos_viewpager);
 
                 viewPager.setAdapter(loginViewPagerAdapter);
@@ -385,19 +399,34 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
                 dotscount = loginViewPagerAdapter.getCount();
                 dots = new ImageView[dotscount];
+                if (book_list_login.size() > 5) {
+                    for (int i = 0; i < dotscount; i++) {
 
-                for (int i = 0; i < dotscount; i++) {
+                        dots[i] = new ImageView(ChooseYourBookActivity.this);
+                        dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
 
-                    dots[i] = new ImageView(ChooseYourBookActivity.this);
-                    dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(10, 0, 10, 0);
 
-                    params.setMargins(10, 0, 10, 0);
+                        sliderDotspanel.addView(dots[i], params);
 
-                    sliderDotspanel.addView(dots[i], params);
+                    }
+                } else {
+                    for (int i = 0; i < dotscount; i++) {
 
+                        dots[i] = new ImageView(ChooseYourBookActivity.this);
+                        dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                        params.setMargins(10, 0, 10, 0);
+
+                        sliderDotspanel.addView(dots[i], params);
+
+                    }
                 }
+
 
                 dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
 
@@ -451,9 +480,10 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                 }
 //                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image_list, book_name_list, book_audio_file_list);
 
-                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, book_list, sharedPreferenceMethod);
+                ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, book_list, sharedPreferenceMethod);
                 viewPager = findViewById(R.id.photos_viewpager);
-
+                viewPagerAdapter.addView(v0, 0);
+                viewPagerAdapter.notifyDataSetChanged();
                 viewPager.setAdapter(viewPagerAdapter);
 
 

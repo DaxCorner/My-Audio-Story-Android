@@ -43,6 +43,13 @@ public class SharedPreferenceMethod {
 
     }
 
+    public void login(String login) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
+        SharedPreferences.Editor sp_editor = sharedPreferences.edit();
+        sp_editor.putString("loginEmail", login);
+        sp_editor.apply();
+    }
+
     public String getUserId() {
         SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
@@ -50,7 +57,6 @@ public class SharedPreferenceMethod {
         SharedModel sharedModel = new SharedModel();
         spUser_id = sp.getString("spUser_id", "");
         sharedModel.setUser_id(spUser_id);
-
         return spUser_id;
     }
 
@@ -58,9 +64,8 @@ public class SharedPreferenceMethod {
         SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
-
         boolean email = sp.getString("email", "").isEmpty();
-        return email ;
+        return email;
     }
 
     public void Logout() {

@@ -118,17 +118,17 @@ public class RecordYourOwnActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-//                if (hasMicrophone()) {
-////                    String is_paid = bundle.getString("is_paid");
-////                    if (is_paid.equals("1")) {
-//                    RecordPersonalGreetingPopUp();
-////                    }
-////                    else{
-//                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
-////                    }
-//                } else {
-//                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
-//                }
+                if (hasMicrophone()) {
+                    String is_paid = bundle.getString("is_paid");
+                    if (is_paid.equals("1")) {
+                    RecordPersonalGreetingPopUp();
+                    }
+                    else{
+                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
+                }
 
 
             }

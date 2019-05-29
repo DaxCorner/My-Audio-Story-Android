@@ -3,7 +3,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/bg"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/back_press_player"
@@ -36,7 +37,7 @@
             android:gravity="center_horizontal"
             android:text="Eli's Star"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textColor="#fff" />
+            android:textColor="#FCB714" />
     </LinearLayout>
 
     <SeekBar
@@ -82,6 +83,24 @@
             android:layout_height="48dp"
             android:layout_marginTop="35dp"
             android:src="@drawable/fast_forward" />
+
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/skip_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="#FCB714"
+        android:text="Skip Greeting"
+        android:visibility="gone"
+        android:textColor="#fff"
+        android:padding="10dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:drawableRight="@drawable/skip_btn"/>
+
+
 </RelativeLayout>
 

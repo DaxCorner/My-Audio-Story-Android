@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/back_press_player"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:src="@drawable/arrow_back_button" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/book_img_player"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="50dp" />
+
+        <TextView
+            android:id="@+id/audio_file_name"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="50dp"
+            android:gravity="center_horizontal"
+            android:text="Eli's Star"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="#fff" />
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/media_plyr_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:progressDrawable="@drawable/seek_bar"
+        android:thumb="@drawable/seekbar_thumb" />
+
+    <LinearLayout
+        android:id="@+id/media_plyr_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="50dp">
+
+        <ImageView
+
+            android:id="@+id/rewind_btn"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="35dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/rewind_button" />
+
+        <ImageView
+            android:id="@+id/play_pause_btn"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/pause_button" />
+
+
+        <ImageView
+            android:id="@+id/fast_forward"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="35dp"
+            android:src="@drawable/fast_forward" />
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/skip_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="#FCB714"
+        android:text="skip"
+        android:textColor="#fff"
+        android:padding="5dp"
+        android:drawableRight="@drawable/skip_btn"/>
+
+
+</RelativeLayout>
+

@@ -6,133 +6,117 @@
     android:orientation="vertical">
 
     <RelativeLayout
+        android:id="@+id/recording_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/recording_layout"
         android:visibility="visible">
 
-    <RelativeLayout
-        android:id="@+id/header"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
+
+            <ImageView
+                android:id="@+id/home_btn_start_recording"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/home_btn_pressed" />
+
+            <ImageView
+                android:id="@+id/homepage_logo"
+                android:layout_width="250dp"
+                android:layout_height="140dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/top_logo" />
+
+            <ImageView
+                android:id="@+id/lib_btn_recording"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/login_btn_recording"
+                android:src="@drawable/lib_btn_pressed" />
+
+            <ImageView
+                android:id="@+id/login_btn_recording"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="7dp"
+                android:src="@drawable/login_btn_pressed" />
+
+        </RelativeLayout>
+
 
         <ImageView
-            android:id="@+id/home_btn_start_recording"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/home_btn_pressed" />
+            android:id="@+id/choose_book"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_below="@+id/header"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/record_your_own" />
 
-        <ImageView
-            android:id="@+id/homepage_logo"
-            android:layout_width="250dp"
-            android:layout_height="140dp"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/top_logo" />
-
-        <ImageView
-            android:id="@+id/lib_btn_recording"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginTop="10dp"
-            android:layout_toLeftOf="@id/login_btn_recording"
-            android:src="@drawable/lib_btn_pressed" />
-
-        <ImageView
-            android:id="@+id/login_btn_recording"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="7dp"
-            android:src="@drawable/login_btn_pressed" />
-
-    </RelativeLayout>
-
-
-    <ImageView
-        android:id="@+id/choose_book"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_below="@+id/header"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/record_your_own" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/choose_book"
-        android:layout_above="@+id/bottom"
-        android:padding="20dp">
-
-        <TextView
-            android:id="@+id/story_text_on_recording"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Story text.........................................................................."
             android:layout_below="@+id/choose_book"
-            android:textColor="#000"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:layout_above="@+id/bottom"/>
-    </ScrollView>
+            android:padding="20dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:id="@+id/bottom"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:fontFamily="sans-serif-medium"
-            android:text="The End"
-            android:layout_above="@id/design"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/design"
-            android:layout_width="150dp"
-            android:layout_height="55dp"
-            android:layout_above="@+id/record_personal_msg"
-            android:layout_centerHorizontal="true"
-            android:src="@drawable/design_element" />
-        <ImageView
-            android:id="@+id/stop_recording_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:padding="5dp"
-            android:src="@drawable/end_recording_button" />
+                <TextView
+                    android:id="@+id/story_text_on_recording"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_above="@+id/bottom"
+                    android:layout_below="@+id/choose_book"
+                    android:text="Story text.........................................................................."
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="#000" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="The End"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                <ImageView
+                    android:id="@+id/design"
+                    android:layout_width="150dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/design_element" />
+            </LinearLayout>
+        </ScrollView>
+
 
         <ImageView
-            android:id="@+id/record_personal_msg"
+            android:id="@+id/start_count_down_timer_dialog"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:padding="5dp"
-            android:src="@drawable/greeting_pressed" />
+            android:src="@drawable/start_countdown_and_record_button" />
 
-    </LinearLayout>
 
     </RelativeLayout>
 
 
-
-
-
     <RelativeLayout
+        android:id="@+id/save_share_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/save_share_layout"
         android:visibility="gone">
 
         <RelativeLayout
@@ -143,8 +127,8 @@
 
             <ImageView
                 android:id="@+id/home_btn_recorded"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_margin="10dp"
                 android:src="@drawable/home_btn_pressed" />
 
@@ -169,8 +153,8 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="10dp"
                 android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="7dp"
                 android:src="@drawable/login_btn_pressed" />
 
@@ -215,42 +199,42 @@
                 android:textColor="#fff" />
 
             <EditText
-                android:layout_marginRight="10dp"
-                android:layout_marginLeft="10dp"
                 android:id="@+id/name_recorded_story"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_below="@id/recorded_story"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
                 android:background="@drawable/text_field"
                 android:padding="10dp" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:padding="15dp"
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/save_name_txt">
+            android:layout_below="@id/save_name_txt"
+            android:layout_centerHorizontal="true"
+            android:padding="15dp">
 
             <ImageView
 
-                android:padding="2dp"
                 android:id="@+id/save_story_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
+                android:padding="2dp"
                 android:src="@drawable/savebtn_pressed" />
+
             <ImageView
                 android:id="@+id/share_story_btn_on_end"
-                android:padding="2dp"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/save_story_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
+                android:layout_below="@id/save_story_btn"
+                android:layout_marginTop="20dp"
+                android:padding="2dp"
                 android:src="@drawable/share_btn_pressed" />
         </RelativeLayout>
 
     </RelativeLayout>
-
 
 
 </RelativeLayout>

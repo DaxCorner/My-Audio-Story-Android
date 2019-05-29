@@ -72,7 +72,7 @@ public class LibraryActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         home_btn = findViewById(R.id.home_btn_lib);
         login_btn_main = findViewById(R.id.login_btn_lib);
-
+        Log.e("User_id", sharedPreferenceMethod.getUserId());
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
@@ -177,6 +177,7 @@ public class LibraryActivity extends AppCompatActivity {
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
+                        sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_main.setImageResource(R.drawable.profile_btn_pressed);
                         if (!sharedPreferenceMethod.checkLogin()) {
