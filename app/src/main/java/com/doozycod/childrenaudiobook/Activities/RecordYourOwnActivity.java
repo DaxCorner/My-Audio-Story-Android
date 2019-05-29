@@ -27,6 +27,7 @@ import com.anjlab.android.iab.v3.TransactionDetails;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import retrofit2.Call;
@@ -52,6 +53,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
     SharedPreferenceMethod sharedPreferenceMethod;
     Bundle bundle;
     String android_id;
+    CustomProgressBar progressDialog;
 //    String PRODUCT_ID = "purchase_book";
 
     @Override
@@ -59,6 +61,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         bundle = getIntent().getExtras();
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+        progressDialog = new CustomProgressBar(this);
         myDialog = new Dialog(this);
         setContentView(R.layout.activity_record_own);
 
@@ -74,8 +77,18 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+                ShowProgressDialog();
 
+                login_btn.setImageResource(R.drawable.login_btn_pressed);
 
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowPopup(v);
+                    }
+                });
+            } else {
+                ShowProgressDialog();
                 login_btn.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -83,19 +96,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                         startActivity(new Intent(RecordYourOwnActivity.this, ProfileActivity.class));
                     }
                 });
-                if (!BillingProcessor.isIabServiceAvailable(this)) {
-                    Toast.makeText(this, "In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                login_btn.setImageResource(R.drawable.login_btn_pressed);
-                login_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        ShowPopup(v);
-
-                    }
-                });
             }
         }
 
@@ -179,6 +180,14 @@ public class RecordYourOwnActivity extends AppCompatActivity {
 
     }
 
+    public void ShowProgressDialog() {
+        progressDialog.showProgress();
+    }
+
+    public void HideProgressDialog() {
+        progressDialog.hideProgress();
+
+    }
 
     public void ShowPopup(final View v) {
         myDialog.setContentView(R.layout.custom_record_timer);
@@ -323,7 +332,7 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                         sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
                         login_btn.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin()) {
+                        if (!sharedPreferenceMethod.checkLogin()) {
                             login_btn.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -352,10 +361,6 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         PackageManager pmanager = this.getPackageManager();
         return pmanager.hasSystemFeature(PackageManager.FEATURE_MICROPHONE);
     }
-
-
-
-
 
 
 }

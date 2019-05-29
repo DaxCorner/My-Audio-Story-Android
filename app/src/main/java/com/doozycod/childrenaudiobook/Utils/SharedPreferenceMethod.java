@@ -19,7 +19,7 @@ public class SharedPreferenceMethod {
 
 
     public void spInsert(String semail, String spassword, String spfirst_name, String splast_name, String spMobileNumber, String spUser_id) {
-        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
@@ -34,7 +34,7 @@ public class SharedPreferenceMethod {
     }
 
     public void saveLogin(boolean login) {
-        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
@@ -44,7 +44,7 @@ public class SharedPreferenceMethod {
     }
 
     public String getUserId() {
-        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
         SharedModel sharedModel = new SharedModel();
@@ -55,22 +55,19 @@ public class SharedPreferenceMethod {
     }
 
     public boolean checkLogin() {
-        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
 
-        boolean login = sp.getBoolean("login", true);
-
-        return login;
+        boolean email = sp.getString("email", "").isEmpty();
+        return email ;
     }
 
     public void Logout() {
-        SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
-        sp_editior.putBoolean("login", false);
-        sp_editior.clear();
-        sp_editior.apply();
+        sp_editior.clear().apply();
 
     }
 }

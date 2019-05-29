@@ -130,7 +130,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
 
         if (sharedPreferenceMethod != null) {
-            if (sharedPreferenceMethod.checkLogin()) {
+            if (!sharedPreferenceMethod.checkLogin()) {
                 login_btn_recording.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_recording.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -523,7 +523,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                         sharedPreferenceMethod.saveLogin(true);
                         login_btn_recording.setImageResource(R.drawable.profile_btn_pressed);
                         login_btn_recorded.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin()) {
+                        if (!sharedPreferenceMethod.checkLogin()) {
                             login_btn_recording.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

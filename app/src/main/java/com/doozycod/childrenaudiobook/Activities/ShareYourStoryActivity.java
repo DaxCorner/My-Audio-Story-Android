@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import retrofit2.Call;
@@ -31,6 +32,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
     APIService apiService;
     SharedPreferenceMethod sharedPreferenceMethod;
     String android_id;
+    CustomProgressBar progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +40,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_share_story);
         apiService = ApiUtils.getAPIService();
-
+        progressDialog = new CustomProgressBar(this);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
         home_btn_share = findViewById(R.id.home_btn_share);
@@ -58,6 +60,18 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+//                ShowProgressDialog();
+
+                login_btn_share.setImageResource(R.drawable.login_btn_pressed);
+
+                login_btn_share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowPopup();
+                    }
+                });
+            } else {
+//                ShowProgressDialog();
                 login_btn_share.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_share.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -65,16 +79,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                         startActivity(new Intent(ShareYourStoryActivity.this, ProfileActivity.class));
                     }
                 });
-            } else {
-                login_btn_share.setImageResource(R.drawable.login_btn_pressed);
-                login_btn_share.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        ShowPopup();
-
-                    }
-                });
             }
         }
 
@@ -103,7 +108,14 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         });
 
     }
+    public void ShowProgressDialog() {
+        progressDialog.showProgress();
+    }
 
+    public void HideProgressDialog() {
+        progressDialog.hideProgress();
+
+    }
     public void ShowPopup() {
 
         myDialog.setContentView(R.layout.custom_popup);
@@ -173,7 +185,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                         sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
                         login_btn_share.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin()) {
+                        if (!sharedPreferenceMethod.checkLogin()) {
                             login_btn_share.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

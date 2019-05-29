@@ -19,6 +19,7 @@ import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.Models.updateProfileModel;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.hmomeni.progresscircula.ProgressCircula;
 
@@ -34,16 +35,17 @@ public class ProfileActivity extends AppCompatActivity {
     String shared_email, shared_phoneno, shared_firstname, shared_lastname;
     SharedPreferenceMethod sharedPreferenceMethod;
     APIService apiService;
-    ProgressCircula progressCircula;
+    CustomProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myDialog = new Dialog(this);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+        progressBar = new CustomProgressBar(this);
         apiService = ApiUtils.getAPIService();
         setContentView(R.layout.activity_profile);
-        SharedPreferences sp = this.getSharedPreferences("children", Context.MODE_PRIVATE);
+        SharedPreferences sp = this.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
 
         home_btn_profile = findViewById(R.id.home_btn_profile);
         lib_btn_profile = findViewById(R.id.lib_btn_profile);
@@ -164,18 +166,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     public void ShowProgressDialog() {
-        myDialog.setContentView(R.layout.custom_dialog);
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setShowProgress(true);
-        progressCircula.setVisibility(View.VISIBLE);
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
+        progressBar.showProgress();
     }
 
     public void HideProgressDialog() {
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setVisibility(View.GONE);
-        myDialog.dismiss();
+        progressBar.hideProgress();
 
     }
 

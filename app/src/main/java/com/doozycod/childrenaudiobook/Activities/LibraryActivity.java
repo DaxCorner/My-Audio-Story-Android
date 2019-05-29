@@ -26,6 +26,7 @@ import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Service.Config;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.hmomeni.progresscircula.ProgressCircula;
@@ -50,7 +51,8 @@ public class LibraryActivity extends AppCompatActivity {
     SharedPreferenceMethod sharedPreferenceMethod;
     String android_id;
     List<LibraryModel.LibraryDetails> libraryModelList;
-    ProgressCircula progressCircula;
+    CustomProgressBar progressDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class LibraryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_library);
 
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
+        progressDialog = new CustomProgressBar(this);
         apiService = ApiUtils.getAPIService();
         android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
@@ -73,7 +76,18 @@ public class LibraryActivity extends AppCompatActivity {
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+//                ShowProgressDialog();
 
+                login_btn_main.setImageResource(R.drawable.login_btn_pressed);
+
+                login_btn_main.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowPopup();
+                    }
+                });
+            } else {
+//                ShowProgressDialog();
                 login_btn_main.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_main.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -81,19 +95,10 @@ public class LibraryActivity extends AppCompatActivity {
                         startActivity(new Intent(LibraryActivity.this, ProfileActivity.class));
                     }
                 });
-            } else {
-                login_btn_main.setImageResource(R.drawable.login_btn_pressed);
-                login_btn_main.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        ShowPopup();
-
-                    }
-                });
             }
         }
-        if (sharedPreferenceMethod.checkLogin()) {
+        if (!sharedPreferenceMethod.checkLogin()) {
             getLibrary(sharedPreferenceMethod.getUserId());
             ShowProgressDialog();
         } else {
@@ -174,7 +179,7 @@ public class LibraryActivity extends AppCompatActivity {
                         sharedPreferenceMethod.saveLogin(true);
                         myDialog.dismiss();
                         login_btn_main.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin()) {
+                        if (!sharedPreferenceMethod.checkLogin()) {
                             login_btn_main.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -200,18 +205,11 @@ public class LibraryActivity extends AppCompatActivity {
     }
 
     public void ShowProgressDialog() {
-        myDialog.setContentView(R.layout.custom_dialog);
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setShowProgress(true);
-        progressCircula.setVisibility(View.VISIBLE);
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
+        progressDialog.showProgress();
     }
 
     public void HideProgressDialog() {
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setVisibility(View.GONE);
-        myDialog.dismiss();
+        progressDialog.hideProgress();
 
     }
 

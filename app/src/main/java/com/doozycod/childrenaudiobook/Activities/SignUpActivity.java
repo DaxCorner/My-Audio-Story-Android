@@ -23,6 +23,7 @@ import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.Signup_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.hmomeni.progresscircula.ProgressCircula;
 
@@ -47,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
     TextView passwordtxt;
     TextView retypepass, phone_txt;
     String entered_email, entered_fname, entered_lname, entered_password, entered_mobile;
-    ProgressCircula progressCircula;
+    CustomProgressBar progressBar;
     //init volley
     private RequestQueue mRequestQueue;
     private StringRequest mStringRequest;
@@ -61,7 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         apiService = ApiUtils.getAPIService();
-
+        progressBar = new CustomProgressBar(this);
         myDialog = new Dialog(this);
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
         android_id = Settings.Secure.getString(this.getContentResolver(),
@@ -117,6 +118,18 @@ public class SignUpActivity extends AppCompatActivity {
         });
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+//                ShowProgressDialog();
+
+                login_button.setImageResource(R.drawable.login_btn_pressed);
+
+                login_button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowPopup();
+                    }
+                });
+            } else {
+//                ShowProgressDialog();
                 login_button.setImageResource(R.drawable.profile_btn_pressed);
                 login_button.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -124,16 +137,7 @@ public class SignUpActivity extends AppCompatActivity {
                         startActivity(new Intent(SignUpActivity.this, ProfileActivity.class));
                     }
                 });
-            } else {
-                login_button.setImageResource(R.drawable.login_btn_pressed);
-                login_button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        ShowPopup();
-
-                    }
-                });
             }
         }
         library_buton.setOnClickListener(new View.OnClickListener() {
@@ -148,18 +152,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void ShowProgressDialog() {
-        myDialog.setContentView(R.layout.custom_dialog);
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setShowProgress(true);
-        progressCircula.setVisibility(View.VISIBLE);
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
+        progressBar.showProgress();
     }
 
     public void HideProgressDialog() {
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setVisibility(View.GONE);
-        myDialog.dismiss();
+        progressBar.hideProgress();
 
     }
 
@@ -269,7 +266,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
                         login_button.setImageResource(R.drawable.profile_btn_pressed);
-                        if (sharedPreferenceMethod.checkLogin()) {
+                        if (!sharedPreferenceMethod.checkLogin()) {
                             login_button.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

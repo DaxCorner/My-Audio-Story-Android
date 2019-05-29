@@ -33,6 +33,7 @@ import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.hmomeni.progresscircula.ProgressCircula;
 
@@ -62,7 +63,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     List<Books_model.book_detail> book_list = null;
     String android_id;
     String book_id;
-    ProgressCircula progressCircula;
+    CustomProgressBar progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +71,10 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         checkPermission();
         setContentView(R.layout.activity_main);
         myDialog = new Dialog(this);
+        progressDialog = new CustomProgressBar(this);
 
         login_btn = findViewById(R.id.login_btn_main);
+
         //      Checking that run is first time of the app or not
 //        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
 //                .getBoolean("isFirstRun", true);
@@ -94,28 +97,26 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                 ShowPopup();
             }
         });
-        ShowProgressDialog();
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+                ShowProgressDialog();
+                fetchBookDataAndViewPager();
+                login_btn.setImageResource(R.drawable.login_btn_pressed);
 
+                login_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowPopup();
+                    }
+                });
+            } else {
+                ShowProgressDialog();
                 fetchBookDataAndLoginViewPager();
                 login_btn.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         startActivity(new Intent(ChooseYourBookActivity.this, ProfileActivity.class));
-                    }
-                });
-            } else {
-                ShowProgressDialog();
-                fetchBookDataAndViewPager();
-                login_btn.setImageResource(R.drawable.login_btn_pressed);
-                login_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        ShowPopup();
-
                     }
                 });
 
@@ -229,16 +230,16 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
 
                 Log.e("signIn Response", response.body().getStatus());
-                HideProgressDialog();
+                progressDialog.hideProgress();
 
                 if (response.body().getStatus().equals("true")) {
                     sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
-                    sharedPreferenceMethod.saveLogin(true);
+//                    sharedPreferenceMethod.saveLogin(true);
                     Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                     myDialog.dismiss();
                     login_btn.setImageResource(R.drawable.profile_btn_pressed);
                     Log.e("Shared CheckLogin", sharedPreferenceMethod.checkLogin() + "");
-                    if (sharedPreferenceMethod.checkLogin()) {
+                    if (!sharedPreferenceMethod.checkLogin()) {
                         login_btn.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -290,19 +291,11 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     }
 
     public void ShowProgressDialog() {
-        myDialog.setContentView(R.layout.custom_dialog);
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setShowProgress(true);
-        progressCircula.setVisibility(View.VISIBLE);
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
+        progressDialog.showProgress();
     }
 
     public void HideProgressDialog() {
-
-        progressCircula = myDialog.findViewById(R.id.progressBar);
-//        progressCircula.setVisibility(View.GONE);
-        myDialog.dismiss();
+        progressDialog.hideProgress();
 
     }
 
@@ -376,6 +369,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             public void onResponse(Call<BooksModel_login> call, Response<BooksModel_login> response) {
 
                 HideProgressDialog();
+
                 for (int index = 0; index < response.body().getBook_list_data().size(); index++) {
 
                     book_list_login = response.body().getBook_list_data();
@@ -448,10 +442,11 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         apiService.getAllBooks().enqueue(new Callback<Books_model>() {
             @Override
             public void onResponse(Call<Books_model> call, Response<Books_model> response) {
+                HideProgressDialog();
+
                 for (int index = 0; index < response.body().getBook_list_data().size(); index++) {
 
                     book_list = response.body().getBook_list_data();
-                    HideProgressDialog();
                     Log.e("Book Image", book_list.get(0).getBook_image());
                 }
 //                viewPagerAdapter = new ViewPagerAdapter(ChooseYourBookActivity.this, apiService, book_image_list, book_name_list, book_audio_file_list);

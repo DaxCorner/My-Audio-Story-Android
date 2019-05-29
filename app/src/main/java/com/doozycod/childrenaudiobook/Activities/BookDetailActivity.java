@@ -37,6 +37,7 @@ import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
 import java.io.IOException;
@@ -67,12 +68,14 @@ public class BookDetailActivity extends AppCompatActivity {
     private boolean readyToPurchase = false;
     String PRODUCT_ID = "purchase_book";
     String book_id, user_id, is_paid, book_image, book_name;
+    CustomProgressBar progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         bundle = getIntent().getExtras();
+        progressDialog = new CustomProgressBar(this);
         inAppBilling();
         setContentView(R.layout.activity_listen_audio_story);
         login_btn_listen = findViewById(R.id.login_btn_listen);
@@ -89,6 +92,18 @@ public class BookDetailActivity extends AppCompatActivity {
 //        Check user Logged in or Not
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
+                ShowProgressDialog();
+
+                login_btn_listen.setImageResource(R.drawable.login_btn_pressed);
+
+                login_btn_listen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ShowPopup();
+                    }
+                });
+            } else {
+                ShowProgressDialog();
                 login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
                 login_btn_listen.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -96,16 +111,7 @@ public class BookDetailActivity extends AppCompatActivity {
                         startActivity(new Intent(BookDetailActivity.this, ProfileActivity.class));
                     }
                 });
-            } else {
-                login_btn_listen.setImageResource(R.drawable.login_btn_pressed);
-                login_btn_listen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
 
-                        ShowPopup();
-
-                    }
-                });
             }
         }
         String audio_file = bundle.getString("audio_file");
@@ -176,7 +182,14 @@ public class BookDetailActivity extends AppCompatActivity {
             }
         });
     }
+    public void ShowProgressDialog() {
+        progressDialog.showProgress();
+    }
 
+    public void HideProgressDialog() {
+        progressDialog.hideProgress();
+
+    }
     public void inAppBilling() {
         bp = new BillingProcessor(this, null, new BillingProcessor.IBillingHandler() {
             @Override
