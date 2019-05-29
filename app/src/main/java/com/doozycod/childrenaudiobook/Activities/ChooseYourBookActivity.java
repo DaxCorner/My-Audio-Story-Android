@@ -301,7 +301,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     public void HideProgressDialog() {
 
         progressCircula = myDialog.findViewById(R.id.progressBar);
-        progressCircula.setVisibility(View.GONE);
+//        progressCircula.setVisibility(View.GONE);
         myDialog.dismiss();
 
     }

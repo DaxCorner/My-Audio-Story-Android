@@ -217,7 +217,7 @@ public class ProfileActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(), response.body().getMessage()
                                     , Toast.LENGTH_SHORT).show();
                             if (response.body().getSuccess().equals("true")) {
-                                sharedPreferenceMethod.saveLogin(false);
+                                sharedPreferenceMethod.Logout();
                                 Intent intent = new Intent(ProfileActivity.this, ChooseYourBookActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);

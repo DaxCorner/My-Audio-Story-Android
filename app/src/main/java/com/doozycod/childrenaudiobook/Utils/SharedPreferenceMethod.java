@@ -64,12 +64,13 @@ public class SharedPreferenceMethod {
         return login;
     }
 
-    public void Logout(boolean logout) {
+    public void Logout() {
         SharedPreferences sp = context.getSharedPreferences("children", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
 
-        sp_editior.putBoolean("login", logout);
-        sp_editior.commit();
+        sp_editior.putBoolean("login", false);
+        sp_editior.clear();
+        sp_editior.apply();
 
     }
 }

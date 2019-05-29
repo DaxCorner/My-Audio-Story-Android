@@ -10,7 +10,7 @@
         android:layout_width="90dp"
         android:layout_height="90dp"
         app:pgc_indeterminate="true"
-        app:pgc_progress="40"
+        app:pgc_progress="0"
         app:pgc_rimColor="@color/colorAccent"
         app:pgc_rimWidth="3dp"
         app:pgc_showProgress="true" />
