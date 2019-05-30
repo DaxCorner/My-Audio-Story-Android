@@ -100,7 +100,7 @@
 
 
         <ImageView
-            android:id="@+id/start_count_down_timer_dialog"
+            android:id="@+id/start_count_down_timer_btn"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_alignParentBottom="true"

@@ -67,10 +67,11 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     ImageView save_story_btn, share_story_btn, stop_recording_btn,
             imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup,
-            home_btn_recording, lib_btn_recording, start_count_down_timer_dialog, login_btn_recording, home_btn_recorded, lib_btn_recorded, login_btn_recorded;
+            home_btn_recording, lib_btn_recording, start_count_down_timer_btn, login_btn_recording, home_btn_recorded, lib_btn_recorded, login_btn_recorded;
     Dialog myDialog;
     RelativeLayout start_recording_layout, save_recording_layout;
     int i = 0;
+    int count = 0;
     String audioFilePath = "";
     boolean isRecording = false;
     boolean readyToPurchase = false;
@@ -82,8 +83,7 @@ public class StartRecordingActivity extends AppCompatActivity {
             R.drawable.countdown_13, R.drawable.countdown_12, R.drawable.countdown_11, R.drawable.countdown_10, R.drawable.countdown_09, R.drawable.countdown_08,
             R.drawable.countdown_07, R.drawable.countdown_06, R.drawable.countdown_05, R.drawable.countdown_04, R.drawable.countdown_03, R.drawable.countdown_02,
             R.drawable.countdown_01, R.drawable.countdown_00};
-    int[] count_down_timer_img_for_3_sec = {R.drawable.countdown_03, R.drawable.countdown_02,
-            R.drawable.countdown_01, R.drawable.countdown_00};
+    int[] count_down_timer_img_for_3_sec = {R.drawable.countdown_03, R.drawable.countdown_02, R.drawable.countdown_01, R.drawable.countdown_00};
     File mydir;
     File mydirRecording;
     Bundle bundle;
@@ -95,7 +95,7 @@ public class StartRecordingActivity extends AppCompatActivity {
     CustomProgressBar progressBar;
     Intent intent;
     private BillingProcessor bp;
-
+    boolean isPressed = true;
     private static final String TAG = StartRecordingActivity.class.getSimpleName();
 
 
@@ -112,7 +112,6 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         extra = getIntent().getExtras();
         mediaPlayer = new MediaPlayer();
-        mediaRecorder = new MediaRecorder();
         book_id = getIntent().getStringExtra("book_id");
         Log.e("Book ID and User_id", book_id + sharedPreferenceMethod.getUserId());
         intent = new Intent(StartRecordingActivity.this, BookDetailActivity.class);
@@ -137,7 +136,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         login_btn_recorded = findViewById(R.id.login_btn_recorded);
         save_story_btn = findViewById(R.id.save_story_btn);
         share_story_btn = findViewById(R.id.share_story_btn_on_end);
-        start_count_down_timer_dialog = findViewById(R.id.start_count_down_timer_dialog);
+        start_count_down_timer_btn = findViewById(R.id.start_count_down_timer_btn);
 
         if (sharedPreferenceMethod != null) {
             if (!sharedPreferenceMethod.checkLogin()) {
@@ -213,7 +212,6 @@ public class StartRecordingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (mediaPlayer.isPlaying()) {
                     stopRecording();
-                    stopBGMusic();
                 }
                 startActivity(new Intent(StartRecordingActivity.this, LibraryActivity.class));
 
@@ -230,12 +228,7 @@ public class StartRecordingActivity extends AppCompatActivity {
             }
         });
 
-        start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ShowCountdownTimerDialog();
-            }
-        });
+
         share_story_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -250,7 +243,6 @@ public class StartRecordingActivity extends AppCompatActivity {
 
                 if (mediaPlayer.isPlaying()) {
                     stopRecording();
-                    stopBGMusic();
                 }
                 Intent intent = new Intent(StartRecordingActivity.this, ChooseYourBookActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -264,23 +256,46 @@ public class StartRecordingActivity extends AppCompatActivity {
                 startActivity(new Intent(StartRecordingActivity.this, LibraryActivity.class));
             }
         });
+        start_count_down_timer_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                if (isPressed) {
+                    ShowCountdownTimerDialog();
+                    isPressed = false;
+
+                } else {
+                    isPressed = true;
+                    start_count_down_timer_btn.setImageResource(R.drawable.start_countdown_and_record_button);
+
+                    stopRecording();
+                    start_recording_layout.setVisibility(View.GONE);
+                    save_recording_layout.setVisibility(View.VISIBLE);
+
+                }
+
+            }
+        });
         inAppBilling();
 
     }
 
     private void ShowCountdownTimerDialog() {
+
         myDialog.setContentView(R.layout.custom_record_or_nothanks_popup);
-        ImageView record_with_greeting_btn = myDialog.findViewById(R.id.pop_btn_record_with_greeting);
-        ImageView no_thanks_btn = myDialog.findViewById(R.id.no_thanks_btn);
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        myDialog.show();
+
+        ImageView record_with_greeting_btn = myDialog.findViewById(R.id.pop_btn_record_with_greeting);
+        ImageView no_thanks_btn = myDialog.findViewById(R.id.no_thanks_btn);
 
         record_with_greeting_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                ShowPopupGreeting();
+                ShowPopupToRecordGreeting();
+
             }
 
 
@@ -289,10 +304,11 @@ public class StartRecordingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 myDialog.dismiss();
-                ShowPopup();
+                ShowPopupToRecordStory();
+
             }
         });
-        myDialog.show();
+
 
     }
 
@@ -329,6 +345,8 @@ public class StartRecordingActivity extends AppCompatActivity {
     public void recordAudio(String audio_filename) {
 
         isRecording = true;
+
+        mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -345,36 +363,6 @@ public class StartRecordingActivity extends AppCompatActivity {
         }
     }
 
-    public void playBGMusic() {
-
-        audioFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()
-                + "" + "/morning.mp3";
-
-        try {
-            AssetFileDescriptor afd = getAssets().openFd("raw/morning.mp3");
-
-
-            mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    void stopBGMusic() {
-
-        if (mediaPlayer != null) {
-
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-
-    }
 
     public void stopRecording() {
 
@@ -387,11 +375,15 @@ public class StartRecordingActivity extends AppCompatActivity {
         }
     }
 
-    public void ShowPopupGreeting() {
+    public void ShowPopupToRecordGreeting() {
 
         myDialog.setContentView(R.layout.custom_personal_greet_popup);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         imageView = myDialog.findViewById(R.id.counter_image_personal);
         stop_recorder_btn = myDialog.findViewById(R.id.stop_recorder_btn);
+        myDialog.show();
+
 
         final Handler handler = new Handler();
         Runnable myRunnable = new Runnable() {
@@ -399,69 +391,51 @@ public class StartRecordingActivity extends AppCompatActivity {
                 if (i < 30) {
                     imageView.setImageResource(count_down_timer_img[i]);
                     i++;
+                } else if (mediaRecorder != null) {
+                    stopRecording();
+                    myDialog.dismiss();
+                    ShowPopupToRecordStory();
                 }
-                handler.postDelayed(this, 1000);
 
+                handler.postDelayed(this, 1000);
             }
         };
-
         handler.postDelayed(myRunnable, 1000);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        //start record greeting
+        recordAudio("GreetingMessage");
 
-//                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
-                recordAudio("greeting");
-                myDialog.dismiss();
-                if (mediaRecorder != null) {
-                    stopRecording();
-                }
-                ShowPopup();
-            }
-        }, 30 * 1050);
-        myDialog.show();
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         stop_recorder_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                playBGMusic();
+
                 if (mediaRecorder != null) {
                     stopRecording();
+                    myDialog.dismiss();
+                    handler.removeCallbacks(myRunnable);
+                    ShowPopupToRecordStory();
                 }
-                myDialog.dismiss();
-                start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
-                start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-
-                        start_recording_layout.setVisibility(View.GONE);
-                        save_recording_layout.setVisibility(View.VISIBLE);
-                        stopRecording();
-                        recordAudio("static recorded story");
-                    }
-                });
-
-                handler.postDelayed(myRunnable, 100);
 
             }
         });
-        myDialog.show();
+
     }
 
-    public void ShowPopup() {
+    public void ShowPopupToRecordStory() {
+
         myDialog.setContentView(R.layout.custom_record_timer);
-        imageView = myDialog.findViewById(R.id.counter_image);
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        imageView = myDialog.findViewById(R.id.counter_image);
+        myDialog.show();
+
+
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                if (i < 3) {
-                    imageView.setImageResource(count_down_timer_img_for_3_sec[i]);
-                    i++;
+                if (count < 3) {
+                    imageView.setImageResource(count_down_timer_img_for_3_sec[count]);
+                    count++;
                 }
                 handler.postDelayed(this, 1000);
 
@@ -473,53 +447,17 @@ public class StartRecordingActivity extends AppCompatActivity {
             public void run() {
                 myDialog.dismiss();
 //                playBGMusic();
-                start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
-                recordAudio("static recorded story");
+
+                recordAudio("Recorded Story");
+                start_count_down_timer_btn.setImageResource(R.drawable.end_recording_btn_press);
 //                finish();
-                start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
-                start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        stopRecording();
-                        Log.e("CLICKED", "START END CLICKED!");
-                        start_recording_layout.setVisibility(View.GONE);
-                        save_recording_layout.setVisibility(View.VISIBLE);
-                    }
-                });
+
             }
         }, 3 * 1050);
-        myDialog.show();
+        isPressed = false;
+
     }
 
-    public void RecordPersonalGreetingPopUp() {
-
-        myDialog.setContentView(R.layout.custom_yes_or_no_greeting);
-        TextView greeting_dialog_txt = myDialog.findViewById(R.id.record_personal_greeting);
-        ImageView record_greeting = myDialog.findViewById(R.id.yes_btn_record_greeting);
-        ImageView donot_record_greeting = myDialog.findViewById(R.id.no_btn_record_greeting);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
-
-        greeting_dialog_txt.setTypeface(custom_font);
-        myDialog.show();
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
-        donot_record_greeting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog.dismiss();
-
-            }
-        });
-        record_greeting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myDialog.dismiss();
-                ShowPopupGreeting();
-
-            }
-        });
-        myDialog.show();
-    }
 
     public void ShowPopupSignInSignUp() {
 
@@ -648,16 +586,16 @@ public class StartRecordingActivity extends AppCompatActivity {
 
             mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
             if (mydirRecording.exists()) {
-                File from = new File(mydirRecording, "static recorded story.mp3");
-                File fromGreeting = new File(mydirRecording, "greeting.mp3");
+                File from = new File(mydirRecording, "Recorded Story.mp3");
+                File fromGreeting = new File(mydirRecording, "GreetingMessage.mp3");
                 File to = new File(mydirRecording, audio_filename + ".mp3");
 
 
                 String audioFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + audio_filename + ".mp3";
-                String greetingFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "greeting-" + audio_filename + ".mp3";
-                String fromgreet = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "greeting.mp3";
+                String greetingFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "GreetingMessage-" + audio_filename + ".mp3";
+                String fromgreet = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "GreetingMessage.mp3";
 
-                File toGreet = new File(mydirRecording, "greeting-" + audio_filename + ".mp3");
+                File toGreet = new File(mydirRecording, "GreetingMessage-" + audio_filename + ".mp3");
                 if (from.exists() && fromGreeting.exists() || from.exists()) {
                     from.renameTo(to);
                     fromGreeting.renameTo(toGreet);
@@ -666,8 +604,10 @@ public class StartRecordingActivity extends AppCompatActivity {
 //                        uploadFile(audioFilePath);
                         uploadAudioToServer(audioFile, greetingFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
 
+
                     } else {
 //                        uploadFile(audioFilePath);
+
                         uploadAudioToServer(audioFile, "", sharedPreferenceMethod.getUserId(), audio_filename, book_id);
                     }
                 }
@@ -695,7 +635,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
         RequestBody greetingBody = RequestBody.create(MediaType.parse("multipart/form-data"), greetingFile);
         RequestBody audioBody = RequestBody.create(MediaType.parse("multipart/form-data"), audioFile);
-        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio_message", audioFile.getName(), audioBody);
+        MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio_message", greetingFile.getName(), greetingBody);
         MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio_story", audioFile.getName(), audioBody);
 
         Call<ResultObject> serverCom = apiService.uploadAudioToServer(userId, bookId, userName, greeting, audiofile);
@@ -728,11 +668,11 @@ public class StartRecordingActivity extends AppCompatActivity {
 
             mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
             String audioFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + audio_filename + ".mp3";
-            String greetingfile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/greeting.mp3";
+            String greetingfile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/GreetingMessage.mp3";
 
             if (mydirRecording.exists()) {
-                File from = new File(mydirRecording, "static recorded story.mp3");
-                File fromGreeting = new File(mydirRecording, "greeting.mp3");
+                File from = new File(mydirRecording, "Recorded Story.mp3");
+                File fromGreeting = new File(mydirRecording, "GreetingMessage.mp3");
                 File to = new File(mydirRecording, audio_filename + ".mp3");
 
 
@@ -764,14 +704,13 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        stopBGMusic();
         stopRecording();
         bp.release();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
         if (mydirRecording.exists()) {
-            File from = new File(mydirRecording, "static recorded story.mp3");
+            File from = new File(mydirRecording, "Recorded Story.mp3");
             if (from.exists())
                 from.delete();
         }
