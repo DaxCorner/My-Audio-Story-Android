@@ -108,6 +108,14 @@ public class LibraryActivity extends AppCompatActivity {
                 });
 
             }
+        } else {
+            login_btn_main.setImageResource(R.drawable.login_btn_pressed);
+            login_btn_main.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ShowPopup();
+                }
+            });
         }
 
         retry_img_btn.setOnClickListener(new View.OnClickListener() {
