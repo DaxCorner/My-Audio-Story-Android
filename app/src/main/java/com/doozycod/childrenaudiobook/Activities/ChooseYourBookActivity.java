@@ -262,6 +262,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                         ShowPopup();
                     }
 
+                }else {
+                    Toast.makeText(ChooseYourBookActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }

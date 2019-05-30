@@ -378,7 +378,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     public void stopRecording() {
 
-
+        Log.e("Stop recording", "Recording Stopped!");
         if (isRecording) {
             mediaRecorder.stop();
             mediaRecorder.release();
@@ -411,11 +411,12 @@ public class StartRecordingActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-
 //                startActivity(new Intent(StartRecordingActivity.this, SaveShareYourStoryActivity.class));
                 recordAudio("greeting");
                 myDialog.dismiss();
-                stopRecording();
+                if (mediaRecorder != null) {
+                    stopRecording();
+                }
                 ShowPopup();
             }
         }, 30 * 1050);
@@ -425,21 +426,24 @@ public class StartRecordingActivity extends AppCompatActivity {
         stop_recorder_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playBGMusic();
-                stopRecording();
+//                playBGMusic();
+                if (mediaRecorder != null) {
+                    stopRecording();
+                }
                 myDialog.dismiss();
                 start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
                 start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        stopBGMusic();
-                        stopRecording();
+
+
                         start_recording_layout.setVisibility(View.GONE);
                         save_recording_layout.setVisibility(View.VISIBLE);
-
+                        stopRecording();
+                        recordAudio("static recorded story");
                     }
                 });
-                recordAudio("static recorded story");
+
                 handler.postDelayed(myRunnable, 100);
 
             }
@@ -470,19 +474,20 @@ public class StartRecordingActivity extends AppCompatActivity {
                 myDialog.dismiss();
 //                playBGMusic();
                 start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
-                recordAudio("static audio story");
+                recordAudio("static recorded story");
 //                finish();
                 start_count_down_timer_dialog.setImageResource(R.drawable.end_recording_btn_press);
                 start_count_down_timer_dialog.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         stopRecording();
+                        Log.e("CLICKED", "START END CLICKED!");
                         start_recording_layout.setVisibility(View.GONE);
                         save_recording_layout.setVisibility(View.VISIBLE);
                     }
                 });
             }
-        }, 3 * 1100);
+        }, 3 * 1050);
         myDialog.show();
     }
 
@@ -606,6 +611,8 @@ public class StartRecordingActivity extends AppCompatActivity {
                             ShowPopupSignInSignUp();
                         }
 
+                    } else {
+                        Toast.makeText(StartRecordingActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

@@ -6,8 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -36,6 +39,8 @@ public class ProfileActivity extends AppCompatActivity {
     SharedPreferenceMethod sharedPreferenceMethod;
     APIService apiService;
     CustomProgressBar progressBar;
+    String android_id;
+    String firstname, lastname, email, phoneno;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,8 @@ public class ProfileActivity extends AppCompatActivity {
         apiService = ApiUtils.getAPIService();
         setContentView(R.layout.activity_profile);
         SharedPreferences sp = this.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
-
+        android_id = Settings.Secure.getString(this.getContentResolver(),
+                Settings.Secure.ANDROID_ID);
         home_btn_profile = findViewById(R.id.home_btn_profile);
         lib_btn_profile = findViewById(R.id.lib_btn_profile);
         login_profile = findViewById(R.id.profile_btn);
@@ -57,10 +63,6 @@ public class ProfileActivity extends AppCompatActivity {
         et_phone_no = findViewById(R.id.et_phone_no);
         update_btn = findViewById(R.id.update_profile_btn);
 
-        et_email.requestFocus();
-        et_first_name.requestFocus();
-        et_last_name.requestFocus();
-        et_phone_no.requestFocus();
 
         shared_email = sp.getString("email", "");
         shared_firstname = sp.getString("firstname", "");
@@ -70,7 +72,6 @@ public class ProfileActivity extends AppCompatActivity {
         et_phone_no.setText(shared_phoneno);
         et_first_name.setText(shared_firstname);
         et_last_name.setText(shared_lastname);
-
 
         home_btn_profile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,11 +95,98 @@ public class ProfileActivity extends AppCompatActivity {
                 ShowPopup(v);
             }
         });
+        et_phone_no.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (getCurrentFocus() == et_phone_no) {
+                    // is only executed if the EditText was directly changed by the user
+                    shared_phoneno = s.toString();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_email.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (getCurrentFocus() == et_phone_no) {
+                    // is only executed if the EditText was directly changed by the user
+                    shared_email = s.toString();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_first_name.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (getCurrentFocus() == et_first_name) {
+                    // is only executed if the EditText was directly changed by the user
+                    shared_firstname = s.toString();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        et_last_name.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (getCurrentFocus() == et_last_name) {
+                    // is only executed if the EditText was directly changed by the user
+                    shared_lastname = s.toString();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         update_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ShowProgressDialog();
-                updateProfile(sharedPreferenceMethod.getUserId(), shared_firstname, shared_lastname, shared_email, shared_phoneno);
+
+                Log.e("String Email", shared_phoneno);
+                updateProfile(sharedPreferenceMethod.getUserId(), et_email.getText().toString(), shared_lastname, shared_email, shared_phoneno);
+
+
+                SharedPreferences sp = ProfileActivity.this.getSharedPreferences("audiobook", MODE_PRIVATE);
+                sharedPreferenceMethod.spInsert(shared_email, sp.getString("password", ""), shared_firstname, shared_lastname, shared_phoneno, sharedPreferenceMethod.getUserId());
+
 
             }
         });
@@ -112,6 +200,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
     }
+
 
     public void ShowPopup(View v) {
 
@@ -184,9 +273,15 @@ public class ProfileActivity extends AppCompatActivity {
                         HideProgressDialog();
                         if (response.isSuccessful()) {
 
-                            Toast.makeText(getApplicationContext(), response.body().getMessage()
-                                    , Toast.LENGTH_SHORT).show();
-                            myDialog.dismiss();
+
+                            if (response.body().getSuccess().equals("true")) {
+                                Toast.makeText(getApplicationContext(), response.body().getMessage()
+                                        , Toast.LENGTH_SHORT).show();
+                                myDialog.dismiss();
+                            } else {
+                                Toast.makeText(getApplicationContext(), response.body().getMessage()
+                                        , Toast.LENGTH_SHORT).show();
+                            }
 
                         }
 

@@ -344,6 +344,9 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                         }
 
                     }
+                    else {
+                        Toast.makeText(RecordYourOwnActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
 
             }

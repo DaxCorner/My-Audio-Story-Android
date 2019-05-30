@@ -191,6 +191,8 @@ public class LibraryActivity extends AppCompatActivity {
                             ShowPopup();
                         }
 
+                    } else {
+                        Toast.makeText(LibraryActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

@@ -279,6 +279,8 @@ public class SignUpActivity extends AppCompatActivity {
                             ShowPopup();
                         }
 
+                    } else {
+                        Toast.makeText(SignUpActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

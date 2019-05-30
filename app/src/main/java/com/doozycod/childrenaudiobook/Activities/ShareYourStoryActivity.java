@@ -200,6 +200,8 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                             ShowPopup();
                         }
 
+                    } else {
+                        Toast.makeText(ShareYourStoryActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

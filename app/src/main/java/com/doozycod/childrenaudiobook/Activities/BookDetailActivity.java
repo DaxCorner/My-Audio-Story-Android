@@ -122,7 +122,6 @@ public class BookDetailActivity extends AppCompatActivity {
         book_id = bundle.getString("book_id");
         user_id = bundle.getString("user_id");
         is_paid = bundle.getString("is_paid");
-        Toast.makeText(this, is_paid, Toast.LENGTH_SHORT).show();
 
         myDialog = new Dialog(this);
 
@@ -140,7 +139,7 @@ public class BookDetailActivity extends AppCompatActivity {
                 if (sharedPreferenceMethod.checkLogin()) {
 
                     Toast.makeText(BookDetailActivity.this, "You must have to login first!", Toast.LENGTH_SHORT).show();
-
+                    showLoginPopUp(v);
 
                 } else {
 
@@ -575,6 +574,8 @@ public class BookDetailActivity extends AppCompatActivity {
                             ShowPopup();
                         }
 
+                    } else {
+                        Toast.makeText(BookDetailActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 

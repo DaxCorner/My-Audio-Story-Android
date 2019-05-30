@@ -65,7 +65,8 @@ public class SharedPreferenceMethod {
         SharedPreferences.Editor sp_editior = sp.edit();
 
         boolean email = sp.getString("email", "").isEmpty();
-        return email;
+        boolean password = sp.getString("password", "").isEmpty();
+        return email || password;
     }
 
     public void Logout() {
