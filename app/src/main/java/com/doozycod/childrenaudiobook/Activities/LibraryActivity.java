@@ -1,10 +1,13 @@
 package com.doozycod.childrenaudiobook.Activities;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -32,6 +36,9 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +51,7 @@ import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 public class LibraryActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     Dialog myDialog;
-    ImageView login_dialog, login_btn_main, home_btn;
+    ImageView login_dialog, login_btn_main, home_btn, no_library_img, retry_img_btn;
     private MediaPlayer mediaPlayer;
     RecyclerAdapter recyclerAdapter;
     APIService apiService;
@@ -52,6 +59,7 @@ public class LibraryActivity extends AppCompatActivity {
     String android_id;
     List<LibraryModel.LibraryDetails> libraryModelList;
     CustomProgressBar progressDialog;
+    Dialog dialog;
 
 
     @Override
@@ -59,11 +67,12 @@ public class LibraryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
 
+
+        Button retry_btn;
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
         progressDialog = new CustomProgressBar(this);
         apiService = ApiUtils.getAPIService();
-        android_id = Settings.Secure.getString(this.getContentResolver(),
-                Settings.Secure.ANDROID_ID);
+        android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
         myDialog = new Dialog(this);
@@ -72,6 +81,8 @@ public class LibraryActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         home_btn = findViewById(R.id.home_btn_lib);
         login_btn_main = findViewById(R.id.login_btn_lib);
+        no_library_img = findViewById(R.id.no_library_img);
+        retry_img_btn = findViewById(R.id.retry_btn);
         Log.e("User_id", sharedPreferenceMethod.getUserId());
 
         if (sharedPreferenceMethod != null) {
@@ -98,13 +109,16 @@ public class LibraryActivity extends AppCompatActivity {
 
             }
         }
-        if (!sharedPreferenceMethod.checkLogin()) {
-            getLibrary(sharedPreferenceMethod.getUserId());
-            ShowProgressDialog();
-        } else {
-            Log.e("Library", "Nothing here");
-        }
 
+        retry_img_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkInternetandLogin();
+            }
+        });
+
+
+        checkInternetandLogin();
 
         home_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,6 +129,41 @@ public class LibraryActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    void checkInternetandLogin() {
+        ConnectivityManager mgr = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = mgr.getActiveNetworkInfo();
+
+        if (netInfo != null) {
+            if (netInfo.isConnected()) {
+
+                if (!sharedPreferenceMethod.checkLogin()) {
+                    getLibrary(sharedPreferenceMethod.getUserId());
+                    ShowProgressDialog();
+                } else {
+                    no_library_img.setImageResource(R.drawable.no_lib_yet);
+                    no_library_img.setVisibility(View.VISIBLE);
+                }
+
+            } else {
+
+                no_library_img.setImageResource(R.drawable.no_internet);
+                retry_img_btn.setImageResource(R.drawable.try_again);
+                no_library_img.setVisibility(View.VISIBLE);
+                retry_img_btn.setVisibility(View.VISIBLE);
+            }
+        } else {
+
+            no_library_img.setImageResource(R.drawable.no_internet);
+            retry_img_btn.setImageResource(R.drawable.try_again);
+            no_library_img.setVisibility(View.VISIBLE);
+            retry_img_btn.setVisibility(View.VISIBLE);
+        }
+
+
+    }
+
 
     public void ShowPopup() {
         myDialog.setContentView(R.layout.custom_popup);
@@ -148,6 +197,8 @@ public class LibraryActivity extends AppCompatActivity {
 
         EditText et_email_btn = myDialog.findViewById(R.id.et_login_dialog);
         EditText et_password_btn = myDialog.findViewById(R.id.et_password_dialog);
+
+
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,6 +208,7 @@ public class LibraryActivity extends AppCompatActivity {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();
                     loginRequest(login_email, login_password);
+                    ShowProgressDialog();
                 }
             }
         });
@@ -170,29 +222,22 @@ public class LibraryActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-                HideProgressDialog();
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
+                        HideProgressDialog();
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
                         sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_main.setImageResource(R.drawable.profile_btn_pressed);
-                        if (!sharedPreferenceMethod.checkLogin()) {
-                            login_btn_main.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    startActivity(new Intent(LibraryActivity.this, ProfileActivity.class));
-                                }
-                            });
-                        } else {
-                            ShowPopup();
-                        }
+
 
                     } else {
-                        Toast.makeText(LibraryActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+
+                        HideProgressDialog();
+                        errorDialogLogin();
                     }
                 }
 
@@ -216,6 +261,25 @@ public class LibraryActivity extends AppCompatActivity {
 
     }
 
+    public void errorDialogLogin() {
+
+        Dialog errorDialog = new Dialog(LibraryActivity.this);
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        errorDialog.setContentView(R.layout.error_dialog_login);
+
+
+        errorDialog.show();
+
+        ImageView back_arror_btn = errorDialog.findViewById(R.id.error_back_btn);
+        back_arror_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                errorDialog.dismiss();
+            }
+        });
+    }
+
     public void getLibrary(String userId) {
         apiService.getLibrary(userId).enqueue(new Callback<LibraryModel>() {
             @Override
@@ -224,6 +288,10 @@ public class LibraryActivity extends AppCompatActivity {
                     HideProgressDialog();
                     Log.e("Library JSON", response.body().getStatus() + "\n " + response.body().getLibrary_list_data());
                     if (response.body().getStatus().equals("true")) {
+
+                        no_library_img.setVisibility(View.GONE);
+                        retry_img_btn.setVisibility(View.GONE);
+
                         libraryModelList = response.body().getLibrary_list_data();
                         recyclerAdapter = new RecyclerAdapter(LibraryActivity.this, libraryModelList, apiService, sharedPreferenceMethod);
                         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -232,6 +300,9 @@ public class LibraryActivity extends AppCompatActivity {
                         Log.e("lib book image", libraryModelList.get(0).book_details.getBook_image());
 
 //                        Log.e("book image lib", response.body().LibraryDetails.book_details.getBook_image());
+                    } else {
+                        no_library_img.setImageResource(R.drawable.no_lib_yet);
+                        no_library_img.setVisibility(View.VISIBLE);
                     }
                 }
             }
@@ -241,6 +312,7 @@ public class LibraryActivity extends AppCompatActivity {
 
             }
         });
+
 
     }
 

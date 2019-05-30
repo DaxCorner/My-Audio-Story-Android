@@ -71,7 +71,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private BillingProcessor bp;
     private boolean readyToPurchase = false;
     String PRODUCT_ID = "purchase_book";
-    String book_id, user_id, is_paid, book_image, book_name;
+    String book_id, user_id, is_paid, book_image, book_name, book_content_file;
     CustomProgressBar progressDialog;
 
     @Override
@@ -122,7 +122,7 @@ public class BookDetailActivity extends AppCompatActivity {
         book_id = bundle.getString("book_id");
         user_id = bundle.getString("user_id");
         is_paid = bundle.getString("is_paid");
-
+        book_content_file = bundle.getString("book_content_file");
         myDialog = new Dialog(this);
 
         recordAudioButton.setOnClickListener(new View.OnClickListener() {
@@ -142,7 +142,6 @@ public class BookDetailActivity extends AppCompatActivity {
                     showLoginPopUp(v);
 
                 } else {
-
                     if (is_paid.equals("1")) {
                         Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
                         Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
@@ -151,6 +150,7 @@ public class BookDetailActivity extends AppCompatActivity {
                         extras.putString("book_id", book_id);
                         extras.putString("user_id", user_id);
                         extras.putString("is_paid", is_paid);
+                        extras.putString("book_content_file", book_content_file);
                         intent.putExtras(extras);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
@@ -253,6 +253,25 @@ public class BookDetailActivity extends AppCompatActivity {
         });
     }
 
+    public void errorDialogLogin() {
+
+        Dialog errorDialog = new Dialog(BookDetailActivity.this);
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        errorDialog.setContentView(R.layout.error_dialog_login);
+
+
+        errorDialog.show();
+
+        ImageView back_arror_btn = errorDialog.findViewById(R.id.error_back_btn);
+        back_arror_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                errorDialog.dismiss();
+            }
+        });
+    }
+
     public void ShowPopup() {
 
         myDialog.setContentView(R.layout.custom_popup);
@@ -280,25 +299,6 @@ public class BookDetailActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void recordAudio() {
-        AudioSavePathInDevice =
-                Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
-                        "" + "AudioRecording.3gp";
-
-        MediaRecorderReady();
-
-        try {
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-        } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
 
     void stopBGMusic() {
 
@@ -575,7 +575,7 @@ public class BookDetailActivity extends AppCompatActivity {
                         }
 
                     } else {
-                        Toast.makeText(BookDetailActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        errorDialogLogin();
                     }
                 }
 

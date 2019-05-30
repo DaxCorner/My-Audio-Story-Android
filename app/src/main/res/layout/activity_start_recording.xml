@@ -63,6 +63,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_above="@+id/start_count_down_timer_btn"
             android:layout_below="@+id/choose_book"
             android:padding="20dp">
 
@@ -81,18 +82,12 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                     android:textColor="#000" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="The End"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                 <ImageView
                     android:id="@+id/design"
                     android:layout_width="150dp"
                     android:layout_height="55dp"
+                    android:layout_marginTop="20dp"
                     android:layout_gravity="center_horizontal"
                     android:src="@drawable/design_element" />
             </LinearLayout>

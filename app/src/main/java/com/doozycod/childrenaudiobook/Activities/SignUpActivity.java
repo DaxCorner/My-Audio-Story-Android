@@ -280,6 +280,7 @@ public class SignUpActivity extends AppCompatActivity {
                         }
 
                     } else {
+                        errorDialogLogin();
                         Toast.makeText(SignUpActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -293,6 +294,25 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
 
+        });
+    }
+
+    public void errorDialogLogin() {
+
+        Dialog errorDialog = new Dialog(SignUpActivity.this);
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        errorDialog.setContentView(R.layout.error_dialog_login);
+
+
+        errorDialog.show();
+
+        ImageView back_arror_btn = errorDialog.findViewById(R.id.error_back_btn);
+        back_arror_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                errorDialog.dismiss();
+            }
         });
     }
 

@@ -250,20 +250,9 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                     myDialog.dismiss();
                     login_btn.setImageResource(R.drawable.profile_btn_pressed);
                     Log.e("Shared CheckLogin", sharedPreferenceMethod.checkLogin() + "");
-                    if (!sharedPreferenceMethod.checkLogin()) {
-                        login_btn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                startActivity(new Intent(ChooseYourBookActivity.this, ProfileActivity.class));
 
-                            }
-                        });
-                    } else {
-                        ShowPopup();
-                    }
-
-                }else {
-                    Toast.makeText(ChooseYourBookActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    errorDialogLogin();
                 }
 
             }
@@ -278,6 +267,24 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         });
     }
 
+    public void errorDialogLogin() {
+
+        Dialog errorDialog = new Dialog(ChooseYourBookActivity.this);
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        errorDialog.setContentView(R.layout.error_dialog_login);
+
+
+        errorDialog.show();
+
+        ImageView back_arror_btn = errorDialog.findViewById(R.id.error_back_btn);
+        back_arror_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                errorDialog.dismiss();
+            }
+        });
+    }
 
     public void ShowPopupRating(View v) {
 
@@ -401,36 +408,27 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
                 dotscount = loginViewPagerAdapter.getCount();
                 dots = new ImageView[dotscount];
-                if (book_list_login.size() > 5) {
-                    for (int i = 0; i < dotscount; i++) {
 
-                        dots[i] = new ImageView(ChooseYourBookActivity.this);
+
+                for (int i = 0; i < dotscount; i++) {
+
+                    dots[i] = new ImageView(ChooseYourBookActivity.this);
+
+                    if (dotscount > 1) {
                         dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
-
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                        params.setMargins(10, 0, 10, 0);
-
-                        sliderDotspanel.addView(dots[i], params);
-
                     }
-                } else {
-                    for (int i = 0; i < dotscount; i++) {
 
-                        dots[i] = new ImageView(ChooseYourBookActivity.this);
-                        dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(10, 0, 10, 0);
 
-                        params.setMargins(10, 0, 10, 0);
+                    sliderDotspanel.addView(dots[i], params);
 
-                        sliderDotspanel.addView(dots[i], params);
-
-                    }
                 }
 
-
-                dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
+                if (dotscount > 1) {
+                    dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
+                }
 
                 viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override
@@ -490,12 +488,19 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
 
                 dotscount = viewPagerAdapter.getCount();
+
+
                 dots = new ImageView[dotscount];
+
 
                 for (int i = 0; i < dotscount; i++) {
 
                     dots[i] = new ImageView(ChooseYourBookActivity.this);
-                    dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+
+
+                    if (dotscount > 1) {
+                        dots[i].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.dark_dot));
+                    }
 
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -505,7 +510,10 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
                 }
 
-                dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
+
+                if (dotscount > 1) {
+                    dots[0].setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.light_dot));
+                }
 
                 viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
                     @Override

@@ -98,6 +98,7 @@ public class login_GridAdapter extends BaseAdapter {
                 bundle.putString("book_id", Book_list_data.get(position).getBook_id());
                 bundle.putString("is_paid", Book_list_data.get(position).getIs_paid());
                 bundle.putString("user_id", sharedPreferenceMethod.getUserId());
+                bundle.putString("book_content_file", Book_list_data.get(position).getBook_content_file());
 
 
                 bundle.putString("player_book_img", Book_list_data.get(position).getBook_image());

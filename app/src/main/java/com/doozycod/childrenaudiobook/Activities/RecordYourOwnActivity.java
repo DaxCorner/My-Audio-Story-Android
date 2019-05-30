@@ -121,10 +121,9 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                 if (hasMicrophone()) {
                     String is_paid = bundle.getString("is_paid");
                     if (is_paid.equals("1")) {
-                    RecordPersonalGreetingPopUp();
-                    }
-                    else{
-                    Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
+                        RecordPersonalGreetingPopUp();
+                    } else {
+                        Toast.makeText(RecordYourOwnActivity.this, "It's looks like you havn't paid for this :/", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(RecordYourOwnActivity.this, "Microphone not found!", Toast.LENGTH_SHORT).show();
@@ -343,9 +342,8 @@ public class RecordYourOwnActivity extends AppCompatActivity {
                             ShowPopupSignInSignUp();
                         }
 
-                    }
-                    else {
-                        Toast.makeText(RecordYourOwnActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    } else {
+                        errorDialogLogin();
                     }
                 }
 
@@ -360,6 +358,24 @@ public class RecordYourOwnActivity extends AppCompatActivity {
         });
     }
 
+    public void errorDialogLogin() {
+
+        Dialog errorDialog = new Dialog(RecordYourOwnActivity.this);
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        errorDialog.setContentView(R.layout.error_dialog_login);
+
+
+        errorDialog.show();
+
+        ImageView back_arror_btn = errorDialog.findViewById(R.id.error_back_btn);
+        back_arror_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                errorDialog.dismiss();
+            }
+        });
+    }
     protected boolean hasMicrophone() {
         PackageManager pmanager = this.getPackageManager();
         return pmanager.hasSystemFeature(PackageManager.FEATURE_MICROPHONE);

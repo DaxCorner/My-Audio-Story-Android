@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Children\'s Book</string>
     <string name="who_do_you_want_to_share_your_n_recorded_story_with">Who do you want to share your \n  recorded story with:</string>
-    <string name="personal_greeting_string">Do you want record personal greeting ?</string>
+    <string name="personal_greeting_string">Invalid Username or Password!</string>
     <string name="license_key">MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz2SHNk2P/iWl796W0vGDbUiK6Qbu7EN6lRcxtyKnzpVaClm5Gq12155zLf8kwzsdt6TcOcdqRw7V0EP489D9I6TqUSj3038YZiK+Sjsp1UEZRxt0XiYcgxli/raggOxi2WKaSNt/yyMs3FSE/erPdyjFZXwMFPpTIcLMXFhVw9jxvPIoD9g59UP4vj3ubPYeao44inrQsylCoAGAtKD5j3Dqdej488V5mKJGrS7FrgYEbycXq2kVTsudkf4vS9faR2GiJmVUBzbCzRXer9G3RKPOPGrCkmlAM60P61kyEi4D3Ervwj0tam3pIaycb2ladzxPwJ78FrB4N//9IBahpwIDAQAB
 
 </string>

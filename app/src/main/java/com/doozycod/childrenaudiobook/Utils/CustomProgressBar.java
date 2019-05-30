@@ -34,9 +34,9 @@ public class CustomProgressBar {
 	}
 
 	public void hideProgress() {
-		popDialog.dismiss();
 
 		if (popDialog != null) {
+			popDialog.dismiss();
 
 		}
 	}

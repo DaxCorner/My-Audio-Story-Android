@@ -16,14 +16,14 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:src="@drawable/home_btn_pressed"/>
+            android:src="@drawable/home_btn_pressed" />
 
         <ImageView
             android:id="@+id/homepage_logo"
             android:layout_width="260dp"
             android:layout_height="150dp"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/top_logo"/>
+            android:src="@drawable/top_logo" />
 
         <ImageView
             android:id="@+id/lib_btn"
@@ -43,23 +43,43 @@
             android:layout_marginRight="7dp"
             android:src="@drawable/login_btn_pressed" />
 
+        <ImageView
+            android:id="@+id/share_book"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:layout_below="@+id/homepage_logo"
+            android:src="@drawable/library" />
 
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/share_book"
-        android:layout_width="wrap_content"
-        android:layout_height="65dp"
-        android:layout_below="@+id/header"
-        android:src="@drawable/library" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_lib"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/share_book">
+        android:layout_below="@id/header">
 
     </android.support.v7.widget.RecyclerView>
+
+    <ImageView
+        android:id="@+id/no_library_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/no_lib_yet"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/retry_btn"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/try_again"
+        android:visibility="gone" />
 
 
 </RelativeLayout>

@@ -40,16 +40,21 @@ import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 import com.doozycod.childrenaudiobook.Utils.Upload;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.ProtocolException;
 import cz.msebera.android.httpclient.util.TextUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -72,7 +77,8 @@ public class StartRecordingActivity extends AppCompatActivity {
     RelativeLayout start_recording_layout, save_recording_layout;
     int i = 0;
     int count = 0;
-    String audioFilePath = "";
+    RequestBody greetingBody;
+    private StringBuilder text = new StringBuilder();
     boolean isRecording = false;
     boolean readyToPurchase = false;
     MediaPlayer mediaPlayer;
@@ -88,6 +94,7 @@ public class StartRecordingActivity extends AppCompatActivity {
     File mydirRecording;
     Bundle bundle;
     APIService apiService;
+    TextView story_text_on_recording;
     SharedPreferenceMethod sharedPreferenceMethod;
     String book_id;
     String android_id;
@@ -97,7 +104,7 @@ public class StartRecordingActivity extends AppCompatActivity {
     private BillingProcessor bp;
     boolean isPressed = true;
     private static final String TAG = StartRecordingActivity.class.getSimpleName();
-
+    String book_content_file;
 
     @SuppressLint("HardwareIds")
     @Override
@@ -137,6 +144,8 @@ public class StartRecordingActivity extends AppCompatActivity {
         save_story_btn = findViewById(R.id.save_story_btn);
         share_story_btn = findViewById(R.id.share_story_btn_on_end);
         start_count_down_timer_btn = findViewById(R.id.start_count_down_timer_btn);
+        story_text_on_recording = findViewById(R.id.story_text_on_recording);
+
 
         if (sharedPreferenceMethod != null) {
             if (!sharedPreferenceMethod.checkLogin()) {
@@ -180,6 +189,9 @@ public class StartRecordingActivity extends AppCompatActivity {
         String book_id_forBook_act = bundle.getString("book_id");
         String user_id_forBook_act = bundle.getString("user_id");
         String is_paid_check_forBook_act = bundle.getString("is_paid");
+        book_content_file = bundle.getString("book_content_file");
+
+
         Bundle extras = new Bundle();
         extras.putString("audio_file", audio_fileforBook_act);
         extras.putString("book_id", book_id_forBook_act);
@@ -277,7 +289,50 @@ public class StartRecordingActivity extends AppCompatActivity {
             }
         });
         inAppBilling();
+        showBookTextContent();
+        Log.e("Book_content_file", book_content_file);
 
+    }
+
+    void showBookTextContent() {
+
+        new Thread() {
+            @Override
+            public void run() {
+                String path = "http://" + book_content_file;
+                URL u = null;
+                try {
+                    u = new URL(path);
+                    HttpURLConnection c = (HttpURLConnection) u.openConnection();
+                    c.setRequestMethod("GET");
+                    c.connect();
+                    InputStream in = c.getInputStream();
+                    final ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                    byte[] buffer = new byte[1024];
+                    in.read(buffer); // Read from Buffer.
+                    bo.write(buffer); // Write Into Buffer.
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            story_text_on_recording.setText(bo.toString());
+                            Log.e("TEXT FILE", bo.toString());
+                            try {
+                                bo.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }.start();
     }
 
     private void ShowCountdownTimerDialog() {
@@ -550,7 +605,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                         }
 
                     } else {
-                        Toast.makeText(StartRecordingActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                        errorDialogLogin();
                     }
                 }
 
@@ -564,6 +619,25 @@ public class StartRecordingActivity extends AppCompatActivity {
 
             }
 
+        });
+    }
+
+    public void errorDialogLogin() {
+
+        Dialog errorDialog = new Dialog(StartRecordingActivity.this);
+        errorDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        errorDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
+        errorDialog.setContentView(R.layout.error_dialog_login);
+
+
+        errorDialog.show();
+
+        ImageView back_arror_btn = errorDialog.findViewById(R.id.error_back_btn);
+        back_arror_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                errorDialog.dismiss();
+            }
         });
     }
 
@@ -633,7 +707,11 @@ public class StartRecordingActivity extends AppCompatActivity {
         RequestBody userName = RequestBody.create(okhttp3.MultipartBody.FORM, name);
         RequestBody bookId = RequestBody.create(okhttp3.MultipartBody.FORM, book_id);
 
-        RequestBody greetingBody = RequestBody.create(MediaType.parse("multipart/form-data"), greetingFile);
+        if (greetingPath.equals("")) {
+            greetingBody = RequestBody.create(MediaType.parse("multipart/form-data"), greetingPath);
+        } else {
+            greetingBody = RequestBody.create(MediaType.parse("multipart/form-data"), greetingFile);
+        }
         RequestBody audioBody = RequestBody.create(MediaType.parse("multipart/form-data"), audioFile);
         MultipartBody.Part greeting = MultipartBody.Part.createFormData("audio_message", greetingFile.getName(), greetingBody);
         MultipartBody.Part audiofile = MultipartBody.Part.createFormData("audio_story", audioFile.getName(), audioBody);
