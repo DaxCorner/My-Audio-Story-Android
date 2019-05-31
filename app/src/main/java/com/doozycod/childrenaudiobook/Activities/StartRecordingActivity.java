@@ -2,15 +2,11 @@ package com.doozycod.childrenaudiobook.Activities;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
@@ -18,11 +14,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -38,23 +31,19 @@ import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
-import com.doozycod.childrenaudiobook.Utils.Upload;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 
-import cz.msebera.android.httpclient.ProtocolException;
 import cz.msebera.android.httpclient.util.TextUtils;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -62,14 +51,14 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 import static com.loopj.android.http.AsyncHttpClient.LOG_TAG;
 
 public class StartRecordingActivity extends AppCompatActivity {
-
+    EditText editText;
+    Bundle send_to_share_activity;
+    String audio_filename;
     ImageView save_story_btn, share_story_btn, stop_recording_btn,
             imageView, stop_recorder_btn, login_dialog, popup_login, popup_signup,
             home_btn_recording, lib_btn_recording, start_count_down_timer_btn, login_btn_recording, home_btn_recorded, lib_btn_recorded, login_btn_recorded;
@@ -105,6 +94,7 @@ public class StartRecordingActivity extends AppCompatActivity {
     boolean isPressed = true;
     private static final String TAG = StartRecordingActivity.class.getSimpleName();
     String book_content_file;
+    Intent parseToShareActivity;
 
     @SuppressLint("HardwareIds")
     @Override
@@ -122,6 +112,7 @@ public class StartRecordingActivity extends AppCompatActivity {
         book_id = getIntent().getStringExtra("book_id");
         Log.e("Book ID and User_id", book_id + sharedPreferenceMethod.getUserId());
         intent = new Intent(StartRecordingActivity.this, BookDetailActivity.class);
+        parseToShareActivity = new Intent(StartRecordingActivity.this, ShareYourStoryActivity.class);
 
         if (book_id != null) {
             Toast.makeText(this, book_id, Toast.LENGTH_SHORT).show();
@@ -197,6 +188,8 @@ public class StartRecordingActivity extends AppCompatActivity {
         extras.putString("book_id", book_id_forBook_act);
         extras.putString("user_id", user_id_forBook_act);
         extras.putString("is_paid", is_paid_check_forBook_act);
+        extras.putString("book_content_file", book_content_file);
+
         intent.putExtras(extras);
         mydir = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/");
 
@@ -294,7 +287,28 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     }
 
-    void showBookTextContent() {
+    public void generatePushToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TOKEN", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+
+                        String token = task.getResult().getToken();
+                        sharedPreferenceMethod.spSaveToken(token);
+                        // Log and toast
+
+                        Log.e("TOKEN", token);
+                    }
+                });
+    }
+
+    public void showBookTextContent() {
 
         new Thread() {
             @Override
@@ -558,7 +572,8 @@ public class StartRecordingActivity extends AppCompatActivity {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();
                     ShowProgressDialog();
-                    loginRequest(login_email, login_password);
+                    generatePushToken();
+                    loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
 
                 }
 
@@ -570,8 +585,8 @@ public class StartRecordingActivity extends AppCompatActivity {
     }
 
 
-    public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
+    public void loginRequest(String entered_email, String entered_password, String token) {
+        apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
@@ -652,8 +667,8 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     void saveRecording() {
 
-        final EditText editText = findViewById(R.id.name_recorded_story);
-        String audio_filename = editText.getText().toString();
+        editText = findViewById(R.id.name_recorded_story);
+        audio_filename = editText.getText().toString();
 
 
         if (!audio_filename.equals("")) {
@@ -686,7 +701,10 @@ public class StartRecordingActivity extends AppCompatActivity {
                     }
                 }
 
+
             }
+
+
 //            startActivity(new Intent(StartRecordingActivity.this, RecordYourOwnActivity.class));
 //            finish();
 
@@ -740,13 +758,16 @@ public class StartRecordingActivity extends AppCompatActivity {
 
     private void saveShareRecording() {
 
-        final EditText editText = findViewById(R.id.name_recorded_story);
-        String audio_filename = editText.getText().toString();
+        editText = findViewById(R.id.name_recorded_story);
+        audio_filename = editText.getText().toString();
+        Log.e("audiofilename :", audio_filename);
         if (!audio_filename.equals("")) {
 
             mydirRecording = new File(Environment.getExternalStorageDirectory() + "/myAudioBook/audioBooks/temp/recording/");
             String audioFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + audio_filename + ".mp3";
             String greetingfile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/GreetingMessage.mp3";
+            String greetingFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "GreetingMessage-" + audio_filename + ".mp3";
+            send_to_share_activity = new Bundle();
 
             if (mydirRecording.exists()) {
                 File from = new File(mydirRecording, "Recorded Story.mp3");
@@ -754,25 +775,35 @@ public class StartRecordingActivity extends AppCompatActivity {
                 File to = new File(mydirRecording, audio_filename + ".mp3");
 
 
-                String greetingFile = "/storage/emulated/0/myAudioBook/audioBooks/temp/recording/" + "greeting-" + audio_filename + ".mp3";
-
-                File toGreet = new File(mydirRecording, "greeting-" + audio_filename + ".mp3");
-                if (from.exists() && fromGreeting.exists() || from.exists()) {
+                File toGreet = new File(mydirRecording, "GreetingMessage" + audio_filename + ".mp3");
+                if (from.exists() || fromGreeting.exists()) {
                     from.renameTo(to);
                     fromGreeting.renameTo(toGreet);
                     if (toGreet.exists()) {
 //                        uploadFile(audioFilePath);
                         uploadAudioToServer(audioFile, greetingFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
+                        send_to_share_activity.putString("book_id", book_id);
+                        send_to_share_activity.putString("audioFile", audioFile);
+                        send_to_share_activity.putString("greetingFile", greetingFile);
+                        send_to_share_activity.putString("audio_filename", audio_filename);
+                        parseToShareActivity.putExtras(send_to_share_activity);
+                        startActivity(parseToShareActivity);
+                        finish();
 
                     } else {
 //                        uploadFile(audioFilePath);
-                        uploadAudioToServer(audioFile, audioFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
+                        uploadAudioToServer(audioFile, "", sharedPreferenceMethod.getUserId(), audio_filename, book_id);
+                        send_to_share_activity.putString("book_id", book_id);
+                        send_to_share_activity.putString("audioFile", audioFile);
+                        send_to_share_activity.putString("greetingFile", "false");
+                        send_to_share_activity.putString("audio_filename", audio_filename);
+                        parseToShareActivity.putExtras(send_to_share_activity);
+                        startActivity(parseToShareActivity);
+                        finish();
                     }
                 }
-
             }
-            startActivity(new Intent(StartRecordingActivity.this, ShareYourStoryActivity.class));
-            finish();
+
 
         } else {
             Toast.makeText(this, "Please enter story name!", Toast.LENGTH_SHORT).show();

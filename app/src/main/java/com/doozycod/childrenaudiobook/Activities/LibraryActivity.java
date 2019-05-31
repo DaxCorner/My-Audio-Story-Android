@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -32,6 +33,10 @@ import com.doozycod.childrenaudiobook.Service.Config;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.hmomeni.progresscircula.ProgressCircula;
 
@@ -215,7 +220,8 @@ public class LibraryActivity extends AppCompatActivity {
                 } else {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();
-                    loginRequest(login_email, login_password);
+                    generatePushToken();
+                    loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
                     ShowProgressDialog();
                 }
             }
@@ -225,8 +231,29 @@ public class LibraryActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
+    public void generatePushToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TOKEN", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+
+                        String token = task.getResult().getToken();
+                        sharedPreferenceMethod.spSaveToken(token);
+                        // Log and toast
+
+                        Log.e("TOKEN", token);
+                    }
+                });
+    }
+
+    public void loginRequest(String entered_email, String entered_password, String token) {
+        apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {

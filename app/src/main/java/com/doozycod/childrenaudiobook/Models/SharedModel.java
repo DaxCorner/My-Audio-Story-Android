@@ -1,6 +1,13 @@
 package com.doozycod.childrenaudiobook.Models;
 
 public class SharedModel {
+    String token;
+    String user_id;
+    String first_name;
+    String last_name;
+    String mobile_number;
+    String email;
+
     public String getUser_id() {
         return user_id;
     }
@@ -41,5 +48,14 @@ public class SharedModel {
         this.email = email;
     }
 
-    String user_id,first_name,last_name,mobile_number,email;
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+
 }

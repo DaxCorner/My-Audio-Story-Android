@@ -5,11 +5,8 @@ import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.Models.LibraryModel;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.ResultObject;
-import com.doozycod.childrenaudiobook.Models.Signup_model;
+import com.doozycod.childrenaudiobook.Models.ShareStoryModel;
 import com.doozycod.childrenaudiobook.Models.updateProfileModel;
-
-import java.util.Map;
-
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -19,11 +16,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
-import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 
 public interface APIService {
-
 
     //signup
     @POST("User/signup_post.php")
@@ -33,6 +28,15 @@ public interface APIService {
                              @Field("email") String email,
                              @Field("password") String password,
                              @Field("mobile_number") String mobile_number,
+                             @Field("token") String token,
+                             @Field("device_id") String device_id);
+
+    //login
+    @POST("User/login.php")
+    @FormUrlEncoded
+    Call<Login_model> signIn(@Field("username") String username,
+                             @Field("password") String password,
+                             @Field("token") String token,
                              @Field("device_id") String device_id);
 
     //Update Profile
@@ -44,13 +48,6 @@ public interface APIService {
                                            @Field("email") String email,
                                            @Field("mobile_number") String mobile_number);
 
-
-    //login
-    @POST("User/login.php")
-    @FormUrlEncoded
-    Call<Login_model> signIn(@Field("username") String username,
-                             @Field("password") String password,
-                             @Field("device_id") String device_id);
 
     //Change password
     @POST("User/change_password.php")
@@ -88,19 +85,17 @@ public interface APIService {
     @GET("Book/books_new.php")
     Call<Books_model> getAllBooks();
 
-    //     Audio File
-//    @Multipart
-//    @POST("Library/add-library.php")
-//    Call<ResultObject> uploadAudioToServer(@Part MultipartBody.Part audio);
 
+    @Multipart
+    @POST("Library/share.php")
+    Call<ShareStoryModel> shareLibraryToUser(@Part("user_id") RequestBody user_id,
+                                             @Part("name") RequestBody name,
+                                             @Part("book_id") RequestBody book_id,
+                                             @Part("phone_number") RequestBody phone_number,
+                                             @Part("email") RequestBody email,
+                                             @Part MultipartBody.Part audio_message,
+                                             @Part MultipartBody.Part audio_story);
 
-    //    @Multipart
-//    @POST("Library/add-library.php")
-//    Call<ResultObject> uploadAudioToServer(@Part("user_id") RequestBody user_id,
-//                                           @Part("name") RequestBody name,
-//                                           @Part("book_id") RequestBody book_id,
-//                                           @Part("audio_message") RequestBody audio_message,
-//                                           @Part("audio_story") RequestBody audio_story);
     @Multipart
     @POST("Library/add-library.php")
     Call<ResultObject> uploadAudioToServer(@Part("user_id") RequestBody user_id,

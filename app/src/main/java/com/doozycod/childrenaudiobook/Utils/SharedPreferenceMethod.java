@@ -11,7 +11,7 @@ import com.doozycod.childrenaudiobook.Models.SharedModel;
 
 public class SharedPreferenceMethod {
     Context context;
-    public static String spemail, sppassword, spfirst_name, splast_name, spMobileNumber, spUser_id, spBook_id, spBook_name;
+    public static String spemail, sppassword, spfirst_name, splast_name, spMobileNumber, spUser_id, spBook_id, spBook_name, sp_token;
 
     public SharedPreferenceMethod(Context context) {
         this.context = context;
@@ -33,6 +33,26 @@ public class SharedPreferenceMethod {
 
     }
 
+    public void spSaveToken(String token) {
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
+        SharedPreferences.Editor sp_editior = sp.edit();
+
+
+        sp_editior.putString("push_token", token);
+        sp_editior.commit();
+
+    }
+
+    public String getToken() {
+        SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
+        SharedPreferences.Editor sp_editior = sp.edit();
+
+        SharedModel sharedModel = new SharedModel();
+        sp_token = sp.getString("push_token", "");
+        sharedModel.setToken(sp_token);
+        return sp_token;
+    }
+
     public void saveLogin(boolean login) {
         SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
@@ -50,6 +70,7 @@ public class SharedPreferenceMethod {
         sp_editor.apply();
     }
 
+
     public String getUserId() {
         SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);
         SharedPreferences.Editor sp_editior = sp.edit();
@@ -59,6 +80,7 @@ public class SharedPreferenceMethod {
         sharedModel.setUser_id(spUser_id);
         return spUser_id;
     }
+
 
     public boolean checkLogin() {
         SharedPreferences sp = context.getSharedPreferences("audiobook", Context.MODE_PRIVATE);

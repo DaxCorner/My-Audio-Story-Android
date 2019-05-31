@@ -33,6 +33,14 @@ public class Login_model {
     @SerializedName("mobile_number")
     @Expose
     private String mobile_number;
+    @SerializedName("device_id")
+    @Expose
+    private String device_id;
+
+
+    @SerializedName("token")
+    @Expose
+    private String token;
 
     public String getDevice_id() {
         return device_id;
@@ -42,9 +50,13 @@ public class Login_model {
         this.device_id = device_id;
     }
 
-    @SerializedName("device_id")
-    @Expose
-    private String device_id;
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 
     public String getStatus() {
         return status;
@@ -58,6 +70,7 @@ public class Login_model {
     public String getMessage() {
         return message;
     }
+
     public void setMessage(String message) {
         this.message = message;
     }
@@ -74,6 +87,7 @@ public class Login_model {
     public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
@@ -81,6 +95,7 @@ public class Login_model {
     public String getFirst_name() {
         return first_name;
     }
+
     public void setFirst_name(String first_name) {
         this.first_name = first_name;
     }
@@ -97,6 +112,7 @@ public class Login_model {
     public String getMobile_number() {
         return mobile_number;
     }
+
     public void setMobile_number(String mobile_number) {
         this.mobile_number = mobile_number;
     }

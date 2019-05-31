@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,6 +26,10 @@ import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.util.regex.Matcher;
@@ -213,11 +218,32 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this, "Mobile Number Should Be of At least 8 digits", Toast.LENGTH_SHORT).show();
             return;
         }
-        signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id);
+        generatePushToken();
+        signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id, sharedPreferenceMethod.getToken());
         ShowProgressDialog();
 
     }
 
+    public void generatePushToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TOKEN", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+
+                        String token = task.getResult().getToken();
+                        sharedPreferenceMethod.spSaveToken(token);
+                        // Log and toast
+
+                        Log.e("TOKEN", token);
+                    }
+                });
+    }
 
     public void ShowPopup() {
 
@@ -241,7 +267,8 @@ public class SignUpActivity extends AppCompatActivity {
                 } else {
                     String login_email = et_login_dialog.getText().toString();
                     String login_password = et_password_dialog.getText().toString();
-                    loginRequest(login_email, login_password);
+                    generatePushToken();
+                    loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
                     ShowProgressDialog();
                 }
 //                    myDialog.dismiss();
@@ -253,8 +280,8 @@ public class SignUpActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
+    public void loginRequest(String entered_email, String entered_password, String token) {
+        apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
@@ -316,8 +343,8 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile, String device_id) {
-        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, device_id).enqueue(new Callback<Login_model>() {
+    public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile, String device_id, String token) {
+        apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, token, device_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {

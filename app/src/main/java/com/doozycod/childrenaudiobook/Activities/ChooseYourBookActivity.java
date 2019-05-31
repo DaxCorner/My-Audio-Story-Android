@@ -35,9 +35,14 @@ import com.doozycod.childrenaudiobook.Models.BooksModel_login;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
+import com.doozycod.childrenaudiobook.Service.MyFirebaseMessagingService;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.util.List;
@@ -68,6 +73,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     CustomProgressBar progressDialog;
     LayoutInflater inflater;
     RelativeLayout v0;
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +103,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         android_id = Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
         Log.e("Device_id", android_id);
+
+
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -128,7 +136,6 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
             }
         }
-
         apiService = ApiUtils.getAPIService();
         home_btn = findViewById(R.id.home_btn);
         library_btn = findViewById(R.id.lib_btn_main);
@@ -167,6 +174,26 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
     }
 
+    public void generatePushToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TOKEN", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+
+                        token = task.getResult().getToken();
+                        sharedPreferenceMethod.spSaveToken(token);
+                        // Log and toast
+
+                        Log.e("TOKEN", token);
+                    }
+                });
+    }
 
     public void ShowPopup() {
 
@@ -215,7 +242,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                         String login_email = et_email_btn.getText().toString();
                         String login_password = et_password_btn.getText().toString();
                         ShowProgressDialog();
-                        loginRequest(login_email, login_password);
+                        generatePushToken();
+                        loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
 
                     } else {
                         Toast.makeText(ChooseYourBookActivity.this, "Password is at least 7 words!", Toast.LENGTH_SHORT).show();
@@ -230,8 +258,8 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
+    public void loginRequest(String entered_email, String entered_password, String token) {
+        apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
@@ -244,6 +272,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 //                    fetchBookDataAndLoginViewPager();
                     startActivity(new Intent(ChooseYourBookActivity.this, ChooseYourBookActivity.class));
                     finish();
+
                     sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
 //                    sharedPreferenceMethod.saveLogin(true);
                     Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());

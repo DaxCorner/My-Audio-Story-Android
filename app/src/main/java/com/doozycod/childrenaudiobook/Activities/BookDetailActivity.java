@@ -39,6 +39,10 @@ import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 
 import java.io.IOException;
 
@@ -496,7 +500,8 @@ public class BookDetailActivity extends AppCompatActivity {
                         String login_email = et_email_btn.getText().toString();
                         String login_password = et_password_btn.getText().toString();
                         ShowProgressDialog();
-                        loginRequest(login_email, login_password);
+                        generatePushToken();
+                        loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
 
                     } else {
                         Toast.makeText(BookDetailActivity.this, "Password is at least 7 words!", Toast.LENGTH_SHORT).show();
@@ -508,6 +513,27 @@ public class BookDetailActivity extends AppCompatActivity {
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.getWindow().setBackgroundDrawable(getResources().getDrawable(pop_up_bg));
         myDialog.show();
+    }
+
+    public void generatePushToken() {
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("TOKEN", "getInstanceId failed", task.getException());
+                            return;
+                        }
+
+                        // Get new Instance ID token
+
+                        String token = task.getResult().getToken();
+                        sharedPreferenceMethod.spSaveToken(token);
+                        // Log and toast
+
+                        Log.e("TOKEN", token);
+                    }
+                });
     }
 
     public void playBGMusic(SeekBar seekBar, ImageView play_btn) {
@@ -548,8 +574,8 @@ public class BookDetailActivity extends AppCompatActivity {
 
     }
 
-    public void loginRequest(String entered_email, String entered_password) {
-        apiService.signIn(entered_email, entered_password, android_id).enqueue(new Callback<Login_model>() {
+    public void loginRequest(String entered_email, String entered_password, String token) {
+        apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
