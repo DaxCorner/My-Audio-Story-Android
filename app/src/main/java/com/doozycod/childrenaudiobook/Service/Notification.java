@@ -7,7 +7,7 @@ import android.widget.TextView;
 
 import com.doozycod.childrenaudiobook.R;
 
-public class Notification extends AppCompatActivity {
+class Notification1 extends AppCompatActivity {
     TextView titleView;
     TextView messageView;
 
