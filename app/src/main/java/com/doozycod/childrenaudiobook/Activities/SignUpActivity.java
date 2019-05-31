@@ -52,7 +52,7 @@ public class SignUpActivity extends AppCompatActivity {
     TextView emailtxt;
     TextView passwordtxt;
     TextView retypepass, phone_txt;
-    String entered_email, entered_fname, entered_lname, entered_password, entered_mobile;
+    String entered_email, entered_fname, entered_lname, entered_password, entered_mobile, token;
     CustomProgressBar progressBar;
     //init volley
     private RequestQueue mRequestQueue;
@@ -65,7 +65,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
-
+        generatePushToken();
         apiService = ApiUtils.getAPIService();
         progressBar = new CustomProgressBar(this);
         myDialog = new Dialog(this);
@@ -218,9 +218,12 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this, "Mobile Number Should Be of At least 8 digits", Toast.LENGTH_SHORT).show();
             return;
         }
-        generatePushToken();
-        signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id, sharedPreferenceMethod.getToken());
-        ShowProgressDialog();
+
+        if(!token.equals("")){
+            signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id, token);
+            Log.e("token in signup api",token);
+        }
+
 
     }
 
@@ -232,21 +235,20 @@ public class SignUpActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             Log.w("TOKEN", "getInstanceId failed", task.getException());
                             return;
+                        }else{
+
+                            Log.e("TOKEN generated=> ", task.getResult().getToken());
+                            token = task.getResult().getToken();
+                            sharedPreferenceMethod.spSaveToken(task.getResult().getToken());
                         }
 
-                        // Get new Instance ID token
 
-                        String token = task.getResult().getToken();
-                        sharedPreferenceMethod.spSaveToken(token);
-                        // Log and toast
 
-                        Log.e("TOKEN", token);
                     }
                 });
     }
 
     public void ShowPopup() {
-
 
         myDialog.setContentView(R.layout.custom_login_popup);
 
@@ -269,7 +271,7 @@ public class SignUpActivity extends AppCompatActivity {
                     String login_password = et_password_dialog.getText().toString();
                     generatePushToken();
                     loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
-                    ShowProgressDialog();
+
                 }
 //                    myDialog.dismiss();
 
@@ -281,6 +283,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password, String token) {
+        ShowProgressDialog();
         apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
@@ -344,6 +347,7 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     public void signUpRequest(String entered_fname, String entered_lname, String entered_email, String entered_password, String entered_mobile, String device_id, String token) {
+        ShowProgressDialog();
         apiService.signUp(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, token, device_id).enqueue(new Callback<Login_model>() {
 
             @Override
@@ -355,8 +359,8 @@ public class SignUpActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), response.body().getStatus()
                                 + response.body().getMessage()
                                 + response.body().getUser_id()
-
                                 + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
+                        Log.e("user id of new user=>",response.body().getUser_id());
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
                         finish();

@@ -45,25 +45,10 @@ import static com.doozycod.childrenaudiobook.Service.Config.NOTIFICATION_ID;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
+    String token_fb=null;
 
     private NotificationUtils notificationUtils;
 
-    @Override
-    public void onNewToken(String s) {
-        super.onNewToken(s);
-        Log.e("Token=>>>", s);
-
-
-        storeRegIdInPref(s);
-
-        sendRegistrationToServer(s);
-
-        // Notify UI that registration has completed, so the progress indicator can be hidden.
-        Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
-        registrationComplete.putExtra("token", s);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
-
-    }
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -117,17 +102,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         notificationManager.notify(0, notificationBuilder.build());
     }
 
-    private void sendRegistrationToServer(final String token) {
-        // sending gcm token to server
-        Log.e(TAG, "sendRegistrationToServer: " + token);
 
-        //add code here
-    }
 
-    private void storeRegIdInPref(String token) {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
-        SharedPreferences.Editor editor = pref.edit();
-        editor.putString("regId", token);
-        editor.commit();
-    }
 }
