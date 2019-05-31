@@ -86,7 +86,9 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         login_btn = findViewById(R.id.login_btn_main);
         inflater = this.getLayoutInflater();
         v0 = (RelativeLayout) inflater.inflate(R.layout.view_pager_layout, null);
-
+        if (generatePushToken() == null) {
+            generatePushToken();
+        }
         //      Checking that run is first time of the app or not
 //        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
 //                .getBoolean("isFirstRun", true);
@@ -174,7 +176,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
 
     }
 
-    public void generatePushToken() {
+    public String generatePushToken() {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -193,6 +195,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                         Log.e("TOKEN", token);
                     }
                 });
+        return token;
     }
 
     public void ShowPopup() {
@@ -241,9 +244,10 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                     if (pass.length() > 6) {
                         String login_email = et_email_btn.getText().toString();
                         String login_password = et_password_btn.getText().toString();
-                        ShowProgressDialog();
-                        generatePushToken();
-                        loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
+                        if (generatePushToken() != null) {
+                            ShowProgressDialog();
+                            loginRequest(login_email, login_password, generatePushToken());
+                        }
 
                     } else {
                         Toast.makeText(ChooseYourBookActivity.this, "Password is at least 7 words!", Toast.LENGTH_SHORT).show();

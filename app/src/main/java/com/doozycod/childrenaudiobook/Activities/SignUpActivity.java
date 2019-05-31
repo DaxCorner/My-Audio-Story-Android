@@ -227,7 +227,7 @@ public class SignUpActivity extends AppCompatActivity {
 
     }
 
-    public void generatePushToken() {
+    public String generatePushToken() {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -246,6 +246,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                     }
                 });
+        return token;
     }
 
     public void ShowPopup() {
@@ -269,8 +270,10 @@ public class SignUpActivity extends AppCompatActivity {
                 } else {
                     String login_email = et_login_dialog.getText().toString();
                     String login_password = et_password_dialog.getText().toString();
-                    generatePushToken();
-                    loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
+                    Log.e("TOKEN ", generatePushToken());
+                    if (generatePushToken() != null) {
+                        loginRequest(login_email, login_password, generatePushToken());
+                    }
 
                 }
 //                    myDialog.dismiss();
