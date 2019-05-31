@@ -104,7 +104,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                 Settings.Secure.ANDROID_ID);
         Log.e("Device_id", android_id);
 
-
+        Log.e("Token", sharedPreferenceMethod.getToken());
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

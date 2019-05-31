@@ -311,6 +311,8 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                     if (response.body().getStatus().equals("true")) {
                         Log.e("RESPONSE ::", response.body().getMessage().notification.getTitle() + "\n" + response.body().getMessage().notification.getBody());
 
+                    } else {
+                        Log.e("RESPONSE ::", response.body().getStatus() + "\n" + response.body().getMessage());
 
                     }
                 }

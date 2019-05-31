@@ -45,7 +45,7 @@ import static com.doozycod.childrenaudiobook.Service.Config.NOTIFICATION_ID;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
-    String token_fb=null;
+    String token_fb = null;
 
     private NotificationUtils notificationUtils;
 
@@ -57,6 +57,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         RemoteMessage.Notification notification = remoteMessage.getNotification();
 
         Map<String, String> data = remoteMessage.getData();
+        Log.e("ON Message Recieved!", data.toString());
         ShowNotification(notification, data);
     }
 
@@ -64,26 +65,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Bitmap icon = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
 
-//        Intent intent = new Intent(this, LibraryActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-//                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-//
-//
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+
         Intent notifyIntent = new Intent(this, LibraryActivity.class);
+
 // Set the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-// Create the PendingIntent
+        // Create the PendingIntent
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
                 this, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         Uri sound = Uri.parse("android.resource://" + getApplicationContext().getPackageName() + "/raw/notification");
 
 
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID);
-//        builder.setContentIntent(notifyPendingIntent);
-//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-//        notificationManager.notify(NOTIFICATION_ID, builder.build());
         android.support.v4.app.NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(data.get("title"))
                 .setContentText(data.get("text"))
@@ -101,7 +94,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, notificationBuilder.build());
     }
-
 
 
 }
