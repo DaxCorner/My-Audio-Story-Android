@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -30,14 +31,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.doozycod.childrenaudiobook.Activities.APIService;
-import com.doozycod.childrenaudiobook.Helper.Model;
 import com.doozycod.childrenaudiobook.Models.LibraryModel;
 import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Activities.ShareYourStoryActivity;
+import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,9 +50,10 @@ import static com.doozycod.childrenaudiobook.R.drawable.dark_line;
 import static com.doozycod.childrenaudiobook.R.drawable.light_line;
 import static com.doozycod.childrenaudiobook.R.drawable.pop_up_bg;
 
+
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder> {
     private Context c;
-    private ArrayList<Model> modelArrayList;
+    private ArrayList<LibraryModel.LibraryDetails> modelArrayList;
     public MediaPlayer mediaPlayer;
     private int length;
     private int seekForwardTime = 5000; // 5000 milliseconds
@@ -82,7 +83,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     public void onBindViewHolder(@NonNull RecyclerAdapter.RecyclerHolder holder, int i) {
 
         final LibraryModel.LibraryDetails fileModel = this.libraryModels.get(i);
-
         Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
 
@@ -112,7 +112,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-
                 Log.e("File for Music", fileModel.getAudio_story());
 
                 if (fileModel.getAudio_message().equals("")) {
@@ -184,7 +183,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             @Override
             public void onClick(View v) {
                 DeleteLibrary(Library_id);
-                modelArrayList.remove(i);
+                libraryModels.remove(i);
                 myDialog.dismiss();
                 notifyItemRemoved(i);
 
@@ -200,55 +199,71 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     @SuppressLint("ClickableViewAccessibility")
     public void ShowMediaPlayerPopoup(String greeting, String filePath, View v, int i, String audioFileName, String book_image) {
         SeekBar seekBar;
-        Bundle bundle = new Bundle();
         Dialog myDialog = new Dialog(c, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         myDialog.setContentView(R.layout.custom_popup_media_player_with_skipbtn);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
 
         ImageView play_btn = myDialog.findViewById(R.id.play_pause_btn);
         ImageView rewind_btn = myDialog.findViewById(R.id.rewind_btn);
         ImageView ff_btn = myDialog.findViewById(R.id.fast_forward);
         ImageView back_btn = myDialog.findViewById(R.id.back_press_player);
         ImageView book_img = myDialog.findViewById(R.id.book_img_player);
-        ImageView skip_btn = myDialog.findViewById(R.id.skip_btn);
+        Button skip_btn = myDialog.findViewById(R.id.skip_btn_skip);
         TextView audio_fileName = myDialog.findViewById(R.id.audio_file_name);
         seekBar = myDialog.findViewById(R.id.seekbar);
-
+        if (greeting.equals("")) {
+            skip_btn.setVisibility(View.GONE);
+        } else {
+            skip_btn.setVisibility(View.VISIBLE);
+        }
         Typeface custom_font = Typeface.createFromAsset(c.getAssets(), "fonts/helvetica.ttf");
 
         audio_fileName.setTypeface(custom_font);
-        audio_fileName.setText(audioFileName);
+        if (greeting.equals("")) {
+            audio_fileName.setText(audioFileName);
+        } else {
+            audio_fileName.setText("Greeting");
+        }
 
-
-        mediaPlayer= new MediaPlayer();
+        mediaPlayer = new MediaPlayer();
 
         if (greeting.equals("")) {
-            if(mediaPlayer.isPlaying()){
+            if (mediaPlayer.isPlaying()) {
                 stopBGMusic();
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                playLibraryAudio(filePath, seekBar, play_btn,mediaPlayer);
+                playLibraryAudioStory(filePath, seekBar, play_btn);
             }
         } else {
-            playLibraryAudio(greeting, seekBar, play_btn,mediaPlayer);
+            playLibraryAudioMessage(greeting, seekBar, play_btn);
             skip_btn.setVisibility(View.VISIBLE);
 
-            int  duration = mediaPlayer.getDuration();
+            int duration = mediaPlayer.getDuration();
 
-            if(mediaPlayer.getDuration() == duration){
+
+            Log.e("Duration", duration / 1000 + "");
+            if (mediaPlayer.getCurrentPosition() == duration) {
                 skip_btn.setVisibility(View.GONE);
+                if (mediaPlayer.isPlaying()) {
+                    stopBGMusic();
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    playLibraryAudio(filePath,seekBar,play_btn, mediaPlayer);
-
+                    playLibraryAudioStory(filePath, seekBar, play_btn);
                 }
 
             }
             skip_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    stopBGMusic();
+
+                    audio_fileName.setText(audioFileName);
+                    if (mediaPlayer.isPlaying()) {
+                        stopBGMusic();
+                    }
                     skip_btn.setVisibility(View.GONE);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        playLibraryAudio(filePath,seekBar,play_btn, mediaPlayer);
+                        playLibraryAudioStory(filePath, seekBar, play_btn);
 
                     }
 
@@ -361,16 +376,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
             }
         });
 
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//        myDialog.getWindow().setBackgroundDrawable(v.getResources().getDrawable(bg));
 
-        myDialog.show();
     }
 
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    public void playLibraryAudio(String filePath, SeekBar seekBar, ImageView play_btn,MediaPlayer mediaPlayer) {
-
+    public void playLibraryAudioMessage(String filePath, SeekBar seekBar, ImageView play_btn) {
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
         try {
             mediaPlayer.setDataSource("http://" + filePath);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -381,6 +395,46 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
             mediaPlayer.setLooping(false);
             Handler mHandler = new Handler();
+//            MediaPlayer finalMediaPlayer = mediaPlayer;
+            ((Activity) c).runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    if (mediaPlayer != null) {
+                        int mCurrentPosition = mediaPlayer.getCurrentPosition() / 1000;
+                        seekBar.setMax(mediaPlayer.getDuration() / 1000);
+                        seekBar.setProgress(mCurrentPosition);
+                        if (mCurrentPosition == mediaPlayer.getDuration() / 1000) {
+                            play_btn.setImageResource(R.drawable.play_button);
+
+                        }
+
+                    }
+                    mHandler.postDelayed(this, 1000);
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
+    }
+
+    public void playLibraryAudioStory(String filePath, SeekBar seekBar, ImageView play_btn) {
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+        }
+        try {
+            mediaPlayer.setDataSource("http://" + filePath);
+            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+
+            mediaPlayer.setPlaybackParams(mediaPlayer.getPlaybackParams().setSpeed(1.0f));
+
+            mediaPlayer.setLooping(false);
+            Handler mHandler = new Handler();
+//            MediaPlayer finalMediaPlayer = mediaPlayer;
             ((Activity) c).runOnUiThread(new Runnable() {
 
                 @Override
@@ -410,7 +464,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         if (mediaPlayer != null) {
 
             mediaPlayer.stop();
-            mediaPlayer.release();
+            mediaPlayer.reset();
             mediaPlayer = null;
         }
 

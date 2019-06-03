@@ -58,7 +58,10 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleTask"
-            android:taskAffinity="" />
+            android:parentActivityName=".Activities.SplashActivity"
+            android:taskAffinity="" >
+
+        </activity>
         <activity android:name=".Activities.BookDetailActivity" />
         <activity
             android:name=".Activities.SignUpActivity"

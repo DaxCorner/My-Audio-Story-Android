@@ -72,7 +72,8 @@ public class GridAdapter extends BaseAdapter {
                 bundle.putString("audio_file", Book_list_data.get(position).getBook_audio_file());
                 bundle.putString("book_id", Book_list_data.get(position).getBook_id());
                 bundle.putString("user_id", sharedPreferenceMethod.getUserId());
-
+                bundle.putString("book_name", Book_list_data.get(position).getBook_name());
+                bundle.putInt("index_of_grid", position );
                 bundle.putString("player_book_img", Book_list_data.get(position).getBook_image());
 
                 intent.putExtras(bundle);

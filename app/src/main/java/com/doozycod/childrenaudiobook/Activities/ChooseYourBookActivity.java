@@ -89,6 +89,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         if (generatePushToken() == null) {
             generatePushToken();
         }
+
         //      Checking that run is first time of the app or not
 //        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
 //                .getBoolean("isFirstRun", true);
@@ -238,7 +239,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (et_email_btn.getText().toString().equals("") || et_password_btn.getText().toString().equals("")) {
-                    Toast.makeText(ChooseYourBookActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChooseYourBookActivity.this, "Username and password can't be empty!", Toast.LENGTH_SHORT).show();
                 } else {
                     String pass = et_password_btn.getText().toString();
                     if (pass.length() > 6) {

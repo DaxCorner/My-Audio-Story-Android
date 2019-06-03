@@ -7,8 +7,8 @@ android {
         applicationId "com.doozycod.childrenaudiobook"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.008"
+        versionCode 12
+        versionName "1.009"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

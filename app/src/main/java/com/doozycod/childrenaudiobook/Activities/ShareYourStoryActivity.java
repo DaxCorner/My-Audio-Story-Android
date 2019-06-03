@@ -133,16 +133,34 @@ public class ShareYourStoryActivity extends AppCompatActivity {
         share_your_story.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextUtils.isEmpty(email_to_share.getText().toString())) {
-                    Toast.makeText(ShareYourStoryActivity.this, "Please enter email ", Toast.LENGTH_SHORT).show();
+
+
+                if (TextUtils.isEmpty(email_to_share.getText().toString()) || TextUtils.isEmpty(phone_no_to_share.getText().toString())) {
+
+                    if (!email_to_share.getText().toString().equals("") ) {
+                        share_on_email = email_to_share.getText().toString();
+                        if (greetingFile.equals("false")) {
+                            shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, "", audioFile, share_on_phone_no, share_on_email);
+                        } else {
+                            shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, greetingFile, audioFile, share_on_phone_no, share_on_email);
+                        }
+                    } else if (!phone_no_to_share.getText().toString().equals("")) {
+                        if (greetingFile.equals("false")) {
+                            shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, "", audioFile, share_on_phone_no, "");
+                        } else {
+                            shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, greetingFile, audioFile, share_on_phone_no ,"");
+                        }
+
+                    }
+                    else{
+                        Toast.makeText(ShareYourStoryActivity.this, "Select email or phone number", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    share_on_email = email_to_share.getText().toString();
+
+                    Toast.makeText(ShareYourStoryActivity.this, "Enter only Email or Phone !", Toast.LENGTH_SHORT).show();
+
                 }
-                if (greetingFile.equals("false")) {
-                    shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, "", audioFile, share_on_phone_no, share_on_email);
-                } else {
-                    shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, greetingFile, audioFile, share_on_phone_no, share_on_email);
-                }
+
             }
         });
 
@@ -198,7 +216,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (et_email_btn.getText().toString().equals("") || et_email_btn.getText().toString().equals("")) {
-                    Toast.makeText(ShareYourStoryActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ShareYourStoryActivity.this, "Username and password can't be empty!", Toast.LENGTH_SHORT).show();
                 } else {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();

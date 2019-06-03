@@ -88,12 +88,14 @@ public class LibraryActivity extends AppCompatActivity {
         login_btn_main = findViewById(R.id.login_btn_lib);
         no_library_img = findViewById(R.id.no_library_img);
         retry_img_btn = findViewById(R.id.retry_btn);
-        Log.e("User_id", sharedPreferenceMethod.getUserId());
+        Log.e("User_id", sharedPreferenceMethod.getUserId()+sharedPreferenceMethod.checkLogin());
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
 //                ShowProgressDialog();
-
+                if (libraryModelList != null) {
+                    libraryModelList.clear();
+                }
                 login_btn_main.setImageResource(R.drawable.login_btn_pressed);
 
                 login_btn_main.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +141,7 @@ public class LibraryActivity extends AppCompatActivity {
                 Intent intent = new Intent(LibraryActivity.this, ChooseYourBookActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
+                finish();
             }
         });
     }
@@ -216,7 +219,7 @@ public class LibraryActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (et_email_btn.getText().toString().equals("") || et_email_btn.getText().toString().equals("")) {
-                    Toast.makeText(LibraryActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LibraryActivity.this, "Username and password can't be empty!", Toast.LENGTH_SHORT).show();
                 } else {
                     String login_email = et_email_btn.getText().toString();
                     String login_password = et_password_btn.getText().toString();

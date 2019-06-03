@@ -67,6 +67,7 @@ public interface APIService {
 
     //books
     @POST("Library/delete_library.php")
+    @FormUrlEncoded
     Call<ResultObject> delete_LibraryBook(@Field("user_id") String user_id,
                                           @Field("library_id") String library_id);
 

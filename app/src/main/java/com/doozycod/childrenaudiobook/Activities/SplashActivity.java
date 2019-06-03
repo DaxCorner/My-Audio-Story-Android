@@ -26,6 +26,15 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
         loading_bar = findViewById(R.id.loading);
+        try {
+            if (getIntent().hasExtra("pushnotification")) {
+                Intent intent = new Intent(this, LibraryActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
 //        sharedPreferenceMethod.saveLogin(false);

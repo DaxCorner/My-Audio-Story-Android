@@ -33,6 +33,7 @@ import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.bumptech.glide.Glide;
+import com.doozycod.childrenaudiobook.Models.BooksModel_login;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.Models.ResultObject;
 import com.doozycod.childrenaudiobook.R;
@@ -76,6 +77,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private boolean readyToPurchase = false;
     String PRODUCT_ID = "purchase_book";
     String book_id, user_id, is_paid, book_image, book_name, book_content_file;
+    String audio_file;
     CustomProgressBar progressDialog;
 
     @Override
@@ -122,7 +124,7 @@ public class BookDetailActivity extends AppCompatActivity {
 
             }
         }
-        String audio_file = bundle.getString("audio_file");
+        audio_file = bundle.getString("audio_file");
         book_id = bundle.getString("book_id");
         user_id = bundle.getString("user_id");
         is_paid = bundle.getString("is_paid");
@@ -140,15 +142,14 @@ public class BookDetailActivity extends AppCompatActivity {
                 SkuDetails sku = bp.getPurchaseListingDetails(PRODUCT_ID);
                 Log.e("Purchased History", PRODUCT_ID + " is purchased   " + bp.isPurchased(PRODUCT_ID));
                 Log.e("Purchased History", sku != null ? sku.toString() : "Failed to load SKU details");
+
                 if (sharedPreferenceMethod.checkLogin()) {
 
-                    Toast.makeText(BookDetailActivity.this, "You must have to login first!", Toast.LENGTH_SHORT).show();
                     showLoginPopUp(v);
 
                 } else {
                     if (is_paid.equals("1")) {
                         Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
-                        Toast.makeText(BookDetailActivity.this, audio_file + book_id + user_id + is_paid, Toast.LENGTH_SHORT).show();
                         Bundle extras = new Bundle();
                         extras.putString("audio_file", audio_file);
                         extras.putString("book_id", book_id);
@@ -343,11 +344,11 @@ public class BookDetailActivity extends AppCompatActivity {
         TextView audio_fileName = myDialog.findViewById(R.id.audio_file_name);
 
         String book_image = bundle.getString("player_book_img");
-        String book_name = bundle.getString("player_book_name");
+        String book_name = bundle.getString("book_name");
 
         Log.e("Bundle Data", book_image + book_name);
         Glide.with(this).load("http://" + book_image).into(book_img);
-        audio_fileName.setText(book_name);
+//        audio_fileName.setText(book_name);
 
         seekBar = myDialog.findViewById(R.id.seekbar);
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/helvetica.ttf");
@@ -368,7 +369,6 @@ public class BookDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 stopBGMusic();
                 myDialog.dismiss();
-
             }
         });
         myDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -489,11 +489,12 @@ public class BookDetailActivity extends AppCompatActivity {
         login_dialog = myDialog.findViewById(R.id.login_dialog_btn);
         EditText et_email_btn = myDialog.findViewById(R.id.et_login_dialog);
         EditText et_password_btn = myDialog.findViewById(R.id.et_password_dialog);
+
         login_dialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (et_email_btn.getText().toString().equals("") || et_password_btn.getText().toString().equals("")) {
-                    Toast.makeText(BookDetailActivity.this, "Username and password can't be emapty!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(BookDetailActivity.this, "Username and password can't be empty!", Toast.LENGTH_SHORT).show();
                 } else {
                     String pass = et_password_btn.getText().toString();
                     if (pass.length() > 6) {
@@ -579,7 +580,6 @@ public class BookDetailActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call<Login_model> call, retrofit2.Response<Login_model> response) {
-                HideProgressDialog();
                 if (response.isSuccessful()) {
                     if (response.body().getStatus().equals("true")) {
 
@@ -589,16 +589,7 @@ public class BookDetailActivity extends AppCompatActivity {
                         sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);
-                        if (!sharedPreferenceMethod.checkLogin()) {
-                            login_btn_listen.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    startActivity(new Intent(BookDetailActivity.this, ProfileActivity.class));
-                                }
-                            });
-                        } else {
-                            ShowPopup();
-                        }
+                        getBooksAfterLogin(response.body().getUser_id());
 
                     } else {
                         errorDialogLogin();
@@ -615,6 +606,32 @@ public class BookDetailActivity extends AppCompatActivity {
             }
 
         });
+    }
+
+
+    void getBooksAfterLogin(String userId) {
+        apiService.getAllBooks_login(userId).enqueue(new Callback<BooksModel_login>() {
+            @Override
+            public void onResponse(Call<BooksModel_login> call, Response<BooksModel_login> response) {
+
+                HideProgressDialog();
+                Toast.makeText(BookDetailActivity.this, "You are Logged In!", Toast.LENGTH_SHORT).show();
+                Log.e("RESPONSE", response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_image());
+                is_paid = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getIs_paid();
+                book_content_file = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_content_file();
+                book_id = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_id();
+                audio_file = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_audio_file();
+
+
+            }
+
+            @Override
+            public void onFailure(Call<BooksModel_login> call, Throwable t) {
+
+            }
+        });
+
+
     }
 
     @Override

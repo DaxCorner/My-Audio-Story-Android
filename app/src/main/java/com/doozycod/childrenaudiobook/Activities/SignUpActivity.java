@@ -359,11 +359,7 @@ public class SignUpActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     if (response.body().getStatus().equals("true")) {
-                        Toast.makeText(getApplicationContext(), response.body().getStatus()
-                                + response.body().getMessage()
-                                + response.body().getUser_id()
-                                + response.body().getMobile_number(), Toast.LENGTH_SHORT).show();
-                        Log.e("user id of new user=>",response.body().getUser_id());
+                      Log.e("user id of new user=>",response.body().getUser_id());
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
                         finish();
