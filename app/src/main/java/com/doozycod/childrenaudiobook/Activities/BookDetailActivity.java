@@ -546,7 +546,6 @@ public class BookDetailActivity extends AppCompatActivity {
             String audio = bundle.getString("audio_file");
 
             Log.e("Audio_File_from", audio);
-            Log.e("Book_image_act", bundle.getString("player_book_img"));
             mediaPlayer.setDataSource("http://" + audio);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.prepare();
@@ -621,7 +620,6 @@ public class BookDetailActivity extends AppCompatActivity {
                 book_content_file = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_content_file();
                 book_id = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_id();
                 audio_file = response.body().getBook_list_data().get(bundle.getInt("index_of_grid")).getBook_audio_file();
-
 
             }
 

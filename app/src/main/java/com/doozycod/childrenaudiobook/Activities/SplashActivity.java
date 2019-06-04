@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
 
 
@@ -26,19 +27,9 @@ public class SplashActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_splash);
         loading_bar = findViewById(R.id.loading);
-        try {
-            if (getIntent().hasExtra("pushnotification")) {
-                Intent intent = new Intent(this, LibraryActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        sharedPreferenceMethod = new SharedPreferenceMethod(this);
 
-//        sharedPreferenceMethod.saveLogin(false);
 
+//        handleIntent(getIntent());
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
@@ -55,8 +46,14 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 startActivity(new Intent(SplashActivity.this, ChooseYourBookActivity.class));
                 finish();
+
             }
         }, 2 * 1400);
+
+//        sharedPreferenceMethod = new SharedPreferenceMethod(this);
+
+//        sharedPreferenceMethod.saveLogin(false);
+
 
     }
 

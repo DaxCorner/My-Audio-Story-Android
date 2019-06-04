@@ -691,6 +691,7 @@ public class StartRecordingActivity extends AppCompatActivity {
                     SharedModel sharedModel = new SharedModel();
                     if (toGreet.exists()) {
 //                        uploadFile(audioFilePath);
+                        Log.e("toGreet EXISTS", "here I am");
                         uploadAudioToServer(audioFile, greetingFile, sharedPreferenceMethod.getUserId(), audio_filename, book_id);
 
 
@@ -776,7 +777,7 @@ public class StartRecordingActivity extends AppCompatActivity {
 
 
                 File toGreet = new File(mydirRecording, "GreetingMessage" + audio_filename + ".mp3");
-                if (from.exists() || fromGreeting.exists()) {
+                if (from.exists() && fromGreeting.exists() || from.exists()) {
                     from.renameTo(to);
                     fromGreeting.renameTo(toGreet);
                     if (toGreet.exists()) {
@@ -810,6 +811,11 @@ public class StartRecordingActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        bp.release();
+        super.onStop();
+    }
 
     @Override
     public void onBackPressed() {

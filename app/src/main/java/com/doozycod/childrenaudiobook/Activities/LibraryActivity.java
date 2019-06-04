@@ -65,6 +65,7 @@ public class LibraryActivity extends AppCompatActivity {
     List<LibraryModel.LibraryDetails> libraryModelList;
     CustomProgressBar progressDialog;
     Dialog dialog;
+    String token;
 
 
     @Override
@@ -78,17 +79,16 @@ public class LibraryActivity extends AppCompatActivity {
         progressDialog = new CustomProgressBar(this);
         apiService = ApiUtils.getAPIService();
         android_id = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
+//        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
         FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL);
         myDialog = new Dialog(this);
-
         recyclerView = findViewById(R.id.recycler_view_lib);
         recyclerView.setHasFixedSize(true);
         home_btn = findViewById(R.id.home_btn_lib);
         login_btn_main = findViewById(R.id.login_btn_lib);
         no_library_img = findViewById(R.id.no_library_img);
         retry_img_btn = findViewById(R.id.retry_btn);
-        Log.e("User_id", sharedPreferenceMethod.getUserId()+sharedPreferenceMethod.checkLogin());
+        Log.e("User_id", sharedPreferenceMethod.getUserId() + sharedPreferenceMethod.checkLogin());
 
         if (sharedPreferenceMethod != null) {
             if (sharedPreferenceMethod.checkLogin()) {
@@ -234,7 +234,7 @@ public class LibraryActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void generatePushToken() {
+    public String generatePushToken() {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -243,16 +243,16 @@ public class LibraryActivity extends AppCompatActivity {
                             Log.w("TOKEN", "getInstanceId failed", task.getException());
                             return;
                         }
-
                         // Get new Instance ID token
 
-                        String token = task.getResult().getToken();
+                        token = task.getResult().getToken();
                         sharedPreferenceMethod.spSaveToken(token);
                         // Log and toast
 
                         Log.e("TOKEN", token);
                     }
                 });
+        return token;
     }
 
     public void loginRequest(String entered_email, String entered_password, String token) {
@@ -296,7 +296,6 @@ public class LibraryActivity extends AppCompatActivity {
 
     public void HideProgressDialog() {
         progressDialog.hideProgress();
-
     }
 
     public void errorDialogLogin() {

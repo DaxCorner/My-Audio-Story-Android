@@ -35,7 +35,6 @@ import com.doozycod.childrenaudiobook.Models.BooksModel_login;
 import com.doozycod.childrenaudiobook.Models.Books_model;
 import com.doozycod.childrenaudiobook.Models.Login_model;
 import com.doozycod.childrenaudiobook.R;
-import com.doozycod.childrenaudiobook.Service.MyFirebaseMessagingService;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
 import com.doozycod.childrenaudiobook.Utils.SharedPreferenceMethod;
@@ -43,10 +42,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.hmomeni.progresscircula.ProgressCircula;
-
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -89,17 +85,6 @@ public class ChooseYourBookActivity extends AppCompatActivity {
         if (generatePushToken() == null) {
             generatePushToken();
         }
-
-        //      Checking that run is first time of the app or not
-//        Boolean isFirstRun = getSharedPreferences("children", MODE_PRIVATE)
-//                .getBoolean("isFirstRun", true);
-//
-////      Condition for Checking isFirstRun or not
-//        if (isFirstRun) {
-//            startActivity(new Intent(ChooseYourBookActivity.this, SplashActivity.class));
-//        }
-//        getSharedPreferences("children", MODE_PRIVATE).edit()
-//                .putBoolean("isFirstRun", false).apply();
 
 
         sharedPreferenceMethod = new SharedPreferenceMethod(this);
@@ -494,7 +479,6 @@ public class ChooseYourBookActivity extends AppCompatActivity {
             }
 
         });
-
 
     }
 

@@ -1,6 +1,7 @@
 package com.doozycod.childrenaudiobook.Adapter;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -420,6 +421,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
 
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
     public void playLibraryAudioStory(String filePath, SeekBar seekBar, ImageView play_btn) {
         if (mediaPlayer == null) {
             mediaPlayer = new MediaPlayer();

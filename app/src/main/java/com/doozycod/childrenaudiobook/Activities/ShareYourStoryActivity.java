@@ -137,7 +137,7 @@ public class ShareYourStoryActivity extends AppCompatActivity {
 
                 if (TextUtils.isEmpty(email_to_share.getText().toString()) || TextUtils.isEmpty(phone_no_to_share.getText().toString())) {
 
-                    if (!email_to_share.getText().toString().equals("") ) {
+                    if (!email_to_share.getText().toString().equals("")) {
                         share_on_email = email_to_share.getText().toString();
                         if (greetingFile.equals("false")) {
                             shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, "", audioFile, share_on_phone_no, share_on_email);
@@ -148,11 +148,10 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                         if (greetingFile.equals("false")) {
                             shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, "", audioFile, share_on_phone_no, "");
                         } else {
-                            shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, greetingFile, audioFile, share_on_phone_no ,"");
+                            shareAudioToUser(sharedPreferenceMethod.getUserId(), book_id, audio_filename, greetingFile, audioFile, share_on_phone_no, "");
                         }
 
-                    }
-                    else{
+                    } else {
                         Toast.makeText(ShareYourStoryActivity.this, "Select email or phone number", Toast.LENGTH_SHORT).show();
                     }
                 } else {
@@ -327,7 +326,8 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     if (response.body().getStatus().equals("true")) {
-                        Log.e("RESPONSE ::", response.body().getMessage().notification.getTitle() + "\n" + response.body().getMessage().notification.getBody());
+                        Toast.makeText(ShareYourStoryActivity.this, "Audio Story Shared!", Toast.LENGTH_SHORT).show();
+//                        Log.e("RESPONSE ::", response.body().getMessage().notification.getTitle() + "\n" + response.body().getMessage().notification.getBody());
 
                     } else {
                         Log.e("RESPONSE ::", response.body().getStatus() + "\n" + response.body().getMessage());
