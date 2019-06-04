@@ -264,7 +264,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                     finish();
 
                     sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
-//                    sharedPreferenceMethod.saveLogin(true);
+                    sharedPreferenceMethod.saveLogin(true);
                     Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                     myDialog.dismiss();
                     login_btn.setImageResource(R.drawable.profile_btn_pressed);

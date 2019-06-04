@@ -77,7 +77,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private boolean readyToPurchase = false;
     String PRODUCT_ID = "purchase_book";
     String book_id, user_id, is_paid, book_image, book_name, book_content_file;
-    String audio_file;
+    String audio_file,token;
     CustomProgressBar progressDialog;
 
     @Override
@@ -148,7 +148,7 @@ public class BookDetailActivity extends AppCompatActivity {
                     showLoginPopUp(v);
 
                 } else {
-                    if (is_paid.equals("1")) {
+                    if (is_paid.equals(is_paid)) {
                         Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
                         Bundle extras = new Bundle();
                         extras.putString("audio_file", audio_file);
@@ -500,9 +500,10 @@ public class BookDetailActivity extends AppCompatActivity {
                     if (pass.length() > 6) {
                         String login_email = et_email_btn.getText().toString();
                         String login_password = et_password_btn.getText().toString();
-                        ShowProgressDialog();
-                        generatePushToken();
-                        loginRequest(login_email, login_password, sharedPreferenceMethod.getToken());
+
+                        if (generatePushToken() != null) {
+                            loginRequest(login_email, login_password, generatePushToken());
+                        }
 
                     } else {
                         Toast.makeText(BookDetailActivity.this, "Password is at least 7 words!", Toast.LENGTH_SHORT).show();
@@ -516,7 +517,7 @@ public class BookDetailActivity extends AppCompatActivity {
         myDialog.show();
     }
 
-    public void generatePushToken() {
+    public String generatePushToken() {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                     @Override
@@ -528,13 +529,14 @@ public class BookDetailActivity extends AppCompatActivity {
 
                         // Get new Instance ID token
 
-                        String token = task.getResult().getToken();
+                        token = task.getResult().getToken();
                         sharedPreferenceMethod.spSaveToken(token);
                         // Log and toast
 
                         Log.e("TOKEN", token);
                     }
                 });
+        return token;
     }
 
     public void playBGMusic(SeekBar seekBar, ImageView play_btn) {
@@ -575,6 +577,8 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password, String token) {
+
+        ShowProgressDialog();
         apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override
