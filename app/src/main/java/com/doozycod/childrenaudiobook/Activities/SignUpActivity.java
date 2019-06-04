@@ -219,8 +219,8 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if(!token.equals("")){
-            signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id, token);
+        if(generatePushToken().equals("")){
+            signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id, generatePushToken());
             Log.e("token in signup api",token);
         }
 
@@ -239,7 +239,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                             Log.e("TOKEN generated=> ", task.getResult().getToken());
                             token = task.getResult().getToken();
-                            sharedPreferenceMethod.spSaveToken(task.getResult().getToken());
+                            sharedPreferenceMethod.spSaveToken(token);
                         }
 
 

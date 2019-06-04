@@ -231,7 +231,6 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                         String login_email = et_email_btn.getText().toString();
                         String login_password = et_password_btn.getText().toString();
                         if (generatePushToken() != null) {
-                            ShowProgressDialog();
                             loginRequest(login_email, login_password, generatePushToken());
                         }
 
@@ -249,6 +248,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
     }
 
     public void loginRequest(String entered_email, String entered_password, String token) {
+        ShowProgressDialog();
         apiService.signIn(entered_email, entered_password, token, android_id).enqueue(new Callback<Login_model>() {
 
             @Override

@@ -195,7 +195,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                sharedPreferenceMethod.saveLogin(false);
                 ShowProgressDialog();
-                logout(sharedPreferenceMethod.getUserId());
+                logout(sharedPreferenceMethod.getUserId(),sharedPreferenceMethod.getToken());
 
             }
         });
@@ -296,15 +296,15 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    public void logout(String user_id) {
-        apiService.logout(user_id).
+    public void logout(String user_id, String existing_token) {
+        apiService.logout(user_id, existing_token).
                 enqueue(new Callback<ResultObject>() {
 
                     @Override
                     public void onResponse(Call<ResultObject> call, retrofit2.Response<ResultObject> response) {
                         HideProgressDialog();
                         if (response.isSuccessful()) {
-
+                            sharedPreferenceMethod.spSaveToken("");
                             Toast.makeText(getApplicationContext(), response.body().getMessage()
                                     , Toast.LENGTH_SHORT).show();
                             if (response.body().getSuccess().equals("true")) {
