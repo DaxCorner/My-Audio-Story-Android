@@ -38,7 +38,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.io.File;
 import java.io.IOException;
@@ -267,6 +266,7 @@ public class LibraryActivity extends AppCompatActivity {
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
+                        sharedPreferenceMethod.spSaveToken(generatePushToken());
                         sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_main.setImageResource(R.drawable.profile_btn_pressed);

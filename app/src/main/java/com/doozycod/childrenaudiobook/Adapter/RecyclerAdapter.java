@@ -62,6 +62,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
     APIService apiService;
     List<LibraryModel.LibraryDetails> libraryModels;
     SharedPreferenceMethod sharedPreferenceMethod;
+    Bundle extras = new Bundle();
 
     public RecyclerAdapter(Context c, List<LibraryModel.LibraryDetails> libraryModels, APIService apiService, SharedPreferenceMethod sharedPreferenceMethod) {
         this.c = c;
@@ -99,7 +100,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Recycl
         holder.share_story_recycler_view_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                c.startActivity(new Intent(c, ShareYourStoryActivity.class));
+                Intent intent = new Intent(new Intent(c, ShareYourStoryActivity.class));
+                extras.putString("book_id", fileModel.book_details.getId());
+                extras.putString("audioFile", fileModel.getAudio_story());
+                extras.putString("greetingFile", fileModel.getAudio_message());
+                extras.putString("audio_filename", fileModel.getName());
+                intent.putExtras(extras);
+                c.startActivity(intent);
             }
         });
         holder.delete_story_btn.setOnClickListener(new View.OnClickListener() {

@@ -335,7 +335,6 @@ public class ShareYourStoryActivity extends AppCompatActivity {
                     }
                 }
 
-
             }
 
             @Override

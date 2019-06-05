@@ -59,7 +59,7 @@ public interface APIService {
     //logout
     @GET("User/logout.php")
     Call<ResultObject> logout(@Query("user_id") String user_id,
-                              @Query("existing_token") String existing_token);
+                              @Query("token") String existing_token);
 
 
     //books

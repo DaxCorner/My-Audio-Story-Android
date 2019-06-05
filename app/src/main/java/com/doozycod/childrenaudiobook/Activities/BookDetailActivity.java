@@ -77,7 +77,7 @@ public class BookDetailActivity extends AppCompatActivity {
     private boolean readyToPurchase = false;
     String PRODUCT_ID = "purchase_book";
     String book_id, user_id, is_paid, book_image, book_name, book_content_file;
-    String audio_file,token;
+    String audio_file, token;
     CustomProgressBar progressDialog;
 
     @Override
@@ -141,49 +141,91 @@ public class BookDetailActivity extends AppCompatActivity {
                 bp.getPurchaseTransactionDetails(getString(R.string.license_key));
                 SkuDetails sku = bp.getPurchaseListingDetails(PRODUCT_ID);
                 Log.e("Purchased History", PRODUCT_ID + " is purchased   " + bp.isPurchased(PRODUCT_ID));
-                Log.e("Purchased History", sku != null ? sku.toString() : "Failed to load SKU details");
+                if (bp.isPurchased(PRODUCT_ID)) {
+                    bookPurchased();
+                    if (sharedPreferenceMethod.checkLogin()) {
 
-                if (sharedPreferenceMethod.checkLogin()) {
-
-                    showLoginPopUp(v);
-
-                } else {
-                    if (is_paid.equals(is_paid)) {
-                        Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
-                        Bundle extras = new Bundle();
-                        extras.putString("audio_file", audio_file);
-                        extras.putString("book_id", book_id);
-                        extras.putString("user_id", user_id);
-                        extras.putString("is_paid", is_paid);
-                        extras.putString("book_content_file", book_content_file);
-                        intent.putExtras(extras);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-//                    ShowCountTimer();
-//                    startActivity(intent);
+                        showLoginPopUp(v);
 
                     } else {
-                        if (bp.isPurchased(PRODUCT_ID)) {
-                            Log.e("Book is Purchased", "Book is Purchased!");
-                        } else {
-
-                            if (bp.isPurchased(PRODUCT_ID)) {
-                                bookPurchased();
-                            }
-                            bp.purchase(BookDetailActivity.this, PRODUCT_ID);
+                        if (is_paid.equals("1")) {
                             Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
                             Bundle extras = new Bundle();
                             extras.putString("audio_file", audio_file);
                             extras.putString("book_id", book_id);
                             extras.putString("user_id", user_id);
                             extras.putString("is_paid", is_paid);
+                            extras.putString("book_content_file", book_content_file);
                             intent.putExtras(extras);
-                            bp.consumePurchase(PRODUCT_ID);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+
+//                    ShowCountTimer();
+//                    startActivity(intent);
+
+                        } else {
+
+                            if (bp.isPurchased(PRODUCT_ID)) {
+                                Log.e("Book ", "Book is Purchased!");
+                                bookPurchased();
+                                Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
+                                Bundle extras = new Bundle();
+                                extras.putString("audio_file", audio_file);
+                                extras.putString("book_id", book_id);
+                                extras.putString("user_id", user_id);
+                                extras.putString("is_paid", is_paid);
+                                extras.putString("book_content_file", book_content_file);
+                                intent.putExtras(extras);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                bp.consumePurchase(PRODUCT_ID);
+                            } else {
+
+                                bp.purchase(BookDetailActivity.this, PRODUCT_ID);
+                                Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
+                                Bundle extras = new Bundle();
+                                extras.putString("audio_file", audio_file);
+                                extras.putString("book_id", book_id);
+                                extras.putString("user_id", user_id);
+                                extras.putString("is_paid", is_paid);
+                                extras.putString("book_content_file", book_content_file);
+                                intent.putExtras(extras);
 
 
+                            }
+                        }
+                    }
+                } else {
+                    if (sharedPreferenceMethod.checkLogin()) {
+
+                        showLoginPopUp(v);
+
+                    } else {
+                        if (is_paid.equals("1")) {
+                            Intent intent = new Intent(BookDetailActivity.this, StartRecordingActivity.class);
+                            Bundle extras = new Bundle();
+                            extras.putString("audio_file", audio_file);
+                            extras.putString("book_id", book_id);
+                            extras.putString("user_id", user_id);
+                            extras.putString("is_paid", is_paid);
+                            extras.putString("book_content_file", book_content_file);
+                            intent.putExtras(extras);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+
+//                    ShowCountTimer();
+//                    startActivity(intent);
+
+                        } else {
+                            bp.purchase(BookDetailActivity.this, PRODUCT_ID);
+                            if (bp.isPurchased(PRODUCT_ID)) {
+                                bookPurchased();
+                            }
                         }
                     }
                 }
+
+
             }
         });
 
@@ -229,7 +271,7 @@ public class BookDetailActivity extends AppCompatActivity {
     }
 
     public void inAppBilling() {
-        bp = new BillingProcessor(this, null, new BillingProcessor.IBillingHandler() {
+        bp = new BillingProcessor(this, getString(R.string.license_key), new BillingProcessor.IBillingHandler() {
             @Override
             public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
                 Toast.makeText(BookDetailActivity.this, productId + "  " + details, Toast.LENGTH_SHORT).show();
@@ -589,6 +631,7 @@ public class BookDetailActivity extends AppCompatActivity {
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id() + "\n" + response.body().getDevice_id());
                         sharedPreferenceMethod.saveLogin(true);
+                        sharedPreferenceMethod.spSaveToken(generatePushToken());
                         sharedPreferenceMethod.login(sharedPreferenceMethod.getUserId());
                         myDialog.dismiss();
                         login_btn_listen.setImageResource(R.drawable.profile_btn_pressed);

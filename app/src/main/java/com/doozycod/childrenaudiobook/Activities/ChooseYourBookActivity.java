@@ -42,7 +42,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+
 import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -178,7 +180,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                         sharedPreferenceMethod.spSaveToken(token);
                         // Log and toast
 
-                        Log.e("TOKEN", token);
+//                        Log.e("TOKEN", token);
                     }
                 });
         return token;
@@ -232,6 +234,7 @@ public class ChooseYourBookActivity extends AppCompatActivity {
                         String login_password = et_password_btn.getText().toString();
                         if (generatePushToken() != null) {
                             loginRequest(login_email, login_password, generatePushToken());
+                            sharedPreferenceMethod.spSaveToken(generatePushToken());
                         }
 
                     } else {

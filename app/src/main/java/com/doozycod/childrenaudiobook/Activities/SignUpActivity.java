@@ -17,11 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
 import com.doozycod.childrenaudiobook.Models.Login_model;
-import com.doozycod.childrenaudiobook.Models.Signup_model;
 import com.doozycod.childrenaudiobook.R;
 import com.doozycod.childrenaudiobook.Utils.ApiUtils;
 import com.doozycod.childrenaudiobook.Utils.CustomProgressBar;
@@ -30,7 +26,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.hmomeni.progresscircula.ProgressCircula;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -54,9 +49,6 @@ public class SignUpActivity extends AppCompatActivity {
     TextView retypepass, phone_txt;
     String entered_email, entered_fname, entered_lname, entered_password, entered_mobile, token;
     CustomProgressBar progressBar;
-    //init volley
-    private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
     private String url = "http://www.doozycod.in/books-manager/api/User/sign_up.php";
     APIService apiService;
     String android_id;
@@ -194,7 +186,7 @@ public class SignUpActivity extends AppCompatActivity {
 
         if (!matcher.matches()) {
 
-            Toast.makeText(getApplicationContext(), "Please Enter A  Valid Email" + email, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Please Enter A  Valid Email", Toast.LENGTH_LONG).show();
             return;
 
         }
@@ -219,9 +211,9 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        if(generatePushToken().equals("")){
+        if (generatePushToken().equals("")) {
             signUpRequest(entered_fname, entered_lname, entered_email, entered_password, entered_mobile, android_id, generatePushToken());
-            Log.e("token in signup api",token);
+            Log.e("token in signup api", token);
         }
 
 
@@ -235,13 +227,12 @@ public class SignUpActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             Log.w("TOKEN", "getInstanceId failed", task.getException());
                             return;
-                        }else{
+                        } else {
 
                             Log.e("TOKEN generated=> ", task.getResult().getToken());
                             token = task.getResult().getToken();
                             sharedPreferenceMethod.spSaveToken(token);
                         }
-
 
 
                     }
@@ -298,7 +289,7 @@ public class SignUpActivity extends AppCompatActivity {
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         Log.e("Login Details", response.body().getStatus() + "  " + response.body().getEmail() + "  " + response.body().getFirst_name() + "  " + response.body().getLast_name() + "  " + response.body().getMobile_number() + "\n userID  " + response.body().getUser_id());
                         sharedPreferenceMethod.saveLogin(true);
-
+                        sharedPreferenceMethod.spSaveToken(generatePushToken());
                         login_button.setImageResource(R.drawable.profile_btn_pressed);
                         if (!sharedPreferenceMethod.checkLogin()) {
                             login_button.setOnClickListener(new View.OnClickListener() {
@@ -359,7 +350,8 @@ public class SignUpActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
 
                     if (response.body().getStatus().equals("true")) {
-                      Log.e("user id of new user=>",response.body().getUser_id());
+                        Log.e("user id of new user=>", response.body().getUser_id());
+                        sharedPreferenceMethod.spSaveToken(generatePushToken());
                         sharedPreferenceMethod.spInsert(response.body().getEmail(), entered_password, response.body().getFirst_name(), response.body().getLast_name(), response.body().getMobile_number(), response.body().getUser_id());
                         startActivity(new Intent(SignUpActivity.this, ChooseYourBookActivity.class));
                         finish();
